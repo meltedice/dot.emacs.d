@@ -4,6 +4,10 @@
 ;;; Stop to load default.el
 (setq inhibit-default-init t)
 
+;;; Change colors while loading...
+(set-background-color "black")
+(set-foreground-color "#7eff00")
+
 
 ;;; Keybindings
 (keyboard-translate ?\C-h ?\C-?) ; (global-set-key "\C-h" 'delete-backward-char)
