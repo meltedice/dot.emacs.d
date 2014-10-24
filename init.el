@@ -33,9 +33,13 @@
 
 ;; (global-font-lock-mode t)
 
-;; Enable upcase/downcase region
+;;; Enable upcase/downcase region
 (put 'upcase-region   'disabled nil)
 (put 'downcase-region 'disabled nil)
+
+;;; yes/no -> y/n
+(fset 'yes-or-no-p 'y-or-n-p)
+
 
 ;;; Keybindings
 (keyboard-translate ?\C-h ?\C-?) ; (global-set-key "\C-h" 'delete-backward-char)
