@@ -8,6 +8,31 @@
 (set-background-color "black")
 (set-foreground-color "#7eff00")
 
+;;; Blink cursor
+(blink-cursor-mode t)
+;;;(blink-cursor-mode nil) ;; Stop blinking (nil or 0))
+
+;;; Beep sound
+(setq visible-bell t) ; No sound but blink screen
+;; (set-message-beep 'asterisk) ; 'asterisk 'exclamation 'hand 'question 'ok nil
+
+;;; Set buffer name and fine name on title
+(setq frame-title-format "%b : %f - emacs")
+
+;;; Hide tool bar
+(cond (window-system (tool-bar-mode 0)))
+
+;;; Show date time in mode line : yyyy/mm/dd(aa) hh:mm
+(setq display-time-string-forms
+      '((let ((system-time-locale "C"))
+          (format-time-string "%Y-%m-%d(%a) %R" now)))) ; "%a, %b %d, %R, %Y" "%Y/%m/%d(%a) %R"
+(display-time)
+
+;;; Show current function in mode line
+(which-function-mode 1)
+
+;; (global-font-lock-mode t)
+
 
 ;;; Keybindings
 (keyboard-translate ?\C-h ?\C-?) ; (global-set-key "\C-h" 'delete-backward-char)
