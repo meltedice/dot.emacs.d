@@ -1,6 +1,10 @@
 ;; -*- coding: utf-8 -*-
 
 
+;;; Stop to load default.el
+(setq inhibit-default-init t)
+
+
 ;;; Keybindings
 (keyboard-translate ?\C-h ?\C-?) ; (global-set-key "\C-h" 'delete-backward-char)
 (global-set-key "\C-ch" 'help-command)
