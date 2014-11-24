@@ -912,7 +912,7 @@
 	  [(20110708)
 	   nil "Mode-specific scratch buffers" single])
  (scpaste .
-	  [(0 6 2)
+	  [(0 6 3)
 	   ((htmlize
 	     (1 39)))
 	   "Paste to the web via scp." single])
@@ -1664,7 +1664,7 @@
        [(0 1 1)
 	nil "Easy Python test running in Emacs" single])
  (noflet .
-   [(0 0 12)
+   [(0 0 13)
      nil "locally override functions" single])
  (nodejs-repl .
 	      [(0 0 2 1)
