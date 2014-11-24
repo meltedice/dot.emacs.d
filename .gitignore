@@ -1,0 +1,17 @@
+# Ignore all logfiles and tempfiles.
+/log/*.log
+/tmp
+
+# Temp files
+*.swp
+*~
+#*
+.#*
+.~lock.*#
+
+# Mac OS X
+.DS_Store
+__MACOSX
+
+# elc
+*.elc
