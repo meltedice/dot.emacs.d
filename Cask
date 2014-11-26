@@ -1,3 +1,5 @@
+;;; brew install cask
+
 (source gnu)
 (source "melpa" "http://melpa.milkbox.net/packages/")
 (source marmalade)
