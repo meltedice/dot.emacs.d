@@ -2,6 +2,18 @@
 
 (setq dot-emacs-dir (file-name-directory load-file-name))
 
+;;; Get path from shell
+(defun set-exec-path-from-shell-PATH ()
+  "Set up Emacs' `exec-path' and PATH environment variable to match that used by the user's shell.
+
+This is particularly useful under Mac OSX, where GUI apps are not started from a shell."
+  (interactive)
+  (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
+
+(set-exec-path-from-shell-PATH)
+
 ;;; load-path
 (setq load-path
       (append
@@ -71,34 +83,27 @@
 ;; 【d】 mark for deletion (removal of a installed package). (package-menu-mark-delete)
 ;; 【x】 for “execute” (start install/uninstall of marked items). (package-menu-execute)
 ;; 【r】 refresh the list from server. (package-menu-refresh)
-(require 'package)
-(setq package-user-dir (concat dot-emacs-dir "elpa"))
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
-(package-initialize)
+;; (require 'package)
+;; (setq package-user-dir (concat dot-emacs-dir "elpa"))
+;; (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+;; (package-initialize)
 ;;(require 'melpa)
 
 ;; Auto install elisp packages
-(mapc
- (lambda (package)
-   (or (package-installed-p package)
-       (package-install package)))
- '(
-   ;; Installed packages here
-   ))
+;; (mapc
+;;  (lambda (package)
+;;    (or (package-installed-p package)
+;;        (package-install package)))
+;;  '(
+;;    ;; Installed packages here
+;;    ))
 
 
-;;; get path from shell
-(defun set-exec-path-from-shell-PATH ()
-  "Set up Emacs' `exec-path' and PATH environment variable to match that used by the user's shell.
-
-This is particularly useful under Mac OSX, where GUI apps are not started from a shell."
-  (interactive)
-  (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
-    (setenv "PATH" path-from-shell)
-    (setq exec-path (split-string path-from-shell path-separator))))
-
-(set-exec-path-from-shell-PATH)
+;;; Cask
+;; brew install cask
+(require 'cask) ;; load from /usr/local/share/emacs/site-lisp/
+(cask-initialize)
 
 
 ;;; auto-install
@@ -134,11 +139,6 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
      (add-to-list 'dmoccur-exclusion-mask "\\.fseventsd/.*" t)
      (add-to-list 'dmoccur-exclusion-mask "\\.fseventsd" t)
      (add-to-list 'dmoccur-exclusion-mask "/doc/api/.*" t)))
-
-;;; Cask
-;; brew install cask
-(require 'cask) ;; load from /usr/local/share/emacs/site-lisp/
-(cask-initialize)
 
 ;;; Temporarily font configuration for Mac OS X
 ;; http://d.hatena.ne.jp/kazu-yamamoto/20140625/1403674172

@@ -5,6 +5,7 @@
 (source marmalade)
 
 (depends-on "color-moccur")
+;; (depends-on "moccur-edit") ; install via auto-install
 (depends-on "magit")
 
 (depends-on "cask")
