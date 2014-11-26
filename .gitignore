@@ -13,5 +13,8 @@
 .DS_Store
 __MACOSX
 
-# elc
+# emacs
 *.elc
+/.cask
+/elpa
+/auto-save-list
