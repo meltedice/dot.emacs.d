@@ -87,6 +87,31 @@
 (auto-install-compatibility-setup)
 
 ;;; auto-installed elisp configurations
+(eval-after-load "color-moccur"
+  '(progn
+     ;; moccur-edit is installed via auto-install
+     (require 'moccur-edit)
+     (add-to-list 'dmoccur-exclusion-mask "\\.\\(git\\|svn\\)/.+" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.rsync_cache/.+" t)
+     (add-to-list 'dmoccur-exclusion-mask "/tmp/.+" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.\\(jpg\\|jpeg\\|gif\\|png\\|bmp\\)$" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.\\(mp3\\|mp4\\|m4a\\|oga\\|mpeg\\|mpg\\|avi\\|flv\\)$" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.\\(xls\\|xlst\\|doc\\)$" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.\\(class\\|jar\\|war\\)$" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.log$" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.sqlite3$" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.sqlite3\." t)
+     (add-to-list 'dmoccur-exclusion-mask "/assets/html/" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.tree$" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.csv$" t)
+     (add-to-list 'dmoccur-exclusion-mask "[0-9]+\\.[0-9]+$" t)
+     (add-to-list 'dmoccur-exclusion-mask "/build/iphone/" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.ipa$" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.json$" t)
+     (add-to-list 'dmoccur-exclusion-mask "/build/" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.fseventsd/.*" t)
+     (add-to-list 'dmoccur-exclusion-mask "\\.fseventsd" t)
+     (add-to-list 'dmoccur-exclusion-mask "/doc/api/.*" t)))
 
 ;;; Temporarily font configuration for Mac OS X
 ;; http://d.hatena.ne.jp/kazu-yamamoto/20140625/1403674172
