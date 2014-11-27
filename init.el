@@ -62,6 +62,8 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 ;;; yes/no -> y/n
 (fset 'yes-or-no-p 'y-or-n-p)
 
+;;; C-k at beginning of line, kill whole line including "\n"
+(setq kill-whole-line t)
 
 ;;; Keybindings
 (keyboard-translate ?\C-h ?\C-?) ; (global-set-key "\C-h" 'delete-backward-char)
