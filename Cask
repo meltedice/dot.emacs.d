@@ -17,3 +17,13 @@
 (depends-on "shut-up")
 
 (depends-on "pallet")
+
+;;; ddskk
+;; wget http://openlab.ring.gr.jp/skk/maintrunk/ddskk-15.2.tar.gz
+;; tar xfz ddskk-15.2.tar.gz
+;; cd ddskk-15.2/
+;; make what-where EMACS=/usr/local/bin/emacs-24.4
+;; make install EMACS=/usr/local/bin/emacs-24.4
+;; make clean
+;; make what-where EMACS=/Applications/Emacs.app/Contents/MacOS/Emacs
+;; make install EMACS=/Applications/Emacs.app/Contents/MacOS/Emacs

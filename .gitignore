@@ -18,3 +18,7 @@ __MACOSX
 /.cask
 /elpa
 /auto-save-list
+
+# ddskk
+ddskk/*
+ddskk-*
