@@ -183,6 +183,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
   ;; .skk を自動的にバイトコンパイル
   (setq skk-byte-compile-init-file t))
 
+
 ;;; Temporarily font configuration for Mac OS X
 ;; http://d.hatena.ne.jp/kazu-yamamoto/20140625/1403674172
 (when (memq window-system '(mac ns))
@@ -209,3 +210,20 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 	  ("-cdac$" . 1.3)))
   ;; C-x 5 2 Use above configuration with new window.
   (setq frame-inherited-parameters '(font tool-bar-lines)))
+
+
+;;; encodings
+;; Regexp: http://flex.ee.uec.ac.jp/texi/emacs-jp/emacs-jp_53.html
+;; \' は空の文字列にマッチしますが，バッファの最後にあるものにだけです．
+;; shift_jis-dos / utf-8-unix / utf-8 / euc-jp
+(modify-coding-system-alist 'file "\\.html\\'" 'utf-8-unix)
+;;(modify-coding-system-alist 'file "\\.htm\\'"  'shift_jis)
+;;(modify-coding-system-alist 'file "\\.\\(pl\\|cgi\\|pm\\|t\\)\\(\\.~BASE~\\|:magit-ediff\\*\\|\\)\\'" 'utf-8-unix)
+(modify-coding-system-alist 'file "\\.\\(php\\|mdl\\|inc\\)\\'" 'utf-8-unix)
+(modify-coding-system-alist 'file "\\.\\(rb\\|erb\\|yml\\)\\(\\.~BASE~\\|\\)\\'" 'utf-8-unix)
+(modify-coding-system-alist 'file "\\ChangeLog\\'" 'utf-8-unix)
+(modify-coding-system-alist 'file "\\.\\(txt\\|log\\|org\\)\\'" 'utf-8-unix)
+
+
+;;; modes
+(add-to-list 'auto-mode-alist '("Cask\\'" . emacs-lisp-mode))
