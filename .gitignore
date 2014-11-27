@@ -20,6 +20,7 @@ __MACOSX
 /auto-save-list
 /.autosave
 /.backup
+/undohist
 
 # ddskk
 ddskk/*
