@@ -62,6 +62,9 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 ;;; yes/no -> y/n
 (fset 'yes-or-no-p 'y-or-n-p)
 
+;;; delete -> trash
+(setq delete-by-moving-to-trash t)
+
 
 ;;; Basic Keybindings
 ;; Write keybindings into inits/99-keybindings.el
