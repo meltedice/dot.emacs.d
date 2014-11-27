@@ -26,6 +26,8 @@
 (depends-on "undohist")
 (depends-on "point-undo")
 
+(depends-on "key-chord")
+
 (depends-on "dired+")
 ;;(depends-on "diredx")
 ;;(depends-on "diredx-grep")
