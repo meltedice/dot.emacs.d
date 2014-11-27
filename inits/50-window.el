@@ -1,5 +1,48 @@
 ;;; Window
 
+
+;;; バッファを入れ替える
+(defun swap-screen()
+  "Swap two screen,leaving cursor at current window."
+  (interactive)
+  (let ((thiswin (selected-window))
+        (nextbuf (window-buffer (next-window))))
+    (set-window-buffer (next-window) (window-buffer))
+    (set-window-buffer thiswin nextbuf)))
+(global-set-key [f2] 'swap-screen)
+
+;;; バッファを入れ替える
+(defun swap-screen-with-cursor()
+  "Swap two screen,with cursor in same buffer."
+  (interactive)
+  (let ((thiswin (selected-window))
+        (thisbuf (window-buffer)))
+    (other-window 1)
+    (set-window-buffer thiswin (window-buffer))
+    (set-window-buffer (selected-window) thisbuf)))
+(global-set-key [S-f2] 'swap-screen-with-cursor)
+
+
+;;; バッファを C-, C-. でどんどん切り替える(移動しないバッファを指定)
+(setq my-ignore-buffer-list
+      '("*Help*" "*Compile-Log*" "*Mew completions*" "*Completions*"
+        "*Shell Command Output*" "*Apropos*" "*Buffer List*"))
+
+(defun my-visible-buffer (blst)
+  (let ((bufn (buffer-name (car blst))))
+    (if (or (= (aref bufn 0) ? ) (member bufn my-ignore-buffer-list))
+        (my-visible-buffer (cdr blst)) (car blst))))
+
+(defun my-grub-buffer ()
+  (interactive)
+  (switch-to-buffer (my-visible-buffer (reverse (buffer-list)))))
+
+(defun my-bury-buffer ()
+  (interactive)
+  (bury-buffer)
+  (switch-to-buffer (my-visible-buffer (buffer-list))))
+
+
 ;;; ウィンドウ 2 分割時に、縦分割<->横分割
 ;; http://www.bookshelf.jp/soft/meadow_30.html#SEC401
 (defun window-toggle-division ()

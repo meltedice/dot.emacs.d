@@ -19,6 +19,10 @@
 (define-key global-map [f5] 'point-undo)
 (define-key global-map [f6] 'point-redo)
 
+;; C-, と C-. で buffer をサクサク切り替える
+(global-set-key [?\C-,] 'my-grub-buffer)
+(global-set-key [?\C-.] 'my-bury-buffer)
+
 ;; yank-pop-summary
 (define-key "\M-y"    'yank-pop-forward)
 (define-key "\C-\M-y" 'yank-pop-backward)
@@ -49,5 +53,7 @@
 (global-set-key "\C-t" ctl-t-map)
 (define-key minibuffer-local-map "\C-t" 'undefined)
 
+(global-set-key "\C-t\C-t" 'window-toggle-division)
+(global-set-key "\C-t\C-s" 'swap-screen)
 (global-set-key "\C-tm"    'moccur-grep-find)
 (global-set-key "\C-t\C-m" 'moccur-grep-find)
