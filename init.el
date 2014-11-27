@@ -130,4 +130,5 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 ;; GNU/Linux                       linux-          linux-commands.el
 ;; All         Non-window system   nw-             nw-key.el
 ;;
+(init-loader-load (concat dot-emacs-dir "inits/" "platforms/"))
 (init-loader-load)
