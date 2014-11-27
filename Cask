@@ -18,6 +18,8 @@
 
 (depends-on "pallet")
 
+(depends-on "redo+")
+
 ;;; ddskk
 ;; wget http://openlab.ring.gr.jp/skk/maintrunk/ddskk-15.2.tar.gz
 ;; tar xfz ddskk-15.2.tar.gz
