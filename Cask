@@ -19,6 +19,8 @@
 (depends-on "pallet")
 
 (depends-on "redo+")
+(depends-on "undo-tree")
+(depends-on "undohist")
 
 ;;; ddskk
 ;; wget http://openlab.ring.gr.jp/skk/maintrunk/ddskk-15.2.tar.gz
