@@ -65,6 +65,9 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 ;;; delete -> trash
 (setq delete-by-moving-to-trash t)
 
+;; Disable region highlight
+(setq-default transient-mark-mode nil)
+
 
 ;;; Basic Keybindings
 ;; Write keybindings into inits/99-keybindings.el
