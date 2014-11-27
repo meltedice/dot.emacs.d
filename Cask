@@ -34,6 +34,7 @@
 
 (depends-on "yaml-mode")
 (depends-on "markdown-mode")
+(depends-on "textile-mode")
 
 (depends-on "haml-mode")
 (depends-on "slim-mode")
