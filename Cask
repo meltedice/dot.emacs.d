@@ -22,6 +22,18 @@
 (depends-on "undo-tree")
 (depends-on "undohist")
 
+(depends-on "yaml-mode")
+(depends-on "markdown-mode")
+
+(depends-on "haml-mode")
+(depends-on "slim-mode")
+(depends-on "sass-mode")
+(depends-on "scss-mode")
+(depends-on "less-css-mode")
+
+(depends-on "js2-mode")
+(depends-on "coffee-mode")
+
 ;;; ddskk
 ;; wget http://openlab.ring.gr.jp/skk/maintrunk/ddskk-15.2.tar.gz
 ;; tar xfz ddskk-15.2.tar.gz
