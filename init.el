@@ -18,10 +18,10 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (setq load-path
       (append
        (list
-	"/usr/local/share/emacs/site-lisp/"
-	;; (expand-file-name "~/.emacs.d/...")
-	;; (concat dot-emacs-dir "dir-name")
-	) load-path))
+        "/usr/local/share/emacs/site-lisp/"
+        ;; (expand-file-name "~/.emacs.d/...")
+        ;; (concat dot-emacs-dir "dir-name")
+        ) load-path))
 
 ;;; Stop to load default.el
 (setq inhibit-default-init t)

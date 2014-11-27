@@ -21,19 +21,19 @@
 
   ;; Org mode のときだけ句読点を変更したい
   (add-hook 'org-mode-hook
-	    (lambda ()
-	      (require 'skk)
-	      (setq skk-kutouten-type 'en)))
+            (lambda ()
+              (require 'skk)
+              (setq skk-kutouten-type 'en)))
 
   ;; 文章系のバッファを開いた時には自動的に英数モード(「SKK」モード)に入る
   (let ((function #'(lambda ()
-		      (require 'skk)
-		      (skk-latin-mode-on))))
+                      (require 'skk)
+                      (skk-latin-mode-on))))
     (dolist (hook '(find-file-hooks
-		    ;; …
-		    mail-setup-hook
-		    message-setup-hook
-		    wl-draft-mode-hook))
+                    ;; …
+                    mail-setup-hook
+                    message-setup-hook
+                    wl-draft-mode-hook))
       (add-hook hook function)))
 
   ;; .skk を自動的にバイトコンパイル
