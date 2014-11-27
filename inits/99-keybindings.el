@@ -25,6 +25,24 @@
 
 (define-key "\C-x\C-j" 'skk-mode) ;; overwrite dired-x keybind
 
+;; Quote region
+(global-set-key "\C-c\"" 'quote-region-by)
+(global-set-key "\C-c'"  'quote-region-by)
+(global-set-key "\C-c`"  'quote-region-by)
+(global-set-key "\C-c/"  'quote-region-by)
+(global-set-key "\C-c!"  'quote-region-by)
+(global-set-key "\C-c|"  'quote-region-by)
+(global-set-key "\C-c%"  'quote-region-by)
+(global-set-key "\C-c("  'quote-region-by)
+(global-set-key "\C-c{"  'quote-region-by)
+(global-set-key "\C-c["  'quote-region-by)
+(global-set-key "\C-c<"  'quote-region-by)
+(global-set-key "\C-c)"  'quote-region-by)
+(global-set-key "\C-c}"  'quote-region-by)
+(global-set-key "\C-c]"  'quote-region-by)
+(global-set-key "\C-c>"  'quote-region-by)
+
+
 ;;; C-t prefix
 (defvar ctl-t-map (make-sparse-keymap)
   "Keymap for C-t prefix key.")
