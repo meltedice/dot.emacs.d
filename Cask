@@ -1,12 +1,9 @@
 ;;; brew install cask
 
 (source gnu)
-(source "melpa" "http://melpa.milkbox.net/packages/")
+(source org)
+(source melpa)
 (source marmalade)
-
-(depends-on "color-moccur")
-;; (depends-on "moccur-edit") ; install via auto-install
-(depends-on "magit")
 
 (depends-on "cask")
 (depends-on "dash")
@@ -15,6 +12,12 @@
 (depends-on "package-build")
 (depends-on "s")
 (depends-on "shut-up")
+
+(depends-on "color-moccur")
+;; (depends-on "moccur-edit") ; install via auto-install
+(depends-on "magit")
+
+(depends-on "init-loader")
 
 (depends-on "pallet")
 
