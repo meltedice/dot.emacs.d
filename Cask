@@ -53,3 +53,12 @@
 ;; make clean
 ;; make what-where EMACS=/Applications/Emacs.app/Contents/MacOS/Emacs
 ;; make install EMACS=/Applications/Emacs.app/Contents/MacOS/Emacs
+
+
+;;; auto-install'ed
+
+;;; M-x auto-install-from-emacswiki grep-edit.el
+;; M-x grep
+;; M-x lgrep
+;; M-x rgrep
+;;; M-x auto-install-from-emacswiki moccur-edit.el
