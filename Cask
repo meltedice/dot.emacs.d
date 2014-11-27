@@ -26,9 +26,11 @@
 (depends-on "undohist")
 
 (depends-on "dired+")
-(depends-on "diredx")
-(depends-on "diredx-grep")
+;;(depends-on "diredx")
+;;(depends-on "diredx-grep")
 (depends-on "wdired")
+
+(depends-on "auto-highlight-symbol")
 
 (depends-on "yaml-mode")
 (depends-on "markdown-mode")
