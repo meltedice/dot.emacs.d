@@ -75,6 +75,9 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (global-set-key "\C-c-" 'text-scale-decrease)
 (global-set-key "\M-o"  'other-window) ;; 'other-window-or-split
 (global-set-key "\C-x\C-d" 'delete-region)
+(global-set-key "\C-ci"    'indent-region)
+(global-set-key "\C-cc"    'comment-region)
+(global-set-key "\C-cu"    'uncomment-region)
 
 
 ;;; Emacs package system
