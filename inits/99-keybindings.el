@@ -14,10 +14,16 @@
 (global-set-key "\C-cu"    'uncomment-region)
 (global-set-key "\M-o"     'other-window-or-split)
 (global-set-key "\M-/"     'redo) ;; Undo C-/  Redo M-/
+(global-set-key "\C-a"     'intelli-home-2) ;; based on intelli-home
 (global-set-key (kbd "C-M-/") 'redo)
 (define-key global-map [f5] 'point-undo)
 (define-key global-map [f6] 'point-redo)
 
+;; yank-pop-summary
+(define-key "\M-y"    'yank-pop-forward)
+(define-key "\C-\M-y" 'yank-pop-backward)
+
+(define-key "\C-x\C-j" 'skk-mode) ;; overwrite dired-x keybind
 
 ;;; C-t prefix
 (defvar ctl-t-map (make-sparse-keymap)

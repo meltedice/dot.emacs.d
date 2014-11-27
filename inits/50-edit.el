@@ -43,3 +43,23 @@
       (kill-mark)
       (message "Mark killed")))
   (setq keyboard-quit-lasttime (float-time)))
+
+
+;;; intelli-home を改造して C-a の時のカーソル位置の挙動を変更した
+;; 行頭以外の C-a で、行頭へ
+;; 行頭での   C-a で、最初の空白文字列以外の出現箇所へ
+(defun intelli-home-2 ()
+  "User method to toggle between 1st text and ZERO column"
+  (interactive)
+  (catch 'ret
+    (let ((pos (point))
+          (blpos (line-beginning-position)))
+
+      ;; If at begin of line
+      (if (= blpos pos)
+          (progn
+            (beginning-of-line-text)
+            (throw 'ret t)))
+
+      (beginning-of-line)
+      (throw 'ret t))))
