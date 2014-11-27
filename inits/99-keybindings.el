@@ -14,6 +14,10 @@
 (global-set-key "\C-cu"    'uncomment-region)
 (global-set-key "\M-o"     'other-window-or-split)
 (global-set-key "\M-/"     'redo) ;; Undo C-/  Redo M-/
+(global-set-key (kbd "C-M-/") 'redo)
+(define-key global-map [f5] 'point-undo)
+(define-key global-map [f6] 'point-redo)
+
 
 ;;; C-t prefix
 (defvar ctl-t-map (make-sparse-keymap)
