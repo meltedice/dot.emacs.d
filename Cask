@@ -24,6 +24,7 @@
 (depends-on "redo+")
 (depends-on "undo-tree")
 (depends-on "undohist")
+(depends-on "point-undo")
 
 (depends-on "dired+")
 ;;(depends-on "diredx")
