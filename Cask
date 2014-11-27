@@ -22,6 +22,11 @@
 (depends-on "undo-tree")
 (depends-on "undohist")
 
+(depends-on "dired+")
+(depends-on "diredx")
+(depends-on "diredx-grep")
+(depends-on "wdired")
+
 (depends-on "yaml-mode")
 (depends-on "markdown-mode")
 
