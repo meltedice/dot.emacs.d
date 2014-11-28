@@ -16,6 +16,45 @@
             (setq dired-omit-files-p t)))
 
 
+;; default
+;; (setq find-ls-option
+;;       (if (eq system-type 'berkeley-unix)
+;;           '("-ls" . "-gilsb")
+;;         '("-exec ls -ld {} \\;" . "-ld")))
+;; -h option を付けるとインデントが乱れる
+(setq find-ls-option
+      (cond ((eq system-type 'berkeley-unix)
+             '("-ls | sort -k 9" . "-gilsb | sort -k 9"))
+            ((ubuntu?)
+             '("-exec ls -ld {} \\; | sort -k 8" . "-ld | sort -k 8"))
+            ((centos?)
+             '("-exec ls -ld {} \\; | sort -k 9" . "-ld | sort -k 9"))
+            (t
+             '("-exec ls -ld {} \\; | sort -k 9" . "-ld | sort -k 9"))))
+;;; /bin/ls -l
+;;; Ubuntu
+;;drwxr-xr-x  4 you you   4096 2010-04-21 00:39 gtd
+;;; CentOS
+;;drwxr-xr-x  7 ice ice 4096 Feb 24 06:09 apps
+;;; Mac OS X
+;;drwxr-xr-x  21 ice   staff   714B Apr 16 16:55 gtd
+
+;;; find-dired したときのバッファ名を変える。複数回実行時にバッファが上書きされるのを防ぐ。
+(defadvice find-dired (around multi-find-dired (dir pattern) activate)
+  ad-do-it
+  (rename-buffer (format "*Find* <%s %s>" dir pattern)))
+
+;;; find-dired したときのバッファ名を変える。複数回実行時にバッファが上書きされるのを防ぐ。
+(defadvice find-name-dired (around multi-find-name-dired (dir pattern) activate)
+  ad-do-it
+  (rename-buffer (format "*FindName* <%s %s>" dir pattern)))
+
+;;; find-dired したときのバッファ名を変える。複数回実行時にバッファが上書きされるのを防ぐ。
+(defadvice find-grep-dired (around multi-find-grep-dired (dir regexp) activate)
+  ad-do-it
+  (rename-buffer (format "*FindGrep* <%s %s>" dir regexp)))
+
+
 ;;; dired-ediff
 
 ;; http://www.emacswiki.org/emacs/DavidBoon
