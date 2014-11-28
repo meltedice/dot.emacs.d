@@ -24,10 +24,10 @@
 (global-set-key [?\C-.] 'my-bury-buffer)
 
 ;; yank-pop-summary
-(define-key "\M-y"    'yank-pop-forward)
-(define-key "\C-\M-y" 'yank-pop-backward)
+(global-set-key "\M-y"    'yank-pop-forward)
+(global-set-key "\C-\M-y" 'yank-pop-backward)
 
-(define-key "\C-x\C-j" 'skk-mode) ;; overwrite dired-x keybind
+(global-set-key "\C-x\C-j" 'skk-mode) ;; overwrite dired-x keybind
 
 ;; Quote region
 (global-set-key "\C-c\"" 'quote-region-by)
@@ -47,8 +47,8 @@
 (global-set-key "\C-c>"  'quote-region-by)
 
 ;; magit + ediff
-(global-set-key "\C-cd") 'magit-ediff-working-tree)
-(global-set-key "\C-cD") 'magit-ediff)
+(global-set-key "\C-cd" 'magit-ediff-working-tree)
+(global-set-key "\C-cD" 'magit-ediff)
 ;; (global-set-key "\C-ce" 'ediff-magit-ediff-working-tree)
 ;; (global-set-key "\C-cE" 'ediff-magit-ediff)
 ;; (global-set-key "\C-xE" 'ediff-magit-ediff-working-tree)
