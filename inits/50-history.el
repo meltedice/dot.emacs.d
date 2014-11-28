@@ -11,6 +11,7 @@
 
 ;;; undohist
 (when (require 'undohist nil t)
+  (setq undohist-directory (concat dot-emacs-dir ".undohist"))
   (undohist-initialize))
 
 
