@@ -46,6 +46,13 @@
 (global-set-key "\C-c]"  'quote-region-by)
 (global-set-key "\C-c>"  'quote-region-by)
 
+;; magit + ediff
+(global-set-key "\C-cd") 'magit-ediff-working-tree)
+(global-set-key "\C-cD") 'magit-ediff)
+;; (global-set-key "\C-ce" 'ediff-magit-ediff-working-tree)
+;; (global-set-key "\C-cE" 'ediff-magit-ediff)
+;; (global-set-key "\C-xE" 'ediff-magit-ediff-working-tree)
+
 
 ;;; C-t prefix
 (defvar ctl-t-map (make-sparse-keymap)
