@@ -35,6 +35,7 @@
 (elscreen-set-prefix-key "\C-z")
 (require 'elscreen-dired)
 (require 'elscreen-dnd)
+(require 'elscreen-magit) ;; my custom elisp in auto-install
 
 
 ;;; keymaps
