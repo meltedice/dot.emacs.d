@@ -29,7 +29,6 @@
 (depends-on "key-chord")
 
 (depends-on "dired+")
-;;(depends-on "diredx")
 ;;(depends-on "diredx-grep")
 (depends-on "wdired")
 
@@ -46,6 +45,13 @@
 (depends-on "sass-mode")
 (depends-on "scss-mode")
 (depends-on "less-css-mode")
+(depends-on "rhtml-mode")
+(depends-on "rspec-mode")
+
+;; (depends-on "rinari")
+(depends-on "projectile")
+(depends-on "projectile-rails")
+(depends-on "robe")
 
 (depends-on "js2-mode")
 (depends-on "coffee-mode")
