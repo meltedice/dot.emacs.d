@@ -2,12 +2,6 @@
 
 ;;; elscreen
 
-(elscreen-start)
-
-(elscreen-set-prefix-key "\C-z")
-(require 'elscreen-dired)
-(require 'elscreen-dnd)
-
 ;;; Hide [X]
 (setq elscreen-tab-display-kill-screen nil)
 ;;; Hide [<->]
@@ -33,6 +27,15 @@
         ("-telnet" . "telnet")
         ("dict" . "OnlineDict")
         ("*WL:Message*" . "Wanderlust")))
+
+
+;;; Boot elscreen
+(elscreen-start)
+
+(elscreen-set-prefix-key "\C-z")
+(require 'elscreen-dired)
+(require 'elscreen-dnd)
+
 
 ;;; keymaps
 (define-key elscreen-map "l"       'elscreen-select-and-goto)
