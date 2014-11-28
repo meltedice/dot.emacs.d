@@ -9,6 +9,20 @@
 (setq kill-whole-line t)
 
 
+;;; 長い行を折り返す
+(setq truncate-lines t)
+(setq truncate-partial-width-windows t)
+
+(defun toggle-truncate-lines ()
+  "toggle-truncate-lines for current window."
+  (interactive)
+  (walk-windows
+   (lambda (window)
+     (with-current-buffer (window-buffer window)
+       (toggle-truncate-lines)))
+   'other 'other))
+
+
 ;;; mark が設定されていないときは単語削除、それ以外は kill-region
 ;; http://d.akinori.org/?date=20070703
 (defun kill-region-or-backward-kill-word (&optional arg)
