@@ -64,3 +64,8 @@
 (global-set-key "\C-t\C-s" 'swap-screen)
 (global-set-key "\C-tm"    'moccur-grep-find)
 (global-set-key "\C-t\C-m" 'moccur-grep-find)
+
+
+;;; C-z prefix: elscreen
+(global-set-key "\C-z\C-m" 'elscreen-moccur-grep-find)
+(global-set-key "\C-zm"    'elscreen-moccur-grep-find)
