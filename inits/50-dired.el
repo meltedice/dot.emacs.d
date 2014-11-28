@@ -1,36 +1,46 @@
 ;;; dired
 
-
 ;;; dired-x
 (add-hook 'dired-load-hook
-          (function (lambda ()
-                      (load "dired-x"))))
+          (lambda ()
+            ;;; ignore files
+            ;; default: "^\\.?#\\|^\\.$\\|^\\.\\.$"
+            (setq dired-omit-files
+                  (concat dired-omit-files "\\|^\\.git$\\|^\\.svn$\\|^CVS$"))
+            (load "dired-x")))
 
 
-;;; ignore files
-;; default: "^\\.?#\\|^\\.$\\|^\\.\\.$"
-(setq dired-omit-files
-      (concat dired-omit-files "\\|^\\.git$\\|^\\.svn$\\|^CVS$"))
 (add-hook 'dired-mode-hook
           (lambda ()
             (setq dired-omit-files-p t)))
 
 
-;; default
+;;; wdired - dired 上で一括リネームできる
+;; C-x d              dired
+;; r                  rename モード
+;; ファイル名を編集
+;; C-x C-s or C-c C-c で変更を適用
+;; C-c C-k            で変更を破棄
+(require 'wdired)
+(define-key dired-mode-map "r" 'wdired-change-to-wdired-mode)
+
+
+;; ;; default
+;; ;; (setq find-ls-option
+;; ;;       (if (eq system-type 'berkeley-unix)
+;; ;;           '("-ls" . "-gilsb")
+;; ;;         '("-exec ls -ld {} \\;" . "-ld")))
+;; ;; -h option を付けるとインデントが乱れる
 ;; (setq find-ls-option
-;;       (if (eq system-type 'berkeley-unix)
-;;           '("-ls" . "-gilsb")
-;;         '("-exec ls -ld {} \\;" . "-ld")))
-;; -h option を付けるとインデントが乱れる
-(setq find-ls-option
-      (cond ((eq system-type 'berkeley-unix)
-             '("-ls | sort -k 9" . "-gilsb | sort -k 9"))
-            ((ubuntu?)
-             '("-exec ls -ld {} \\; | sort -k 8" . "-ld | sort -k 8"))
-            ((centos?)
-             '("-exec ls -ld {} \\; | sort -k 9" . "-ld | sort -k 9"))
-            (t
-             '("-exec ls -ld {} \\; | sort -k 9" . "-ld | sort -k 9"))))
+;;       (cond ((eq system-type 'berkeley-unix)
+;;              '("-ls | sort -k 9" . "-gilsb | sort -k 9"))
+;;             ((ubuntu?)
+;;              '("-exec ls -ld {} \\; | sort -k 8" . "-ld | sort -k 8"))
+;;             ((centos?)
+;;              '("-exec ls -ld {} \\; | sort -k 9" . "-ld | sort -k 9"))
+;;             (t
+;;              '("-exec ls -ld {} \\; | sort -k 9" . "-ld | sort -k 9"))))
+
 ;;; /bin/ls -l
 ;;; Ubuntu
 ;;drwxr-xr-x  4 you you   4096 2010-04-21 00:39 gtd
