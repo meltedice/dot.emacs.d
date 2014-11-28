@@ -34,6 +34,7 @@
 ;;(depends-on "diredx-grep")
 (depends-on "wdired")
 (depends-on "dired-sort")
+(depends-on "bf-mode")
 
 (depends-on "elscreen" :git "git@github.com:knu/elscreen.git")
 
