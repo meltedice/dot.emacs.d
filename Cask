@@ -33,6 +33,7 @@
 (depends-on "dired+")
 ;;(depends-on "diredx-grep")
 (depends-on "wdired")
+(depends-on "dired-sort")
 
 (depends-on "elscreen" :git "git@github.com:knu/elscreen.git")
 
