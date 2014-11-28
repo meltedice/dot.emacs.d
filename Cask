@@ -33,6 +33,8 @@
 ;;(depends-on "diredx-grep")
 (depends-on "wdired")
 
+(depends-on "elscreen" :git "git@github.com:knu/elscreen.git")
+
 (depends-on "auto-highlight-symbol")
 
 (depends-on "yaml-mode")
