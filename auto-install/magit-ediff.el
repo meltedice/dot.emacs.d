@@ -122,6 +122,7 @@
 
 (defun ediff-magit-ediff-working-tree (rev)
   (interactive (list (magit-read-rev "EDiff with (default HEAD)")))
+  ;; FIXME rev is something strange
   (ediff-magit-ediff (or rev "HEAD")))
 
 
