@@ -61,6 +61,29 @@
 (depends-on "js2-mode")
 (depends-on "coffee-mode")
 
+;; ruby
+(depends-on "ruby-additional")
+(depends-on "ruby-block")
+(depends-on "ruby-electric")
+(depends-on "ruby-end")
+(depends-on "ruby-hash-syntax")
+(depends-on "ruby-interpolation")
+(depends-on "ruby-refactor")
+(depends-on "ruby-tools")
+
+;; flymake
+(depends-on "flymake")
+(depends-on "flymake-coffee")
+(depends-on "flymake-css")
+(depends-on "flymake-gjshint")
+(depends-on "flymake-haml")
+(depends-on "flymake-json")
+(depends-on "flymake-less")
+(depends-on "flymake-ruby")
+(depends-on "flymake-shell")
+(depends-on "flymake-yaml")
+
+
 ;;; ddskk
 ;; wget http://openlab.ring.gr.jp/skk/maintrunk/ddskk-15.2.tar.gz
 ;; tar xfz ddskk-15.2.tar.gz
