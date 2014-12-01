@@ -39,6 +39,7 @@
 (depends-on "elscreen" :git "git@github.com:knu/elscreen.git")
 
 (depends-on "auto-highlight-symbol")
+(depends-on "yasnippet")
 
 (depends-on "yaml-mode")
 (depends-on "markdown-mode")
