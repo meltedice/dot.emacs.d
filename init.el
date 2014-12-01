@@ -23,6 +23,9 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
         ;; (concat dot-emacs-dir "dir-name")
         ) load-path))
 
+;;; Stop startup screen
+(setq inhibit-startup-screen t)
+
 ;;; Stop to load default.el
 (setq inhibit-default-init t)
 
@@ -67,6 +70,15 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 
 ;; Disable region highlight
 (setq-default transient-mark-mode nil)
+
+;; Common programming mode configurations
+(setq c-basic-offset 4)
+(setq tab-width 4)
+(setq-default indent-tabs-mode nil)
+(setq indent-tabs-mode nil)
+(show-paren-mode 1)
+(line-number-mode 1)
+(column-number-mode 1)
 
 
 ;;; Basic Keybindings
