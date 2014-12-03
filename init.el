@@ -1,5 +1,12 @@
 ;; -*- coding: utf-8 -*-
 
+;;; Hide tool bar
+(cond (window-system (tool-bar-mode 0)))
+
+;;; Stop startup screen
+(setq inhibit-startup-screen t)
+
+;;; Set path to .emacs.d
 (setq dot-emacs-dir (file-name-directory load-file-name))
 
 ;;; Get path from shell
@@ -18,13 +25,11 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (setq load-path
       (append
        (list
+        (expand-file-name "~/.cask/")
         "/usr/local/share/emacs/site-lisp/"
         ;; (expand-file-name "~/.emacs.d/...")
         ;; (concat dot-emacs-dir "dir-name")
         ) load-path))
-
-;;; Stop startup screen
-(setq inhibit-startup-screen t)
 
 ;;; Stop to load default.el
 (setq inhibit-default-init t)
@@ -43,9 +48,6 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 
 ;;; Set buffer name and fine name on title
 (setq frame-title-format "%b : %f - emacs")
-
-;;; Hide tool bar
-(cond (window-system (tool-bar-mode 0)))
 
 ;;; Show date time in mode line : yyyy/mm/dd(aa) hh:mm
 (setq display-time-string-forms
