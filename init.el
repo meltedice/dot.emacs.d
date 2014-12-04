@@ -1,5 +1,8 @@
 ;; -*- coding: utf-8 -*-
 
+;;; Stop to load default.el
+(setq inhibit-default-init t)
+
 ;;; Hide tool bar
 (cond (window-system (tool-bar-mode 0)))
 
@@ -30,9 +33,6 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
         ;; (expand-file-name "~/.emacs.d/...")
         ;; (concat dot-emacs-dir "dir-name")
         ) load-path))
-
-;;; Stop to load default.el
-(setq inhibit-default-init t)
 
 ;;; Change colors while loading...
 (set-background-color "black")

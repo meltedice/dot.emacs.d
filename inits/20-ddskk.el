@@ -15,6 +15,19 @@
   (global-set-key "\C-xj" 'skk-auto-fill-mode)
   (global-set-key "\C-xt" 'skk-tutorial)
 
+  ;;
+  ;; (setq skk-search-prog-list
+  ;;       '((skk-search-server skk-aux-large-jisyo 10000)))
+  (setq skk-server-host "127.0.0.1")
+  (setq skk-server-portnum "1178")
+  (setq skk-large-jisyo nil)
+  ;; server completion
+  (setq skk-search-prog-list '())
+  (add-to-list 'skk-search-prog-list
+               '(skk-server-completion-search) t)
+  (add-to-list 'skk-search-prog-list
+               '(skk-comp-by-server-completion) t)
+
   ;; SKK を起動していなくても、いつでも skk-isearch を使う
   (add-hook 'isearch-mode-hook 'skk-isearch-mode-setup)
   (add-hook 'isearch-mode-end-hook 'skk-isearch-mode-cleanup)
