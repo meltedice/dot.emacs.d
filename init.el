@@ -147,4 +147,4 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (custom-set-variables
  '(init-loader-show-log-after-init 'error-only))
 (init-loader-load (concat dot-emacs-dir "inits/" "platforms/"))
-(init-loader-load)
+(init-loader-load (concat dot-emacs-dir "inits/"))
