@@ -65,3 +65,6 @@
      (add-to-list 'dmoccur-exclusion-mask "\\.fseventsd/.*" t)
      (add-to-list 'dmoccur-exclusion-mask "\\.fseventsd" t)
      (add-to-list 'dmoccur-exclusion-mask "/doc/api/.*" t)))
+
+(require 'color-moccur)
+
