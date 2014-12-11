@@ -62,7 +62,7 @@
 (depends-on "js2-mode")
 (depends-on "coffee-mode")
 
-;; ruby
+;;; ruby
 (depends-on "ruby-additional")
 (depends-on "ruby-block")
 (depends-on "ruby-electric")
@@ -72,7 +72,7 @@
 (depends-on "ruby-refactor")
 (depends-on "ruby-tools")
 
-;; flymake
+;;; flymake
 (depends-on "flymake")
 (depends-on "flymake-coffee")
 (depends-on "flymake-css")
@@ -83,6 +83,9 @@
 (depends-on "flymake-ruby")
 (depends-on "flymake-shell")
 (depends-on "flymake-yaml")
+
+;;; theme
+(depends-on "purple-haze-theme")
 
 
 ;;; ddskk

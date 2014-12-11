@@ -134,6 +134,10 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (auto-install-compatibility-setup)
 
 
+;;; theme
+(load-theme 'purple-haze t)
+
+
 ;;; Loads ~/.emacs.d/inits/*.el
 ;;
 ;; Platform    Subplatform         Prefix          Example
