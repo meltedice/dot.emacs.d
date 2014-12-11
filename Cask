@@ -38,6 +38,7 @@
 (depends-on "bf-mode")
 
 (depends-on "elscreen" :git "git@github.com:knu/elscreen.git")
+(depends-on "linum-off")
 
 (depends-on "auto-highlight-symbol")
 (depends-on "yasnippet")

@@ -138,6 +138,18 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (load-theme 'purple-haze t)
 
 
+;; linum-mode for global
+(eval-after-load 'linum
+  (progn
+    ;; (setq defcustom linum-disable-starred-buffers nil)
+    (setq linum-disabled-modes-list
+          ;; '(eshell-mode wl-summary-mode compilation-mode org-mode text-mode dired-mode doc-view-mode image-mode)
+          '(eshell-mode compilation-mode dired-mode image-mode))
+    (setq linum-format "%3d ")))
+(require 'linum-off)
+(global-linum-mode 1)
+
+
 ;;; Loads ~/.emacs.d/inits/*.el
 ;;
 ;; Platform    Subplatform         Prefix          Example
