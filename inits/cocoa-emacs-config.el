@@ -1,14 +1,6 @@
 ;;; Mac OS X
 ;; cocoa-emacs-*: http://emacsformacosx.com/ 24.4
 
-(setq mac-pass-control-to-system nil)
-(setq mac-pass-command-to-system nil)
-(setq mac-pass-option-to-system nil)
-
-(setq mac-option-modifier 'meta)
-(when (fboundp 'mac-add-ignore-shortcut)
-  (mac-add-ignore-shortcut '(control)))
-
 (setq default-file-name-coding-system 'utf-8-unix)
 
 (set-default-coding-systems 'utf-8-unix)
