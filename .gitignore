@@ -1,6 +1,7 @@
 # Ignore all logfiles and tempfiles.
 /log/*.log
 /tmp
+wget-log
 
 # Temp files
 *.swp
