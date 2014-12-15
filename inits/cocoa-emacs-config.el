@@ -38,7 +38,7 @@
  (interactive)
  (if (eq (frame-parameter nil 'alpha) 80)
      (set-frame-parameter nil 'alpha 100)
-     (set-frame-parameter nil 'alpha 80)
-     ))
+   (set-frame-parameter nil 'alpha 90)
+   ))
 
 (global-set-key "\C-cp" 'mac-toggle-window-alpha)
