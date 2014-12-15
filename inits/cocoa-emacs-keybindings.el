@@ -35,12 +35,6 @@
 
 ;;; iTerm2
 ;;
-;; ## Profiles
-;;
-;; Select Default -> Other Actions... Duplicate Profile
-;; Select duplicated profile
-;; Set as Default
-;;
 ;; ### Keys
 ;;
 ;; * Left option key acts as:  Normal -> +Esc
@@ -48,19 +42,31 @@
 ;;
 ;; ## Keys
 ;;
-;; * Left option key:   Left Option   -> Left Command
-;; * Right option key:  Right Option  -> Right Command
-;; * Left command key:  Left Command  -> Left Option
-;; * Right command key: Right Command -> Right Option
 ;; * +
-;;     Keyboard Shortcut: Option + f
+;;     Keyboard Shortcut: Command + f
 ;;     Action: Send Escape Sequence
 ;;     Esc+ f
 ;; * +
-;;     Keyboard Shortcut: Option + b
+;;     Keyboard Shortcut: Command + b
 ;;     Action: Send Escape Sequence
 ;;     Esc+ b
 ;; * +
-;;     Keyboard Shortcut: Option + d
+;;     Keyboard Shortcut: Command + d
 ;;     Action: Send Escape Sequence
 ;;     Esc+ d
+;;
+;; ## Profiles
+;;
+;; Select Default -> Other Actions... Duplicate Profile
+;; Select duplicated profile
+;; Set as Default
+;;
+;; ### Text
+;;
+;; Regular Font:   12pt Monaco -> 16pt Osaka-等幅
+;; Non-ASCII Font: 12pt Monaco -> 16pt Osaka-等幅
+;;
+;; ### Terminal
+;;
+;; Scrollback Buffer: v Unlimited scrollback
+;;
