@@ -52,12 +52,12 @@
 ;; Missing stage number (and the colon that follows it) names a stage 0 entry.
 ;; During a merge, stage 1 is the common ancestor, stage 2 is the target branch's version (typically the current branch), and stage 3 is the version from the branch being merged. 
 (defun magit-ediff (rev)
-  (interactive (list (magit-read-rev "EDiff")))
+  (interactive (list (magit-read-rev "EDiff" ":0")))
   (let* ((section (magit-current-section))
          (info (magit-section-info section))
          (type (magit-section-type section))
          (canon-name (magit-section-info-canon-name info))
-         (git-name (concat (or rev ":0") ":" canon-name))
+         (git-name (concat rev ":" canon-name))
          (buf (find-file-noselect canon-name))
          (other-buf (magit-file-get-other-version git-name))
          (ediff-after-quit-destination-buffer (current-buffer))
@@ -69,8 +69,8 @@
     ))
 
 (defun magit-ediff-working-tree (rev)
-  (interactive (list (magit-read-rev "EDiff with (default HEAD)")))
-  (magit-ediff (or rev "HEAD")))
+  (interactive (list (magit-read-rev "EDiff with" "HEAD")))
+  (magit-ediff rev))
 
 (defun magit-ediff-startup-hook ()
   (add-hook 'ediff-after-quit-hook-internal
@@ -104,12 +104,12 @@
 
 ;; Use existing buffer for magit-ediff
 (defun ediff-magit-ediff (rev)
-  (interactive (list (magit-read-rev "EDiff")))
+  (interactive (list (magit-read-rev "EDiff" ":0")))
   (let* ((section (magit-current-section))
          (info (magit-section-info section))
          (type (magit-section-type section))
          (canon-name (magit-section-info-canon-name info))
-         (git-name (concat (or rev ":0") ":" canon-name))
+         (git-name (concat rev ":" canon-name))
          (buf (find-file-noselect canon-name))
          (other-buf (magit-file-get-other-version git-name))
          (ediff-after-quit-destination-buffer (current-buffer))
@@ -121,9 +121,9 @@
     ))
 
 (defun ediff-magit-ediff-working-tree (rev)
-  (interactive (list (magit-read-rev "EDiff with (default HEAD)")))
+  (interactive (list (magit-read-rev "EDiff with" "HEAD")))
   ;; FIXME rev is something strange
-  (ediff-magit-ediff (or rev "HEAD")))
+  (ediff-magit-ediff rev))
 
 
 ;;; git-ls-files shows paths from .git directory path
@@ -143,9 +143,9 @@
 
 ;; Use existing buffer for magit-ediff
 (defun ediff-magit-ediff (rev)
-  (interactive (list (magit-read-rev "EDiff")))
+  (interactive (list (magit-read-rev "EDiff" ":0")))
   (let* ((filename (buffer-file-name))
-         (git-name (concat (or rev ":0") ":" (magit-ls-file filename)))
+         (git-name (concat rev ":" (magit-ls-file filename)))
          (buf (find-file-noselect filename))
          (other-buf (magit-file-get-other-version git-name))
          (ediff-after-quit-destination-buffer (current-buffer))
@@ -157,5 +157,5 @@
     ))
 
 (defun ediff-magit-ediff-working-tree (rev)
-  (interactive (list (magit-read-rev "EDiff with (default HEAD)")))
-  (ediff-magit-ediff (or rev "HEAD")))
+  (interactive (list (magit-read-rev "EDiff with" "HEAD")))
+  (ediff-magit-ediff rev))
