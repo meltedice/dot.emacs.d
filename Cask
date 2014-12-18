@@ -85,6 +85,9 @@
 (depends-on "flymake-shell")
 (depends-on "flymake-yaml")
 
+;;; helm
+(depends-on "helm")
+
 ;;; theme
 (depends-on "purple-haze-theme")
 

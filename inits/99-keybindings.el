@@ -69,3 +69,18 @@
 ;;; C-z prefix: elscreen
 (global-set-key "\C-z\C-m" 'elscreen-moccur-grep-find)
 (global-set-key "\C-zm"    'elscreen-moccur-grep-find)
+
+
+;;; helm
+;; (define-key global-map (kbd "M-x")     'helm-M-x)
+(global-set-key "\M-x"     'helm-M-x)
+(global-set-key "\C-x\C-f" 'helm-find-files)
+;; (global-set-key "\C-x\C-r" 'helm-recentf)
+;; (global-set-key "\M-y"     'helm-show-kill-ring)
+;; (global-set-key "\C-ci"    'helm-imenu)
+;; (global-set-key "\C-xb"    'helm-buffers-list)
+
+;; (define-key helm-map (kbd "C-h") 'delete-backward-char)
+;; (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
+;; (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
+;; (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
