@@ -16,6 +16,11 @@
 ;; color-moccur.el 2.71 on melpa doesn't work. Points wrong lines. So use 2.73 on bookshelf.
 ;; (depends-on "color-moccur") ; M-x auto-install-from-url http://www.bookshelf.jp/elc/color-moccur.el
 ;; (depends-on "moccur-edit")  ; M-x install-elisp-from-emacswiki moccur-edit.el
+(depends-on "ag")
+(depends-on "wgrep")
+;; (depends-on "wgrep-ag")
+;; (depends-on "wgrep-helm")
+
 (depends-on "magit")
 (depends-on "git-blame")
 (depends-on "gitignore-mode")
