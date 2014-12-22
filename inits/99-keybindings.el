@@ -84,3 +84,6 @@
 ;; (define-key helm-find-files-map (kbd "C-h") 'delete-backward-char)
 ;; (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
 ;; (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
+
+;; complete with TAB
+(define-key helm-c-read-file-map (kbd "TAB") 'helm-execute-persistent-action)

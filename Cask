@@ -95,6 +95,7 @@
 
 ;;; theme
 (depends-on "purple-haze-theme")
+(depends-on "replace-colorthemes" :git "git@github.com:emacs-jp/replace-colorthemes.git")
 
 
 ;;; ddskk

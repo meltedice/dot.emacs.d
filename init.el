@@ -134,10 +134,6 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (auto-install-compatibility-setup)
 
 
-;;; theme
-(load-theme 'purple-haze t)
-
-
 ;; linum-mode for global
 (eval-after-load 'linum
   (progn
