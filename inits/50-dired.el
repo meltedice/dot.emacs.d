@@ -111,7 +111,7 @@
 ;;
 (require 'bf-mode)
 ;; 別ウィンドウに表示するサイズの上限
-(setq bf-mode-browsing-size 10)
+(setq bf-mode-browsing-size 1000) ;; kb
 ;; 別ウィンドウに表示しないファイルの拡張子
 (setq bf-mode-except-ext '("\\.exe$" "\\.com$" "\\.sys$"
                            "\\.zip$" "\\.gz$" "\\.elc$"))
