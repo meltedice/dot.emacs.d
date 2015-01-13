@@ -81,6 +81,9 @@
 
 ;;; flymake
 (depends-on "flymake")
+(depends-on "flycheck")
+(depends-on "flymake-cursor")
+(depends-on "rfringe")
 (depends-on "flymake-coffee")
 (depends-on "flymake-css")
 (depends-on "flymake-gjshint")
