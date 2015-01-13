@@ -7,4 +7,6 @@
 
   ;; disable helm completition
   (custom-set-variables '(helm-ff-auto-update-initial-value nil))
+  ;; disable helm on find-file
+  (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil))
   )
