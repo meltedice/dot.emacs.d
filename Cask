@@ -67,6 +67,7 @@
 (depends-on "robe")
 
 (depends-on "js2-mode")
+(depends-on "js3-mode")
 (depends-on "coffee-mode")
 
 ;;; ruby
