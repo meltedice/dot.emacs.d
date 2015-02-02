@@ -30,3 +30,7 @@ ddskk-*
 # *scratch*
 .scratch*
 
+# ido
+ido.last
+smex-items
+

@@ -98,6 +98,10 @@
 ;;; helm
 (depends-on "helm")
 
+(depends-on "ido-vertical-mode")
+(depends-on "ido-ubiquitous")
+(depends-on "smex")
+
 ;;; theme
 (depends-on "purple-haze-theme")
 (depends-on "replace-colorthemes" :git "git@github.com:emacs-jp/replace-colorthemes.git")
