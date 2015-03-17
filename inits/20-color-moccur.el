@@ -64,7 +64,12 @@
      (add-to-list 'dmoccur-exclusion-mask "/build/" t)
      (add-to-list 'dmoccur-exclusion-mask "\\.fseventsd/.*" t)
      (add-to-list 'dmoccur-exclusion-mask "\\.fseventsd" t)
-     (add-to-list 'dmoccur-exclusion-mask "/doc/api/.*" t)))
+     (add-to-list 'dmoccur-exclusion-mask "/doc/api/.*" t)
+     (add-to-list 'dmoccur-exclusion-mask "/coverage/assets/.*" t)
+     (add-to-list 'dmoccur-exclusion-mask "/coverage/.*\\.html" t)
+     (add-to-list 'dmoccur-exclusion-mask "/coverage/rcov/assets/.*" t)
+     (add-to-list 'dmoccur-exclusion-mask "/coverage/rcov/.*\\.html" t)
+     ))
 
 (require 'color-moccur)
 
