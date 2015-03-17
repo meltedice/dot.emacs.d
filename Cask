@@ -69,6 +69,7 @@
 (depends-on "js2-mode")
 (depends-on "js3-mode")
 (depends-on "coffee-mode")
+(depends-on "jsx-mode")
 
 ;;; ruby
 (depends-on "ruby-additional")
