@@ -30,6 +30,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
        (list
         (expand-file-name "~/.cask/")
         "/usr/local/share/emacs/site-lisp/"
+        "/usr/local/share/emacs/site-lisp/cask/"
         ;; (expand-file-name "~/.emacs.d/...")
         ;; (concat dot-emacs-dir "dir-name")
         ) load-path))
