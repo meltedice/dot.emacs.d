@@ -1,9 +1,9 @@
 ;;; magit
 
-(autoload 'ediff-magit-ediff-working-tree "magit-ediff" nil t)
-(autoload 'ediff-magit-ediff              "magit-ediff" nil t)
+(autoload 'ediff-magit-ediff-working-tree "ediff-magit-ediff" nil t)
+(autoload 'ediff-magit-ediff              "ediff-magit-ediff" nil t)
 (add-hook 'magit-mode-hook '(lambda ()
-                              (load "magit-ediff")
+                              (load "ediff-magit-ediff")
                               (define-key magit-mode-map (kbd "\C-cd") 'magit-ediff-working-tree)
                               (define-key magit-mode-map (kbd "\C-cD") 'magit-ediff)
                               ))

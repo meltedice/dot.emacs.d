@@ -1,8 +1,8 @@
 ;; -*- Mode: Emacs-Lisp -*-
 ;;
-;; magit-ediff.el 
+;; ediff-magit-ediff.el 
 ;;
-(defconst magit-ediff-version "0.0.1 (May 16, 2010)")
+(defconst ediff-magit-ediff-version "0.0.1 (May 16, 2010)")
 ;;
 ;; Author:   ice <meltedise@gmail.com>
 ;; Created:  Oct 2, 2009
