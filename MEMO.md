@@ -113,3 +113,6 @@
     ;; M-x linum-mode
     ;; C-x l
     ;;     行番号を表示する
+
+    ;; M-x dired
+    ;; b   bf-mode カーソル移動でファイルの中身を表示 b で開始して b で終了

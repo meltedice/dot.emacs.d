@@ -42,6 +42,14 @@
 (depends-on "wdired")
 (depends-on "dired-sort")
 (depends-on "bf-mode")
+;; https://github.com/Fuco1/dired-hacks
+(depends-on "dired-hacks-utils")
+(depends-on "dired-subtree")
+(depends-on "dired-details")
+;; (depends-on "dired-filter")
+;; (depends-on "dired-narrow")
+;; (depends-on "dired-ranger")
+;; (depends-on "dired-open")
 
 (depends-on "elscreen" :git "git@github.com:knu/elscreen.git")
 (depends-on "linum-off")
