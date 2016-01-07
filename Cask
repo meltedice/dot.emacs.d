@@ -96,8 +96,8 @@
 (depends-on "flymake-shell")
 (depends-on "flymake-yaml")
 
-;;; helm
-(depends-on "helm")
+;; ;;; helm
+;; (depends-on "helm")
 
 (depends-on "ido-vertical-mode")
 (depends-on "ido-ubiquitous")
