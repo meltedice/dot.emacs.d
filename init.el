@@ -158,6 +158,17 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 ;; All         Non-window system   nw-             nw-key.el
 ;;
 (custom-set-variables
- '(init-loader-show-log-after-init 'error-only))
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ag-group-matches nil)
+ '(init-loader-show-log-after-init (quote error-only)))
 (init-loader-load (concat dot-emacs-dir "inits/" "platforms/"))
 (init-loader-load (concat dot-emacs-dir "inits/"))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
