@@ -68,6 +68,7 @@
 (depends-on "less-css-mode")
 (depends-on "rhtml-mode")
 (depends-on "rspec-mode")
+(depends-on "web-mode")
 
 ;; (depends-on "rinari")
 (depends-on "projectile")

@@ -10,6 +10,8 @@
   '(lambda() (coffee-custom)))
 
 ;;; JavaScript
+;; TODO: http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
+
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-jsx-mode))
 
 ;;; JSX mode
@@ -17,5 +19,18 @@
 ;; (autoload 'jsx-mode "jsx-mode" "JSX mode" t)
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
 
+(require 'flycheck)
+(flycheck-add-mode 'javascript-eslint 'js2-jsx-mode)
+(eval-after-load 'flycheck
+  '(custom-set-variables
+    '(flycheck-disabled-checkers '(javascript-jshint javascript-jscs))
+    ))
+
 (add-hook 'js2-mode-hook 'flycheck-mode)
 (add-hook 'js2-jsx-mode-hook 'flycheck-mode)
+
+(add-hook 'js2-mode-hook
+          #'(lambda ()
+              (setq js2-basic-offset 2
+                    indent-tabs-mode nil)
+              ))
