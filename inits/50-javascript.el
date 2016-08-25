@@ -12,12 +12,17 @@
 ;;; JavaScript
 ;; TODO: http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
 
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-jsx-mode))
-
-;;; JSX mode
-;; (add-to-list 'auto-mode-alist '("\\.jsx\\'" . jsx-mode))
+;;; js2/js2-jsx mode
+;; https://github.com/mooz/js2-mode/issues/292#issuecomment-155541237
+(defun js2-mode-custom ()
+   (setq js2-mode-show-parse-errors nil)     ;; disable js2-mode syntax check
+   (setq js2-mode-show-strict-warnings nil)) ;; disable js2-mode syntax check
+(add-hook 'js2-mode-hook 'js2-mode-custom)
+(add-hook 'js2-jsx-mode-hook 'js2-mode-custom)
 ;; (autoload 'jsx-mode "jsx-mode" "JSX mode" t)
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-jsx-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
+
 
 (require 'flycheck)
 (flycheck-add-mode 'javascript-eslint 'js2-jsx-mode)
