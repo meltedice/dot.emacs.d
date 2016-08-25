@@ -12,6 +12,7 @@
 (depends-on "package-build")
 (depends-on "s")
 (depends-on "shut-up")
+(depends-on "exec-path-from-shell")
 
 ;; color-moccur.el 2.71 on melpa doesn't work. Points wrong lines. So use 2.73 on bookshelf.
 ;; (depends-on "color-moccur") ; M-x auto-install-from-url http://www.bookshelf.jp/elc/color-moccur.el

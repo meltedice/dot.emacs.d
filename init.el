@@ -12,18 +12,6 @@
 ;;; Set path to .emacs.d
 (setq dot-emacs-dir (file-name-directory load-file-name))
 
-;;; Get path from shell
-(defun set-exec-path-from-shell-PATH ()
-  "Set up Emacs' `exec-path' and PATH environment variable to match that used by the user's shell.
-
-This is particularly useful under Mac OSX, where GUI apps are not started from a shell."
-  (interactive)
-  (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
-    (setenv "PATH" path-from-shell)
-    (setq exec-path (split-string path-from-shell path-separator))))
-
-(set-exec-path-from-shell-PATH)
-
 ;;; load-path
 (setq load-path
       (append
@@ -126,6 +114,9 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (require 'cask) ;; load from /usr/local/share/emacs/site-lisp/
 (cask-initialize)
 
+;;; Get path from shell
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
 
 ;;; auto-install
 (setq auto-install-directory (concat dot-emacs-dir "auto-install"))
