@@ -28,6 +28,37 @@
         ("dict" . "OnlineDict")
         ("*WL:Message*" . "Wanderlust")))
 
+;; (defadvice magit-visit-item (around elscreen-magit-visit-item activate)
+;;   (let ((window-configuration (current-window-configuration))
+;; 	(buffer nil))
+;;     ad-do-it
+;;     (unless (eq major-mode 'magit-mode)
+;;       (setq buffer (current-buffer))
+;;       (set-window-configuration window-configuration)
+;;       (elscreen-find-and-goto-by-buffer buffer t))))
+
+;; RET (translated from <return>) runs the command magit-diff-visit-file,
+;; which is an interactive Lisp closure in `magit-diff.el'.
+;;
+;; It is bound to RET.
+;;
+;; (magit-diff-visit-file FILE &optional OTHER-WINDOW FORCE-WORKTREE)
+;;
+;; From a diff, visit the corresponding file at the appropriate position.
+;;
+;; When the file is already being displayed in another window of the
+;; same frame, then just select that window and adjust point.  With
+;; a prefix argument also display in another window.
+;;
+;; If the diff shows changes in the worktree, the index, or `HEAD',
+;; then visit the actual file.  Otherwise when the diff is about
+;; an older commit, then visit the respective blob using
+;; `magit-find-file'.  Also see `magit-diff-visit-file-worktree'
+;; which, as the name suggests always visits the actual file.
+
+
+
+
 
 ;;; Boot elscreen
 (elscreen-start)
@@ -35,9 +66,9 @@
 (elscreen-set-prefix-key "\C-z")
 (require 'elscreen-dired)
 (require 'elscreen-dnd)
-(require 'elscreen-ext)    ;; my custom elisp in auto-install
-(require 'elscreen-magit)  ;; my custom elisp in auto-install
-(require 'elscreen-moccur) ;; my custom elisp in auto-install
+;; (require 'elscreen-ext)    ;; my custom elisp in auto-install
+;; (require 'elscreen-magit)  ;; my custom elisp in auto-install
+;; (require 'elscreen-moccur) ;; my custom elisp in auto-install
 
 
 ;;; keymaps
