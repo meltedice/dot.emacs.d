@@ -122,8 +122,8 @@
 ;; wget http://openlab.ring.gr.jp/skk/maintrunk/ddskk-15.2.tar.gz
 ;; tar xfz ddskk-15.2.tar.gz
 ;; cd ddskk-15.2/
-;; make what-where EMACS=/usr/local/bin/emacs-24.5
-;; make install EMACS=/usr/local/bin/emacs-24.5
+;; make what-where EMACS=/usr/local/bin/emacs-25.1
+;; make install EMACS=/usr/local/bin/emacs-25.1
 ;; make clean
 ;; make what-where EMACS=/Applications/Emacs.app/Contents/MacOS/Emacs
 ;; make install EMACS=/Applications/Emacs.app/Contents/MacOS/Emacs
