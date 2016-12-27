@@ -154,7 +154,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ag-group-matches nil)
- '(init-loader-show-log-after-init (quote error-only)))
+ '(flycheck-disabled-checkers (quote (javascript-jshint javascript-jscs)))
+ '(init-loader-show-log-after-init (quote error-only))
+ '(package-selected-packages (quote (package-build shut-up epl git commander f dash s))))
 (init-loader-load (concat dot-emacs-dir "inits/" "platforms/"))
 (init-loader-load (concat dot-emacs-dir "inits/"))
 (custom-set-faces
