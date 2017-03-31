@@ -166,7 +166,9 @@
  ;; If there is more than one, they won't work right.
  '(ediff-current-diff-B ((t (:background "DarkOrchid4"))))
  '(ediff-current-diff-C ((t (:background "DarkOrchid4"))))
+ '(ediff-even-diff-A ((t (:background "blue4"))))
  '(ediff-even-diff-B ((t (:background "dark blue"))))
  '(ediff-even-diff-C ((t (:background "dark blue"))))
+ '(ediff-odd-diff-A ((t (:background "dark blue"))))
  '(ediff-odd-diff-B ((t (:background "dark blue"))))
  '(ediff-odd-diff-C ((t (:background "dark blue")))))
