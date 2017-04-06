@@ -9,6 +9,10 @@
 ;;; Stop startup screen
 (setq inhibit-startup-screen t)
 
+;;; HOME
+(when load-file-name
+  (setq user-emacs-directory (file-name-directory load-file-name)))
+
 ;;; Set path to .emacs.d
 (setq dot-emacs-dir (file-name-directory load-file-name))
 
@@ -109,10 +113,156 @@
 ;;    ))
 
 
+;;; El-Get
+(add-to-list 'load-path (locate-user-emacs-file "el-get/el-get"))
+(unless (require 'el-get nil 'noerror)
+  (with-current-buffer
+      (url-retrieve-synchronously
+       "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
+    (goto-char (point-max))
+    (eval-print-last-sexp)))
+
+;;; Packages via El-Get
+;;(source gnu)
+;;(source org)
+;;(source melpa)
+;;(source marmalade)
+
+(el-get-bundle tarao/el-get-lock)
+(el-get-lock)
+
+;;(el-get-bundle cask)
+(el-get-bundle dash)
+(el-get-bundle epl)
+(el-get-bundle f)
+(el-get-bundle package-build)
+(el-get-bundle s)
+(el-get-bundle shut-up)
+(el-get-bundle exec-path-from-shell)
+(el-get-bundle auto-install)
+
+;; color-moccur.el 2.71 on melpa doesn't work. Points wrong lines. So use 2.73 on bookshelf.
+;; (el-get-bundle color-moccur) ; M-x auto-install-from-url http://www.bookshelf.jp/elc/color-moccur.el
+(el-get-bundle color-moccur)
+;; (el-get-bundle moccur-edit)  ; M-x install-elisp-from-emacswiki moccur-edit.el
+(el-get-bundle ag)
+(el-get-bundle wgrep)
+(el-get-bundle wgrep-ag)
+;; (el-get-bundle wgrep-helm)
+
+(el-get-bundle magit)
+;; (el-get-bundle git-blame) ;; no-op?
+(el-get-bundle gitignore-mode)
+
+(el-get-bundle init-loader)
+
+(el-get-bundle pallet)
+
+(el-get-bundle redo+)
+(el-get-bundle undo-tree)
+(el-get-bundle undohist)
+(el-get-bundle point-undo)
+
+(el-get-bundle key-chord)
+
+(el-get-bundle dired+)
+;;(el-get-bundle diredx-grep)
+(el-get-bundle wdired)
+(el-get-bundle dired-sort)
+(el-get-bundle bf-mode)
+;; https://github.com/Fuco1/dired-hacks
+(el-get-bundle dired-hacks-utils)
+(el-get-bundle dired-subtree)
+(el-get-bundle dired-details)
+;; (el-get-bundle dired-filter)
+;; (el-get-bundle dired-narrow)
+;; (el-get-bundle dired-ranger)
+;; (el-get-bundle dired-open)
+
+(el-get-bundle elscreen :type git :url "git@github.com:knu/elscreen.git")
+(el-get-bundle linum-off)
+
+(el-get-bundle auto-highlight-symbol)
+(el-get-bundle yasnippet)
+
+(el-get-bundle yaml-mode)
+(el-get-bundle markdown-mode)
+(el-get-bundle textile-mode)
+
+(el-get-bundle haml-mode)
+(el-get-bundle slim-mode)
+(el-get-bundle sass-mode)
+(el-get-bundle scss-mode)
+(el-get-bundle less-css-mode)
+(el-get-bundle rhtml-mode)
+(el-get-bundle rspec-mode)
+(el-get-bundle web-mode)
+
+;; (el-get-bundle rinari)
+(el-get-bundle projectile)
+(el-get-bundle projectile-rails)
+(el-get-bundle robe)
+
+(el-get-bundle js2-mode)
+(el-get-bundle js3-mode)
+(el-get-bundle coffee-mode)
+(el-get-bundle jsx-mode)
+
+;;; ruby
+(el-get-bundle ruby-additional)
+(el-get-bundle ruby-block)
+(el-get-bundle ruby-electric)
+(el-get-bundle ruby-end)
+(el-get-bundle ruby-hash-syntax)
+(el-get-bundle ruby-interpolation)
+(el-get-bundle ruby-refactor)
+(el-get-bundle ruby-tools)
+
+;;; flymake
+(el-get-bundle flymake)
+(el-get-bundle flycheck)
+(el-get-bundle flymake-cursor)
+(el-get-bundle rfringe)
+(el-get-bundle flymake-coffee)
+(el-get-bundle flymake-css)
+(el-get-bundle flymake-gjshint)
+(el-get-bundle flymake-haml)
+(el-get-bundle flymake-json)
+(el-get-bundle flymake-less)
+(el-get-bundle flymake-ruby)
+(el-get-bundle flymake-shell)
+(el-get-bundle flymake-yaml)
+
+;; ;;; helm
+;; (el-get-bundle helm)
+
+(el-get-bundle ido-vertical-mode)
+(el-get-bundle ido-ubiquitous)
+(el-get-bundle smex)
+
+;;; theme
+(el-get-bundle purple-haze-theme)
+(el-get-bundle replace-colorthemes :type git :url "git@github.com:emacs-jp/replace-colorthemes.git")
+
+;;; auto-install'ed
+
+;;; M-x auto-install-from-emacswiki grep-edit.el
+;; M-x grep
+;; M-x lgrep
+;; M-x rgrep
+;;; M-x auto-install-from-url http://www.bookshelf.jp/elc/color-moccur.el
+;;; M-x auto-install-from-emacswiki moccur-edit.el
+
+;;; requirements (Mac OS X)
+;; brew install ag
+
+;;; El-Get ---------------------------------------- end
+
+
 ;;; Cask
 ;; brew install cask
-(require 'cask) ;; load from /usr/local/share/emacs/site-lisp/
-(cask-initialize)
+;;(require 'cask) ;; load from /usr/local/share/emacs/site-lisp/
+;;(cask-initialize)
 
 ;;; Get path from shell
 (when (memq window-system '(mac ns))
@@ -122,7 +272,6 @@
 (setq auto-install-directory (concat dot-emacs-dir "auto-install"))
 (add-to-list 'load-path auto-install-directory)
 (require 'auto-install)
-(auto-install-update-emacswiki-package-name t)
 (auto-install-compatibility-setup)
 
 
@@ -148,6 +297,10 @@
 ;; GNU/Linux                       linux-          linux-commands.el
 ;; All         Non-window system   nw-             nw-key.el
 ;;
+(init-loader-load (concat dot-emacs-dir "inits/" "platforms/"))
+(init-loader-load (concat dot-emacs-dir "inits/"))
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -157,8 +310,6 @@
  '(flycheck-disabled-checkers (quote (javascript-jshint javascript-jscs)))
  '(init-loader-show-log-after-init (quote error-only))
  '(package-selected-packages (quote (package-build shut-up epl git commander f dash s))))
-(init-loader-load (concat dot-emacs-dir "inits/" "platforms/"))
-(init-loader-load (concat dot-emacs-dir "inits/"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
