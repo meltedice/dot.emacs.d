@@ -1,5 +1,6 @@
 (setq el-get-lock-package-versions
-      '((auto-install :checksum "4c7626db5ec2fd3be5ee075887ec2af59c6b7e26")
+      '((php-mode :checksum "11674976ee981bb05fb79c5b6de6973b53d51e98")
+        (auto-install :checksum "4c7626db5ec2fd3be5ee075887ec2af59c6b7e26")
         (replace-colorthemes :checksum "42a79266f1d7b473e9328e67a455e505e6c3eff5")
         (smex :checksum "55aaebe3d793c2c990b39a302eb26c184281c42c")
         (ido-ubiquitous :checksum "2bd3a2722d8df0db9dfe25f5763f7dfaf0734624")

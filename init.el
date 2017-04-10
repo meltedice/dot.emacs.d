@@ -189,6 +189,8 @@
 (el-get-bundle markdown-mode)
 (el-get-bundle textile-mode)
 
+(el-get-bundle php-mode)
+
 (el-get-bundle haml-mode)
 (el-get-bundle slim-mode)
 (el-get-bundle sass-mode)
