@@ -30,8 +30,8 @@
 (setq initial-frame-alist
       (append (list
                ;;'(width . 110)
-               '(width . 120)
-               '(height . 35)
+               '(width . 170)
+               '(height . 50)
                )
               initial-frame-alist))
 (setq default-frame-alist initial-frame-alist)
