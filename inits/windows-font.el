@@ -34,8 +34,11 @@
 ;; (set-fontset-font nil 'katakana-jisx0201'("MeiryoKe_Console" . "unicode-bmp"))
 
 ;;; OK
-(set-default-font "Ricty Diminished 14")
-(set-fontset-font nil 'japanese-jisx0208 '("Ricty Diminished" . "unicode-bmp"))
-(set-fontset-font nil 'katakana-jisx0201 '("Ricty Diminished" . "unicode-bmp"))
+;; (set-default-font "Ricty Diminished 14")
+;; (set-fontset-font nil 'japanese-jisx0208 '("Ricty Diminished" . "unicode-bmp"))
+;; (set-fontset-font nil 'katakana-jisx0201 '("Ricty Diminished" . "unicode-bmp"))
 
-;; (set-face-font 'default "Ricty Diminished-15")
+;;; OK
+(set-default-font "Ricty Discord 14")
+(set-fontset-font nil 'japanese-jisx0208 '("Ricty Discord" . "unicode-bmp"))
+(set-fontset-font nil 'katakana-jisx0201 '("Ricty Discord" . "unicode-bmp"))
