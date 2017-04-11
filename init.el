@@ -167,7 +167,7 @@
 
 (el-get-bundle dired+)
 ;;(el-get-bundle diredx-grep)
-(el-get-bundle wdired)
+;;(el-get-bundle wdired) ;; already bundled and this el-getted one doesn't work on Windows10
 (el-get-bundle dired-sort)
 (el-get-bundle bf-mode)
 ;; https://github.com/Fuco1/dired-hacks
