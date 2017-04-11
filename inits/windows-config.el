@@ -26,12 +26,12 @@
                                 (deactivate-input-method)
                                 (apply orig-fun args))))
 
-;;; Window size
+;;; Frame size
 (setq initial-frame-alist
       (append (list
                ;;'(width . 110)
                '(width . 170)
-               '(height . 50)
+               '(height . 45)
                )
               initial-frame-alist))
 (setq default-frame-alist initial-frame-alist)
