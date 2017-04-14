@@ -16,29 +16,43 @@
 
 ;;; NG
 ;;; http://qiita.com/melito/items/238bdf72237290bc6e42
-;; 全角と半角で横幅が合わなくてズレる...
+;; 全角と半角で横幅が合わなくてズレる
 ;; (set-face-attribute 'default nil :family "Inconsolata" :height 110)
 ;; ;; (set-face-attribute 'default nil :family "Consolas" :height 104)
 ;; (set-fontset-font nil 'japanese-jisx0208 (font-spec :family "MeiryoKe_Console"))
 ;; (setq face-font-rescale-alist '(("MeiryoKe_Console" . 1.08)))
 
 ;;; NG
-;; 全角と半角で横幅が合わなくてズレる...
+;; 全角と半角で横幅が合わなくてズレる
 ;; (set-face-attribute 'default nil :family "MeiryoKe_Console")
 ;; (set-fontset-font nil 'japanese-jisx0208 (font-spec :family "MeiryoKe_Console"))
 ;; (setq face-font-rescale-alist '(("MeiryoKe_Console" . 1.08)))
 
 ;;; OK
-;; (set-default-font "MeiryoKe_Console 10")
-;; (set-fontset-font nil 'japanese-jisx0208 '("MeiryoKe_Console" . "unicode-bmp"))
-;; (set-fontset-font nil 'katakana-jisx0201'("MeiryoKe_Console" . "unicode-bmp"))
+(set-default-font "MeiryoKe_Console 14")
+(set-fontset-font nil 'japanese-jisx0208 '("MeiryoKe_Console" . "unicode-bmp"))
+(set-fontset-font nil 'katakana-jisx0201 '("MeiryoKe_Console" . "unicode-bmp"))
 
-;;; OK
+;;; NG
+;; 全角と半角で横幅が合わなくてズレる
 ;; (set-default-font "Ricty Diminished 14")
 ;; (set-fontset-font nil 'japanese-jisx0208 '("Ricty Diminished" . "unicode-bmp"))
 ;; (set-fontset-font nil 'katakana-jisx0201 '("Ricty Diminished" . "unicode-bmp"))
 
-;;; OK
-(set-default-font "Ricty Discord 14")
-(set-fontset-font nil 'japanese-jisx0208 '("Ricty Discord" . "unicode-bmp"))
-(set-fontset-font nil 'katakana-jisx0201 '("Ricty Discord" . "unicode-bmp"))
+;;; NG
+;; 全角と半角で横幅が合わなくてズレる
+;; (set-default-font "Ricty Discord 14")
+;; (set-fontset-font nil 'japanese-jisx0208 '("Ricty Discord" . "unicode-bmp"))
+;; (set-fontset-font nil 'katakana-jisx0201 '("Ricty Discord" . "unicode-bmp"))
+
+;;; NG
+;; 全角と半角で横幅が合わなくてズレる
+;; (set-default-font "Cica 14")
+;; (set-fontset-font nil 'japanese-jisx0208 '("Cica" . "unicode-bmp"))
+;; (set-fontset-font nil 'katakana-jisx0201 '("Cica" . "unicode-bmp"))
+
+;;; NG
+;; 全角と半角で横幅が合わなくてズレる
+;; (set-default-font "Myrica 14")
+;; (set-fontset-font nil 'japanese-jisx0208 '("Myrica" . "unicode-bmp"))
+;; (set-fontset-font nil 'katakana-jisx0201 '("Myrica" . "unicode-bmp"))
