@@ -20,9 +20,9 @@
 (setq load-path
       (append
        (list
-        (expand-file-name "~/.cask/")
-        "/usr/local/share/emacs/site-lisp/"
-        "/usr/local/share/emacs/site-lisp/cask/"
+        ;; (expand-file-name "~/.cask/")
+        ;; "/usr/local/share/emacs/site-lisp/"
+        ;; "/usr/local/share/emacs/site-lisp/cask/"
         ;; (expand-file-name "~/.emacs.d/...")
         ;; (concat dot-emacs-dir "dir-name")
         ) load-path))
