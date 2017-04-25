@@ -1,5 +1,8 @@
 (setq el-get-lock-package-versions
-      '((magit :checksum "4fea54f8259ba36edaec2c0c74b97cf8ee94c48e")
+      '((simplenote2 :checksum "5f267d6289b103d77feb2f038baedeae39deee75")
+        (request :checksum "48a35969f7c41810d550e6cdf784cb86c5a05a20")
+        (deferred :checksum "7f2bb81e75db895c99611a7a9fbde7c239b757ba")
+        (magit :checksum "4fea54f8259ba36edaec2c0c74b97cf8ee94c48e")
         (dired+ :checksum "e44027690a7b3f8959c413e4d4bee3950402d95e")
         (php-mode :checksum "11674976ee981bb05fb79c5b6de6973b53d51e98")
         (auto-install :checksum "4c7626db5ec2fd3be5ee075887ec2af59c6b7e26")

@@ -38,3 +38,6 @@ smex-items
 /el-get
 network-security.data
 /server
+
+# curl
+/request
