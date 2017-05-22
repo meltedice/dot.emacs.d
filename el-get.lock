@@ -1,5 +1,7 @@
 (setq el-get-lock-package-versions
-      '((simplenote2 :checksum "5f267d6289b103d77feb2f038baedeae39deee75")
+      '((tablist :checksum "c834a84efb6efa32497efe1e73160fade741b836")
+        (go-mode :checksum "35f6826e435c3004dabf134d0f2ae2f31ea7b6a2")
+        (simplenote2 :checksum "5f267d6289b103d77feb2f038baedeae39deee75")
         (request :checksum "48a35969f7c41810d550e6cdf784cb86c5a05a20")
         (deferred :checksum "7f2bb81e75db895c99611a7a9fbde7c239b757ba")
         (magit :checksum "4fea54f8259ba36edaec2c0c74b97cf8ee94c48e")

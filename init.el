@@ -190,6 +190,7 @@
 (el-get-bundle textile-mode)
 
 (el-get-bundle php-mode)
+(el-get-bundle go-mode)
 
 (el-get-bundle haml-mode)
 (el-get-bundle slim-mode)
