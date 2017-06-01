@@ -245,6 +245,8 @@
 
 (el-get-bundle simplenote2)
 
+(el-get-bundle migemo)
+
 ;;; theme
 (el-get-bundle purple-haze-theme)
 (el-get-bundle replace-colorthemes :type git :url "git@github.com:emacs-jp/replace-colorthemes.git")
