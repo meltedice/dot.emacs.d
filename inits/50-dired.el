@@ -165,3 +165,12 @@
   (or (dired-subtree-up arg)
       (dired-up-directory)))
 (define-key dired-mode-map (kbd "^") 'dired-subtree-up-dwim)
+
+;;; dired-k
+;; Mark and highlight git status on dired
+
+(define-key dired-mode-map (kbd "K") 'dired-k)
+(define-key dired-mode-map (kbd "g") 'dired-k)
+;; always execute dired-k when dired buffer is opened
+(add-hook 'dired-initial-position-hook 'dired-k)
+(add-hook 'dired-after-readin-hook #'dired-k-no-revert)
