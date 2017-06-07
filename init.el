@@ -178,6 +178,7 @@
 ;; (el-get-bundle dired-narrow)
 ;; (el-get-bundle dired-ranger)
 ;; (el-get-bundle dired-open)
+(el-get-bundle dired-k)
 
 (el-get-bundle elscreen :type git :url "git@github.com:knu/elscreen.git")
 (el-get-bundle linum-off)
