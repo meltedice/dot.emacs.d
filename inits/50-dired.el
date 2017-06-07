@@ -166,6 +166,9 @@
       (dired-up-directory)))
 (define-key dired-mode-map (kbd "^") 'dired-subtree-up-dwim)
 
+;;; direx
+;; (global-set-key (kbd "C-x C-j") 'direx:jump-to-directory)
+
 ;;; dired-k
 ;; Mark and highlight git status on dired
 
@@ -174,3 +177,9 @@
 ;; always execute dired-k when dired buffer is opened
 (add-hook 'dired-initial-position-hook 'dired-k)
 (add-hook 'dired-after-readin-hook #'dired-k-no-revert)
+
+;;; direx-k
+
+;; (global-set-key (kbd "C-\\") 'direx-project:jump-to-project-root-other-window)
+(global-set-key (kbd "C-xC-j") 'direx-project:jump-to-project-root-other-window)
+(define-key direx:direx-mode-map (kbd "K") 'direx-k)

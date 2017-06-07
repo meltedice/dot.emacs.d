@@ -1,5 +1,6 @@
 (setq el-get-lock-package-versions
-      '((dired-k :checksum "c50e8f73358060a448bff66db2d330b52bbeffc1")
+      '((direx :checksum "a79bfdb5980cf6ed7bfb3b41ddc471a7b6c0ede4")
+        (dired-k :checksum "c50e8f73358060a448bff66db2d330b52bbeffc1")
         (migemo :checksum "e4744efae1b2fdea2bbd2ceaff0f6ea0bb739f5a")
         (el-get-lock :checksum "df8cfe55441695865a64b97946750b6413a40425")
         (tablist :checksum "c834a84efb6efa32497efe1e73160fade741b836")

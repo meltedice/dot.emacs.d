@@ -165,6 +165,7 @@
 
 (el-get-bundle key-chord)
 
+(el-get-bundle direx)
 (el-get-bundle dired+)
 ;;(el-get-bundle diredx-grep)
 ;;(el-get-bundle wdired) ;; already bundled and this el-getted one doesn't work on Windows10
