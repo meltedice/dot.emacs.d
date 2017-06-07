@@ -308,6 +308,8 @@
 (init-loader-load (concat dot-emacs-dir "inits/" "platforms/"))
 (init-loader-load (concat dot-emacs-dir "inits/"))
 
+;; dired face
+(set-face-attribute 'diredp-flag-mark nil :foreground "hot pink")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
