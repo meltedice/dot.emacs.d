@@ -168,6 +168,13 @@
 
 ;;; direx
 ;; (global-set-key (kbd "C-x C-j") 'direx:jump-to-directory)
+;; TODO: hook for key "o" to open file in elscreen tab
+
+;;; direx-grep
+(define-key direx:direx-mode-map (kbd "s") 'direx-grep:grep-item)
+(define-key direx:direx-mode-map (kbd "S") 'direx-grep:grep-item-from-root)
+(define-key direx:direx-mode-map (kbd "a") 'direx-grep:show-all-item-at-point)
+(define-key direx:direx-mode-map (kbd "A") 'direx-grep:show-all-item)
 
 ;;; dired-k
 ;; Mark and highlight git status on dired
