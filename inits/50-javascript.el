@@ -11,6 +11,9 @@
 
 ;;; JavaScript
 ;; TODO: http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
+;;; npm install -g eslint babel-eslint eslint-plugin-react
+;;; cd ~/
+;;; wget https://raw.githubusercontent.com/yannickcr/eslint-plugin-react/master/.eslintrc
 
 ;;; js2/js2-jsx mode
 ;; https://github.com/mooz/js2-mode/issues/292#issuecomment-155541237
