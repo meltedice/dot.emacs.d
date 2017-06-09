@@ -169,8 +169,10 @@
 ;;; direx
 ;; (global-set-key (kbd "C-x C-j") 'direx:jump-to-directory)
 ;; TODO: hook for key "o" to open file in elscreen tab
+(require 'direx)
 
 ;;; direx-grep
+(require 'direx-grep)
 (define-key direx:direx-mode-map (kbd "s") 'direx-grep:grep-item)
 (define-key direx:direx-mode-map (kbd "S") 'direx-grep:grep-item-from-root)
 (define-key direx:direx-mode-map (kbd "a") 'direx-grep:show-all-item-at-point)
@@ -178,6 +180,7 @@
 
 ;;; dired-k
 ;; Mark and highlight git status on dired
+(require 'dired-k)
 
 (define-key dired-mode-map (kbd "K") 'dired-k)
 (define-key dired-mode-map (kbd "g") 'dired-k)
@@ -186,7 +189,8 @@
 (add-hook 'dired-after-readin-hook #'dired-k-no-revert)
 
 ;;; direx-k
+(require 'direx-k)
 
 ;; (global-set-key (kbd "C-\\") 'direx-project:jump-to-project-root-other-window)
-(global-set-key (kbd "C-xC-j") 'direx-project:jump-to-project-root-other-window)
+(global-set-key "\C-x\C-j" 'direx-project:jump-to-project-root-other-window)
 (define-key direx:direx-mode-map (kbd "K") 'direx-k)
