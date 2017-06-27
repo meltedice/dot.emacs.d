@@ -1,5 +1,6 @@
 (setq el-get-lock-package-versions
-      '((direx-grep :checksum "1109a512a80b2673a70b18b8568514049017faad")
+      '((org-mode :checksum "87a6e3970a22eadd93d742925cab31d4d833ec30")
+        (direx-grep :checksum "1109a512a80b2673a70b18b8568514049017faad")
         (direx :checksum "a79bfdb5980cf6ed7bfb3b41ddc471a7b6c0ede4")
         (dired-k :checksum "c50e8f73358060a448bff66db2d330b52bbeffc1")
         (migemo :checksum "e4744efae1b2fdea2bbd2ceaff0f6ea0bb739f5a")
