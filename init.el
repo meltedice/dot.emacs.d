@@ -250,6 +250,9 @@
 
 (el-get-bundle migemo)
 
+;; org-mode
+(el-get-bundle org-mode)
+
 ;;; theme
 (el-get-bundle purple-haze-theme)
 (el-get-bundle replace-colorthemes :type git :url "git@github.com:emacs-jp/replace-colorthemes.git")
