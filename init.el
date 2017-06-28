@@ -42,11 +42,16 @@
 ;;; Set buffer name and fine name on title
 (setq frame-title-format "%b : %f - emacs")
 
-;;; Show date time in mode line : yyyy/mm/dd(aa) hh:mm
+;;; Show date time in mode line : yyyy-mm-dd(aa) hh:mm
 (setq display-time-string-forms
       '((let ((system-time-locale "C"))
           (format-time-string "%Y-%m-%d(%a) %R" now)))) ; "%a, %b %d, %R, %Y" "%Y/%m/%d(%a) %R"
 (display-time)
+
+;;; Change org-mode timestamp format
+;; before: "2017-06-28 水 11:15"
+;; after:  "2017-06-28 Wed 11:15"
+(setq system-time-locale "C")
 
 ;;; Show current function in mode line
 (which-function-mode 1)
