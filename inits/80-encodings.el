@@ -14,3 +14,4 @@
 (modify-coding-system-alist 'file "\\.\\(txt\\|log\\)\\'" 'utf-8)
 (modify-coding-system-alist 'file "\\.ctp\\'" 'utf-8)
 (modify-coding-system-alist 'file "\\.html?\\'" 'utf-8)
+(modify-coding-system-alist 'file "\\.\\(js\\|jsx\\)\\(\\.~BASE~\\|\\)\\'" 'utf-8-unix)

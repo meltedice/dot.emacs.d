@@ -1,5 +1,6 @@
 (setq el-get-lock-package-versions
-      '((org-mode :checksum "87a6e3970a22eadd93d742925cab31d4d833ec30")
+      '((rjsx-mode :checksum "a0a9cfd532f05f9ccb42919b9105d8e902d971fd")
+        (org-mode :checksum "87a6e3970a22eadd93d742925cab31d4d833ec30")
         (direx-grep :checksum "1109a512a80b2673a70b18b8568514049017faad")
         (direx :checksum "a79bfdb5980cf6ed7bfb3b41ddc471a7b6c0ede4")
         (dired-k :checksum "c50e8f73358060a448bff66db2d330b52bbeffc1")
@@ -37,7 +38,7 @@
         (ruby-block :checksum "289c34dca6daa1a1591537e1c56b687c14631930")
         (coffee-mode :checksum "86ab8aae8662e8eff54d3013010b9c693b16eac5")
         (js3-mode :checksum "229aeb374f1b1f3ee5c59b8ba3eebb6385c232cb")
-        (js2-mode :checksum "908395e3aa413b4293b35aab9d41a56f1dbe1e04")
+        (js2-mode :checksum "558f53f6b6749b09b03b858b0b1dfaeffbba4042")
         (projectile-rails :checksum "6f866e1e7cd50db563a16ae9237ad10f3be97fef")
         (rake :checksum "e680f1a8f2591af7c80cad188340601b101b5ddc")
         (inf-ruby :checksum "af4f238ef4555521d13c5eb2fb8e818acf59d70a")

@@ -218,6 +218,7 @@
 (el-get-bundle js3-mode)
 (el-get-bundle coffee-mode)
 (el-get-bundle jsx-mode)
+(el-get-bundle rjsx-mode)
 
 ;;; ruby
 (el-get-bundle ruby-additional)

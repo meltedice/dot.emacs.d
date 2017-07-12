@@ -18,19 +18,45 @@
 ;;; js2/js2-jsx mode
 ;; https://github.com/mooz/js2-mode/issues/292#issuecomment-155541237
 (defun js2-mode-custom ()
-   (setq js2-mode-show-parse-errors nil)     ;; disable js2-mode syntax check
-   (setq js2-mode-show-strict-warnings nil)  ;; disable js2-mode syntax check
-   (setq js-switch-indent-offset 2)          ;; indent offset for `case`
-   )
+  (setq indent-tabs-mode nil)
+  (setq js2-basic-offset 2)
+  (setq js2-mode-show-parse-errors nil)     ;; disable js2-mode syntax check
+  (setq js2-mode-show-strict-warnings nil)  ;; disable js2-mode syntax check
+  (setq js-switch-indent-offset 2)          ;; indent offset for `case`
+  )
 (add-hook 'js2-mode-hook 'js2-mode-custom)
 (add-hook 'js2-jsx-mode-hook 'js2-mode-custom)
-;; (autoload 'jsx-mode "jsx-mode" "JSX mode" t)
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-jsx-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
+;; ;; (autoload 'jsx-mode "jsx-mode" "JSX mode" t)
+;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-jsx-mode))
+;; (add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
 
+;;; rjsx-mode
+;; https://github.com/felipeochoa/rjsx-mode
+;; https://joppot.info/2017/04/07/3734
+(add-to-list 'auto-mode-alist '(".*\\.js\\'" . rjsx-mode))
+;; (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+;; (add-to-list 'auto-mode-alist '("containers\\/.*\\.js\\'" . rjsx-mode))
+(add-hook 'rjsx-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode nil)
+            (setq js-indent-level 2)
+            (setq js2-strict-missing-semi-warning nil)
+            (setq js2-mode-show-parse-errors nil)     ;; disable js2-mode syntax check
+            (setq js2-mode-show-strict-warnings nil)  ;; disable js2-mode syntax check
+            (setq js-switch-indent-offset 2)          ;; indent offset for `case`
+            ;; https://emacs.stackexchange.com/questions/33536/how-to-edit-jsx-react-files-in-emacs
+            (defadvice js-jsx-indent-line (after js-jsx-indent-line-after-hack activate)
+              "Workaround sgml-mode and follow airbnb component style."
+              (save-excursion
+                (beginning-of-line)
+                (if (looking-at-p "^ +\/?> *$")
+                    (delete-char sgml-basic-offset))))
+            ))
 
+;;; flycheck
 (require 'flycheck)
 (flycheck-add-mode 'javascript-eslint 'js2-jsx-mode)
+(flycheck-add-mode 'javascript-eslint 'rjsx-mode)
 (eval-after-load 'flycheck
   '(custom-set-variables
     '(flycheck-disabled-checkers '(javascript-jshint javascript-jscs))
@@ -38,9 +64,4 @@
 
 (add-hook 'js2-mode-hook 'flycheck-mode)
 (add-hook 'js2-jsx-mode-hook 'flycheck-mode)
-
-(add-hook 'js2-mode-hook
-          #'(lambda ()
-              (setq js2-basic-offset 2
-                    indent-tabs-mode nil)
-              ))
+(add-hook 'rjsx-mode-hook 'flycheck-mode)
