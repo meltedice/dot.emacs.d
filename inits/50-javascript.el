@@ -19,7 +19,9 @@
 ;; https://github.com/mooz/js2-mode/issues/292#issuecomment-155541237
 (defun js2-mode-custom ()
    (setq js2-mode-show-parse-errors nil)     ;; disable js2-mode syntax check
-   (setq js2-mode-show-strict-warnings nil)) ;; disable js2-mode syntax check
+   (setq js2-mode-show-strict-warnings nil)  ;; disable js2-mode syntax check
+   (setq js-switch-indent-offset 2)          ;; indent offset for `case`
+   )
 (add-hook 'js2-mode-hook 'js2-mode-custom)
 (add-hook 'js2-jsx-mode-hook 'js2-mode-custom)
 ;; (autoload 'jsx-mode "jsx-mode" "JSX mode" t)
