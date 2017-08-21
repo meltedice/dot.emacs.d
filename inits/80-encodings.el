@@ -1,9 +1,14 @@
 ;;; encodings --- encodings settings
 
+;; Author: ice <meltedise@gmail.com>
+;; Created:
+;; Version:
+;; Package-Requires:
+;;; Commentary:
+
 ;; Regexp: http://flex.ee.uec.ac.jp/texi/emacs-jp/emacs-jp_53.html
 ;; \' は空の文字列にマッチしますが，バッファの最後にあるものにだけです．
 ;; shift_jis-dos / utf-8-unix / utf-8 / euc-jp
-;;; Commentary:
 
 ;;; Code:
 (modify-coding-system-alist 'file ".*\\'" 'utf-8-unix) ;; default
