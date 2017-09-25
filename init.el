@@ -199,6 +199,10 @@
 
 (el-get-bundle php-mode)
 (el-get-bundle go-mode)
+(el-get-bundle go-autocomplete)
+;; (el-get-bundle company)    ;; Not found
+;; (el-get-bundle company-go) ;; Not found
+(el-get-bundle go-eldoc)
 
 (el-get-bundle haml-mode)
 (el-get-bundle slim-mode)
@@ -330,7 +334,9 @@
  '(ag-group-matches nil)
  '(flycheck-disabled-checkers (quote (javascript-jshint javascript-jscs)))
  '(init-loader-show-log-after-init (quote error-only))
- '(package-selected-packages (quote (package-build shut-up epl git commander f dash s))))
+ '(package-selected-packages
+   (quote
+    (company company-go package-build shut-up epl git commander f dash s))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

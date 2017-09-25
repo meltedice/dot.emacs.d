@@ -1,5 +1,10 @@
 (setq el-get-lock-package-versions
-      '((rjsx-mode :checksum "a0a9cfd532f05f9ccb42919b9105d8e902d971fd")
+      '((go-eldoc :checksum "cbbd2ea1e94a36004432a9ac61414cb5a95a39bd")
+        (go-autocomplete :checksum "c7fddb39ecbc9ebd1ebe7d2a3af473ed0fffffa1")
+        (auto-complete :checksum "2e83566ddfa758c69afe50b8a1c62a66f47471e3")
+        (popup :checksum "80829dd46381754639fb764da11c67235fe63282")
+        (fuzzy :checksum "534d723ad2e06322ff8d9bd0ba4863d243f698e7")
+        (rjsx-mode :checksum "a0a9cfd532f05f9ccb42919b9105d8e902d971fd")
         (org-mode :checksum "87a6e3970a22eadd93d742925cab31d4d833ec30")
         (direx-grep :checksum "1109a512a80b2673a70b18b8568514049017faad")
         (direx :checksum "a79bfdb5980cf6ed7bfb3b41ddc471a7b6c0ede4")
