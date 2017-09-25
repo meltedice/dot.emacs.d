@@ -1,6 +1,13 @@
+;;; elscreen --- elscreen settings
 ;; -*- coding: utf-8 -*-
 
-;;; elscreen
+;; Author: ice <meltedise@gmail.com>
+;; Created:
+;; Version:
+;; Package-Requires:
+;;; Commentary:
+
+;;; Code:
 
 ;;; Hide [X]
 (setq elscreen-tab-display-kill-screen nil)
@@ -129,3 +136,5 @@
 (define-key elscreen-another-m-x-map "7"    'elscreen-execute-extended-command-directly-on)
 (define-key elscreen-another-m-x-map "8"    'elscreen-execute-extended-command-directly-on)
 (define-key elscreen-another-m-x-map "9"    'elscreen-execute-extended-command-directly-on)
+
+;;; 50-elscreen.el ends here

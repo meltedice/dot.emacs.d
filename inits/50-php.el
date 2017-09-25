@@ -1,4 +1,12 @@
-;;; ruby
+;;; php --- php-mode settings
+
+;; Author: ice <meltedise@gmail.com>
+;; Created:
+;; Version:
+;; Package-Requires:
+;;; Commentary:
+
+;;; Code:
 
 ;;; php-mode
 ;; cscope is required for auto-complete
@@ -10,3 +18,5 @@
           (lambda ()
             ;; TODO
             ))
+
+;;; 50-php.el ends here

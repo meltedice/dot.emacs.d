@@ -1,4 +1,12 @@
-;;; modes
+;;; javscript-related-modes --- javascript related modes settings
+
+;; Author: ice <meltedise@gmail.com>
+;; Created:
+;; Version:
+;; Package-Requires:
+;;; Commentary:
+
+;;; Code:
 
 ;;; Coffee mode
 (defun coffee-custom ()
@@ -65,3 +73,5 @@
 (add-hook 'js2-mode-hook 'flycheck-mode)
 (add-hook 'js2-jsx-mode-hook 'flycheck-mode)
 (add-hook 'rjsx-mode-hook 'flycheck-mode)
+
+;;; 50-javascript.el ends here

@@ -1,4 +1,12 @@
-;;; ruby
+;;; ruby --- ruby-mode settings
+
+;; Author: ice <meltedise@gmail.com>
+;; Created:
+;; Version:
+;; Package-Requires:
+;;; Commentary:
+
+;;; Code:
 
 (add-hook 'ruby-mode-hook
           (lambda ()
@@ -16,3 +24,5 @@
 
             (setq comment-style 'indent)
             ))
+
+;;; 50-ruby.el ends here
