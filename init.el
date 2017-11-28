@@ -196,6 +196,7 @@
 (el-get-bundle yaml-mode)
 (el-get-bundle markdown-mode)
 (el-get-bundle textile-mode)
+(el-get-bundle apib-mode)
 
 (el-get-bundle php-mode)
 (el-get-bundle go-mode)
@@ -336,7 +337,7 @@
  '(init-loader-show-log-after-init (quote error-only))
  '(package-selected-packages
    (quote
-    (company company-go package-build shut-up epl git commander f dash s))))
+    (dired-subtree package-build shut-up epl git commander f dash s))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
