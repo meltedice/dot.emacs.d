@@ -337,7 +337,7 @@
  '(init-loader-show-log-after-init (quote error-only))
  '(package-selected-packages
    (quote
-    (dired-subtree package-build shut-up epl git commander f dash s))))
+    (flymake-json dired-subtree package-build shut-up epl git commander f dash s))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
