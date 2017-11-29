@@ -31,6 +31,7 @@
   (setq js2-mode-show-parse-errors nil)     ;; disable js2-mode syntax check
   (setq js2-mode-show-strict-warnings nil)  ;; disable js2-mode syntax check
   (setq js-switch-indent-offset 2)          ;; indent offset for `case`
+  (electric-pair-mode t)
   )
 (add-hook 'js2-mode-hook 'js2-mode-custom)
 (add-hook 'js2-jsx-mode-hook 'js2-mode-custom)
@@ -52,6 +53,7 @@
             (setq js2-mode-show-parse-errors nil)     ;; disable js2-mode syntax check
             (setq js2-mode-show-strict-warnings nil)  ;; disable js2-mode syntax check
             (setq js-switch-indent-offset 2)          ;; indent offset for `case`
+            (electric-pair-mode t)
             ;; https://emacs.stackexchange.com/questions/33536/how-to-edit-jsx-react-files-in-emacs
             (defadvice js-jsx-indent-line (after js-jsx-indent-line-after-hack activate)
               "Workaround sgml-mode and follow airbnb component style."
