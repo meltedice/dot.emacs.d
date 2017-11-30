@@ -9,7 +9,7 @@
 ;; https://github.com/alpha22jp/simplenote2.el
 
 ;; Add following line into ~/.authinfo
-;; machine app.simplenote.com login my^email-address-here password my-password-here
+;; machine app.simplenote.com login my-email-address-here password my-password-here
 
 ;;; Code:
 
