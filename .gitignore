@@ -34,3 +34,10 @@ ddskk-*
 ido.last
 smex-items
 
+# .el-get
+/el-get
+network-security.data
+/server
+
+# curl
+/request

@@ -165,3 +165,32 @@
   (or (dired-subtree-up arg)
       (dired-up-directory)))
 (define-key dired-mode-map (kbd "^") 'dired-subtree-up-dwim)
+
+;;; direx
+;; (global-set-key (kbd "C-x C-j") 'direx:jump-to-directory)
+;; TODO: hook for key "o" to open file in elscreen tab
+(require 'direx)
+
+;;; direx-grep
+(require 'direx-grep)
+(define-key direx:direx-mode-map (kbd "s") 'direx-grep:grep-item)
+(define-key direx:direx-mode-map (kbd "S") 'direx-grep:grep-item-from-root)
+(define-key direx:direx-mode-map (kbd "a") 'direx-grep:show-all-item-at-point)
+(define-key direx:direx-mode-map (kbd "A") 'direx-grep:show-all-item)
+
+;;; dired-k
+;; Mark and highlight git status on dired
+(require 'dired-k)
+
+(define-key dired-mode-map (kbd "K") 'dired-k)
+(define-key dired-mode-map (kbd "g") 'dired-k)
+;; always execute dired-k when dired buffer is opened
+(add-hook 'dired-initial-position-hook 'dired-k)
+(add-hook 'dired-after-readin-hook #'dired-k-no-revert)
+
+;;; direx-k
+(require 'direx-k)
+
+;; (global-set-key (kbd "C-\\") 'direx-project:jump-to-project-root-other-window)
+(global-set-key "\C-x\C-j" 'direx-project:jump-to-project-root-other-window)
+(define-key direx:direx-mode-map (kbd "K") 'direx-k)

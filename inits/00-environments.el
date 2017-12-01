@@ -1,4 +1,11 @@
+;;; environments --- environment variables helper functions
 ;; -*- coding: utf-8 -*-
+
+;; Author: ice <meltedise@gmail.com>
+;; Created:
+;; Version:
+;; Package-Requires:
+;;; Commentary:
 
 ;;; env helper functions
 
@@ -9,6 +16,7 @@
 ;; "GNU Emacs 23.3.1 (x86_64-apple-darwin11.2.0)
 ;;  of 2011-12-18 on tokoyuki.local"
 
+;;; Code:
 ;;; GUI を使ってる環境なら nil いがいが返るはず
 ;; (defconst gui-p (string-match "Lucid\\|XEmacs\\|GTK\\+\\|Carbon" (version))
 ;;   "Non nil if using Emacs with GUI.")
@@ -46,7 +54,9 @@
                (call-process "hostname" nil t nil)
                (car (split-string (buffer-string) "[\n]+" t)))))
         )
-(defun hostname () hostname)
+(defun hostname ()
+  "Return HOSTNAME."
+  hostname)
 
 (defvar hostname-short nil)
 (setq hostname-short (car (split-string hostname "\\." t)))
@@ -93,7 +103,7 @@
 ;; command-name が見つかれば path を返す
 ;; command-name が見つからなければ "" を返す
 (defun which (command-name)
-  "which"
+  "Run *which* command with COMMAND-NAME."
   (car (split-string
         (with-output-to-string
           (with-current-buffer standard-output
@@ -103,7 +113,7 @@
 ;; command-name が見つかれば path を返す
 ;; command-name が見つからなければ nil を返す
 (defun which? (command-name)
-  "which?"
+  "Run *which* command with COMMAND-NAME."
   (let ((result (which command-name)))
     (cond ((string= result "") nil)
           ((string-match (concat ": no " command-name " in \(") result) nil)
@@ -113,7 +123,7 @@
 ;; command-name が見つかれば path を返す
 ;; command-name が見つからなければ "" を返す
 (defun where (command-name)
-  "where"
+  "Run *where* command with COMMAND-NAME."
   (car (split-string
         (with-output-to-string
           (with-current-buffer standard-output
@@ -123,8 +133,10 @@
 ;; command-name が見つかれば path を返す
 ;; command-name が見つからなければ nil を返す
 (defun where? (command-name)
-  "where?"
+  "Run *where* command with COMMAND-NAME."
   (let ((result (where command-name)))
     (cond ((string= result "") nil)
           ((string-match (concat command-name " not found") result) nil)
           (t result))))
+
+;;; 00-environments.el ends here

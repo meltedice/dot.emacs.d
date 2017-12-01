@@ -2,7 +2,11 @@
 
 ;;; Cask
 (add-to-list 'auto-mode-alist '("Cask\\'" . emacs-lisp-mode))
+
+;;; Text
 (setq auto-mode-alist (cons '("\\.\\(text\\|md\\|mdt\\)\\'" . markdown-mode) auto-mode-alist))
+(autoload 'apib-mode "apib-mode" "Major mode for editing API Blueprint files" t)
+(add-to-list 'auto-mode-alist '("\\.apib\\'" . apib-mode))
 
 ;;; Textile mode
 ;; http://www.emacswiki.org/emacs/TextileMode

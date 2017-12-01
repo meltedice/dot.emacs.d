@@ -14,6 +14,13 @@
 (setq ns-alternate-modifier 'super)
 (setq mac-option-modifier   'super) ;; not in use?
 
+;;; for macOS High Sierra
+(define-key global-map [?\¥] [?\\])
+(define-key global-map [?\s-¥] [?\\])
+(define-key global-map [?\C-¥] [?\C-\\])
+(define-key global-map [?\M-¥] [?\M-\\])
+(define-key global-map [?\C-\M-¥] [?\C-\M-\\])
+
 ;;; Karabiner
 ;;
 ;; ## Change Key
