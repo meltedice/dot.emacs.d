@@ -17,6 +17,10 @@
 (add-hook 'coffee-mode-hook
   '(lambda() (coffee-custom)))
 
+;; FIXME: ruby-mode-hook breaks rjsx-mode and js2-mode behavior after type `{`
+;; Work around is following:
+;; M-: (remove-hook 'post-self-insert-hook 'electric-layout-post-self-insert-function)
+
 ;;; JavaScript
 ;; TODO: http://codewinds.com/blog/2015-04-02-emacs-flycheck-eslint-jsx.html
 ;;; npm install -g eslint babel-eslint eslint-plugin-react
@@ -45,23 +49,23 @@
 (add-to-list 'auto-mode-alist '(".*\\.js\\'" . rjsx-mode))
 ;; (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
 ;; (add-to-list 'auto-mode-alist '("containers\\/.*\\.js\\'" . rjsx-mode))
-(add-hook 'rjsx-mode-hook
-          (lambda ()
-            (setq indent-tabs-mode nil)
-            (setq js-indent-level 2)
-            (setq js2-strict-missing-semi-warning nil)
-            (setq js2-mode-show-parse-errors nil)     ;; disable js2-mode syntax check
-            (setq js2-mode-show-strict-warnings nil)  ;; disable js2-mode syntax check
-            (setq js-switch-indent-offset 2)          ;; indent offset for `case`
-            (electric-pair-mode t)
-            ;; https://emacs.stackexchange.com/questions/33536/how-to-edit-jsx-react-files-in-emacs
-            (defadvice js-jsx-indent-line (after js-jsx-indent-line-after-hack activate)
-              "Workaround sgml-mode and follow airbnb component style."
-              (save-excursion
-                (beginning-of-line)
-                (if (looking-at-p "^ +\/?> *$")
-                    (delete-char sgml-basic-offset))))
-            ))
+(defun rjsx-mode-custom ()
+  (setq indent-tabs-mode nil)
+  (setq js-indent-level 2)
+  (setq js2-strict-missing-semi-warning nil)
+  (setq js2-mode-show-parse-errors nil)     ;; disable js2-mode syntax check
+  (setq js2-mode-show-strict-warnings nil)  ;; disable js2-mode syntax check
+  (setq js-switch-indent-offset 2)          ;; indent offset for `case`
+  (electric-pair-mode t)
+  ;; https://emacs.stackexchange.com/questions/33536/how-to-edit-jsx-react-files-in-emacs
+  (defadvice js-jsx-indent-line (after js-jsx-indent-line-after-hack activate)
+    "Workaround sgml-mode and follow airbnb component style."
+    (save-excursion
+      (beginning-of-line)
+      (if (looking-at-p "^ +\/?> *$")
+          (delete-char sgml-basic-offset))))
+  )
+(add-hook 'rjsx-mode-hook 'rjsx-mode-custom)
 
 ;;; flycheck
 (require 'flycheck)
