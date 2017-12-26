@@ -225,6 +225,7 @@
 (el-get-bundle jsx-mode)
 ;; (el-get-bundle rjsx-mode)
 (el-get-bundle rjsx-mode :type git :url "git@github.com:felipeochoa/rjsx-mode.git")
+(el-get-bundle flow-minor-mode)
 
 ;;; ruby
 (el-get-bundle ruby-additional)
@@ -245,6 +246,7 @@
 (el-get-bundle flymake-css)
 (el-get-bundle flymake-gjshint)
 (el-get-bundle flymake-haml)
+(el-get-bundle flycheck-flow)
 (el-get-bundle flymake-json)
 (el-get-bundle flymake-less)
 (el-get-bundle flymake-ruby)

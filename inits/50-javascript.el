@@ -67,6 +67,10 @@
   )
 (add-hook 'rjsx-mode-hook 'rjsx-mode-custom)
 
+;; flowtype: https://github.com/an-sh/flow-minor-mode
+(add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
+;; (add-hook 'js2-mode-hook 'flow-minor-mode)
+
 ;;; flycheck
 (require 'flycheck)
 (flycheck-add-mode 'javascript-eslint 'js2-jsx-mode)
@@ -79,5 +83,14 @@
 (add-hook 'js2-mode-hook 'flycheck-mode)
 (add-hook 'js2-jsx-mode-hook 'flycheck-mode)
 (add-hook 'rjsx-mode-hook 'flycheck-mode)
+
+(require 'flycheck-flow)
+;; (with-eval-after-load 'flycheck
+;;   (flycheck-add-mode 'javascript-flow 'flow-minor-mode)
+;;   (flycheck-add-mode 'javascript-eslint 'flow-minor-mode)
+;;   (flycheck-add-next-checker 'javascript-flow 'javascript-eslint))
+(flycheck-add-mode 'javascript-flow 'flow-minor-mode)
+(flycheck-add-mode 'javascript-eslint 'flow-minor-mode)
+(flycheck-add-next-checker 'javascript-flow 'javascript-eslint)
 
 ;;; 50-javascript.el ends here
