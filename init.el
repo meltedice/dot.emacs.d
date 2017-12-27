@@ -339,6 +339,7 @@
  ;; If there is more than one, they won't work right.
  '(ag-group-matches nil)
  '(flycheck-disabled-checkers (quote (javascript-jshint javascript-jscs)))
+ '(flycheck-javascript-flow-args nil)
  '(init-loader-show-log-after-init (quote error-only))
  '(package-selected-packages
    (quote
