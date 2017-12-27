@@ -89,9 +89,18 @@
 ;;   (flycheck-add-mode 'javascript-flow 'flow-minor-mode)
 ;;   (flycheck-add-mode 'javascript-eslint 'flow-minor-mode)
 ;;   (flycheck-add-next-checker 'javascript-flow 'javascript-eslint))
+;;
+;; FIXME: Doesn't work...
+;; (flycheck-add-mode 'javascript-flow 'flow-minor-mode)
+;; (flycheck-add-mode 'javascript-eslint 'flow-minor-mode)
+;; (flycheck-add-next-checker 'javascript-flow 'javascript-eslint)
 (flycheck-add-mode 'javascript-flow 'flow-minor-mode)
 (flycheck-add-mode 'javascript-eslint 'flow-minor-mode)
+(flycheck-add-mode 'javascript-flow 'rjsx-mode)
+(flycheck-add-mode 'javascript-eslint 'rjsx-mode)
 (flycheck-add-next-checker 'javascript-flow 'javascript-eslint)
+
+;;; M-x flycheck-verify-setup
 
 (require 'prettier-js)
 (add-hook 'js2-mode-hook 'prettier-js-mode)
