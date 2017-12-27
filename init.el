@@ -219,6 +219,7 @@
 (el-get-bundle projectile-rails)
 (el-get-bundle robe)
 
+;;; JavaScript
 (el-get-bundle js2-mode)
 (el-get-bundle js3-mode)
 (el-get-bundle coffee-mode)
@@ -226,6 +227,7 @@
 ;; (el-get-bundle rjsx-mode)
 (el-get-bundle rjsx-mode :type git :url "git@github.com:felipeochoa/rjsx-mode.git")
 (el-get-bundle flow-minor-mode)
+(el-get-bundle prettier-js)
 
 ;;; ruby
 (el-get-bundle ruby-additional)

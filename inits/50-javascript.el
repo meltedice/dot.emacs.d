@@ -93,4 +93,9 @@
 (flycheck-add-mode 'javascript-eslint 'flow-minor-mode)
 (flycheck-add-next-checker 'javascript-flow 'javascript-eslint)
 
+(require 'prettier-js)
+(add-hook 'js2-mode-hook 'prettier-js-mode)
+;; (add-hook 'web-mode-hook 'prettier-js-mode)
+(add-hook 'rjsx-mode-hook 'prettier-js-mode)
+
 ;;; 50-javascript.el ends here

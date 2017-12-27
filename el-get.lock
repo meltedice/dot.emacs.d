@@ -1,5 +1,6 @@
 (setq el-get-lock-package-versions
-      '((el-get :checksum "32d6f967bf15077c7de74b0aece7f0fa57a486cb")
+      '((prettier-js :checksum "6cc79cc933968f9ecae988ed79398d9dc97790e2")
+        (el-get :checksum "32d6f967bf15077c7de74b0aece7f0fa57a486cb")
         (memoize :checksum "636defefa9168f90bce6fc27431352ac7d01a890")
         (jump :checksum "e4f1372cf22e811faca52fc86bdd5d817498a4d8")
         (magit-popup :checksum "3f23e81eb0267d6578d8f1733c5e42699b0229a1")
