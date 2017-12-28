@@ -228,6 +228,7 @@
 (el-get-bundle rjsx-mode :type git :url "git@github.com:felipeochoa/rjsx-mode.git")
 (el-get-bundle flow-minor-mode)
 (el-get-bundle prettier-js)
+(el-get-bundle json-mode)
 
 ;;; ruby
 (el-get-bundle ruby-additional)
