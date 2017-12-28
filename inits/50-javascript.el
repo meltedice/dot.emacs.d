@@ -73,15 +73,15 @@
 
 ;;; flycheck
 (require 'flycheck)
-(flycheck-add-mode 'javascript-eslint 'js2-jsx-mode)
+;; (flycheck-add-mode 'javascript-eslint 'js2-jsx-mode)
 (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
 (eval-after-load 'flycheck
   '(custom-set-variables
     '(flycheck-disabled-checkers '(javascript-jshint javascript-jscs))
     ))
 
-(add-hook 'js2-mode-hook 'flycheck-mode)
-(add-hook 'js2-jsx-mode-hook 'flycheck-mode)
+;; (add-hook 'js2-mode-hook 'flycheck-mode)
+;; (add-hook 'js2-jsx-mode-hook 'flycheck-mode)
 (add-hook 'rjsx-mode-hook 'flycheck-mode)
 
 (require 'flycheck-flow)
@@ -94,16 +94,25 @@
 ;; (flycheck-add-mode 'javascript-flow 'flow-minor-mode)
 ;; (flycheck-add-mode 'javascript-eslint 'flow-minor-mode)
 ;; (flycheck-add-next-checker 'javascript-flow 'javascript-eslint)
-(flycheck-add-mode 'javascript-flow 'flow-minor-mode)
-(flycheck-add-mode 'javascript-eslint 'flow-minor-mode)
 (flycheck-add-mode 'javascript-flow 'rjsx-mode)
 (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
 (flycheck-add-next-checker 'javascript-flow 'javascript-eslint)
 
+(defun flycheck-javascript-flow-auto-disable ()
+  "Workaround: Disable javacript-flow if not flow-minor-mode"
+  (require 'flow-minor-mode)
+  (if (and (flow-minor-configured-p)
+             (flow-minor-tag-present-p))
+      (flycheck-disable-checker 'javascript-flow t) ;; enable
+      (flycheck-disable-checker 'javascript-flow))) ;; disable
+
+;; (add-hook 'js2-mode-hook 'flycheck-javascript-flow-auto-disable)
+(add-hook 'rjsx-mode-hook 'flycheck-javascript-flow-auto-disable)
+
 ;;; M-x flycheck-verify-setup
 
 (require 'prettier-js)
-(add-hook 'js2-mode-hook 'prettier-js-mode)
+;; (add-hook 'js2-mode-hook 'prettier-js-mode)
 ;; (add-hook 'web-mode-hook 'prettier-js-mode)
 (add-hook 'rjsx-mode-hook 'prettier-js-mode)
 
