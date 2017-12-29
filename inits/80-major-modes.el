@@ -21,3 +21,6 @@
   (setq sh-basic-offset 2
         sh-indentation 2))
 (add-hook 'sh-mode-hook 'sh-mode-custom)
+
+;;; json-mode
+(add-to-list 'auto-mode-alist '("\\.\\(json\\|babelrc\\|eslintrc\\)\\'" . json-mode))
