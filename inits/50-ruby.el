@@ -27,6 +27,8 @@
   (electric-layout-mode t)
 
   (setq comment-style 'indent)
+
+  (setq ruby-insert-encoding-magic-comment nil) ;; Don't insert "# coding: utf-8"
   )
 (add-hook 'ruby-mode-hook 'ruby-mode-custom)
 
