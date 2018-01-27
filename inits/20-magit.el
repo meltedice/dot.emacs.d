@@ -6,6 +6,7 @@
                               (load "ediff-magit-ediff")
                               (define-key magit-mode-map (kbd "\C-cd") 'magit-ediff-working-tree)
                               (define-key magit-mode-map (kbd "\C-cD") 'magit-ediff)
+                              (remove-hook 'find-file-hooks 'vc-find-file-hook) ;; To avoid `'.../index.lock': File exists.`
                               ))
 
 ;; (global-set-key "\C-ce" 'ediff-magit-ediff-working-tree)
