@@ -16,6 +16,10 @@
 ;;; Set path to .emacs.d
 (setq dot-emacs-dir (file-name-directory load-file-name))
 
+;;; Print entire list
+(setq eval-expression-print-length nil)
+(setq eval-expression-print-level nil)
+
 ;;; load-path
 (setq load-path
       (append
