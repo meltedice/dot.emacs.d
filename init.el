@@ -67,7 +67,7 @@
 (put 'downcase-region 'disabled nil)
 
 ;;; yes/no -> y/n
-(fset 'yes-or-no-p 'y-or-n-p)
+(fset 'yes-or-no-p 'y-or-n-p) ;; Will overwrite in inits/90-yes-or-no-p.el
 
 ;;; delete -> trash
 (setq delete-by-moving-to-trash t)
