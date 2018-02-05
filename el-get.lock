@@ -66,7 +66,7 @@
         (dired-details :checksum "3de7e19ae874dac03edf9951648a1f11f52dead6")
         (bf-mode :checksum "7cc4d09aed64d9db6be95646f5f5067de68f8895")
         (dired-sort :checksum "251a4614f2a80cad10931eedc29fff90b967a8ad")
-        (dired+ :checksum "58168fff973c661555dbb227154fa8fa61fbbd03")
+        (dired+ :checksum "85d34257e6ba43b0d3a9e8bb88eb90af814ddf6a")
         (direx-grep :checksum "1109a512a80b2673a70b18b8568514049017faad")
         (direx :checksum "a79bfdb5980cf6ed7bfb3b41ddc471a7b6c0ede4")
         (key-chord :checksum "69f6d8097cedce8be75b3f8ebbd06830b28d2c46")
