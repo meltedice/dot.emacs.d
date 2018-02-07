@@ -178,18 +178,16 @@
 (define-key direx:direx-mode-map (kbd "a") 'direx-grep:show-all-item-at-point)
 (define-key direx:direx-mode-map (kbd "A") 'direx-grep:show-all-item)
 
-;;; dired-k
-;; Mark and highlight git status on dired
-(require 'dired-k)
-
-(define-key dired-mode-map (kbd "K") 'dired-k)
-(define-key dired-mode-map (kbd "g") 'dired-k)
-;; always execute dired-k when dired buffer is opened
-(add-hook 'dired-initial-position-hook 'dired-k)
-(add-hook 'dired-after-readin-hook #'dired-k-no-revert)
-
-;;; direx-k
-(require 'direx-k)
+;;; Disable dired-k due to vc-git's .git/index.lock issue
+;; ;;; dired-k
+;; ;; Mark and highlight git status on dired
+;; (require 'dired-k)
+;;
+;; (define-key dired-mode-map (kbd "K") 'dired-k)
+;; (define-key dired-mode-map (kbd "g") 'dired-k)
+;; ;; always execute dired-k when dired buffer is opened
+;; (add-hook 'dired-initial-position-hook 'dired-k)
+;; (add-hook 'dired-after-readin-hook #'dired-k-no-revert)
 
 ;; (global-set-key (kbd "C-\\") 'direx-project:jump-to-project-root-other-window)
 (global-set-key "\C-x\C-j" 'direx-project:jump-to-project-root-other-window)
