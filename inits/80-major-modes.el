@@ -16,10 +16,15 @@
 (add-to-list 'auto-mode-alist '("\\.textile\\'" . textile-mode))
 
 ;;; Shell-script mode
+(add-to-list 'auto-mode-alist '("\\.zsh\\'" . sh-mode))
+(add-to-list 'auto-mode-alist '("\\(zlogin\\|zlogout\\|zpreztorc\\|zprofile\\|zprofile\\|zshenv\\|zshrc\\)\\'" . sh-mode))
 ;; Ref: https://keramida.wordpress.com/2008/08/08/tweaking-shell-script-indentation-in-gnu-emacs/
 (defun sh-mode-custom ()
-  (setq sh-basic-offset 2
-        sh-indentation 2))
+  (setq sh-basic-offset 2)
+  (setq sh-indentation 2)
+  (if (string-match "\\(zlogin\\|zlogout\\|zpreztorc\\|zprofile\\|zprofile\\|zshenv\\|zshrc\\)$"
+                    buffer-file-name)
+        (sh-set-shell "zsh")))
 (add-hook 'sh-mode-hook 'sh-mode-custom)
 
 ;;; json-mode
