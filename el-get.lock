@@ -1,5 +1,7 @@
 (setq el-get-lock-package-versions
-      '((json-mode :checksum "32d5a9b3319e6797c4d52e7d61a65e5638102ef4")
+      '((lua-mode :checksum "99312b8d6c500ba3067da6d81efcfbbea05a1cbd")
+        (ample-regexps :checksum "cbe91e148cac1ee8e223874dc956ed4cf607f046")
+        (json-mode :checksum "32d5a9b3319e6797c4d52e7d61a65e5638102ef4")
         (json-snatcher :checksum "c4cecc0a5051bd364373aa499c47a1bb7a5ac51c")
         (json-reformat :checksum "8eb6668ed447988aea06467ba8f42e1f2178246f")
         (replace-colorthemes :checksum "42a79266f1d7b473e9328e67a455e505e6c3eff5")

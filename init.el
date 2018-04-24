@@ -208,6 +208,7 @@
 ;; (el-get-bundle company)    ;; Not found
 ;; (el-get-bundle company-go) ;; Not found
 (el-get-bundle go-eldoc)
+(el-get-bundle lua-mode)
 
 (el-get-bundle haml-mode)
 (el-get-bundle slim-mode)
