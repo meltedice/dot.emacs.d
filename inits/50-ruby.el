@@ -13,6 +13,12 @@
 ;; M-: (remove-hook 'post-self-insert-hook 'electric-layout-post-self-insert-function)
 
 (defun ruby-mode-custom ()
+  ;; http://gongo.hatenablog.com/entry/2016/02/10/092956
+  ;; To avoid following flycheck error message
+  ;; invalid multibyte char (US-ASCII)
+  (setenv "LC_ALL" "ja_JP.UTF-8")
+  ;; (setenv "LANG" "ja_JP.UTF-8")
+
   (require 'ruby-block)
   (ruby-block-mode t)
   (setq ruby-block-highlight-toggle t)
