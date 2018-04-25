@@ -71,6 +71,9 @@
 (global-set-key "\C-zm"    'elscreen-moccur-grep-find)
 
 
+;;; Remove C-\ key
+(define-key undo-tree-map (kbd "\C-_") 'undefined)
+
 ;; disable helm
 ;; ;;; helm
 ;; ;; (define-key global-map (kbd "M-x")     'helm-M-x)
