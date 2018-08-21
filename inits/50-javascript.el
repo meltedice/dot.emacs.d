@@ -71,6 +71,12 @@
 (add-hook 'js2-mode-hook 'flow-minor-enable-automatically)
 ;; (add-hook 'js2-mode-hook 'flow-minor-mode)
 
+;; TypeScript: https://github.com/ananthakumaran/typescript.el
+;; https://www.emacswiki.org/emacs/TypeScript
+(add-to-list 'auto-mode-alist '("\\.\\(ts\\|tsx\\)\\'" . typescript-mode))
+;; TODO: tss.el
+;; TODO: tide
+
 ;;; flycheck
 (require 'flycheck)
 ;; (flycheck-add-mode 'javascript-eslint 'js2-jsx-mode)
@@ -112,6 +118,9 @@
 ;;; M-x flycheck-verify-setup
 
 (require 'prettier-js)
+;; (setq prettier-js-command "eslint") ;; "prettier"
+;; (setq prettier-js-args '("--fix")) ;; '()
+(setq prettier-js-command "prettier-eslint") ;; "prettier"
 ;; (add-hook 'js2-mode-hook 'prettier-js-mode)
 ;; (add-hook 'web-mode-hook 'prettier-js-mode)
 (add-hook 'rjsx-mode-hook 'prettier-js-mode)
