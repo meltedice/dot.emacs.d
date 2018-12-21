@@ -50,7 +50,7 @@
 (setq display-time-string-forms
       '((let ((system-time-locale "C"))
           (format-time-string "%Y-%m-%d(%a) %R" now)))) ; "%a, %b %d, %R, %Y" "%Y/%m/%d(%a) %R"
-(display-time)
+;; (display-time)
 
 ;;; Change org-mode timestamp format
 ;; before: "2017-06-28 水 11:15"
