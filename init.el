@@ -310,6 +310,8 @@
 (require 'auto-install)
 (auto-install-compatibility-setup)
 
+;;; ffap
+(ffap-bindings)
 
 ;; linum-mode for global
 (eval-after-load 'linum
