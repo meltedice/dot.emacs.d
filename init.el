@@ -176,9 +176,10 @@
 
 (el-get-bundle direx)
 (el-get-bundle direx-grep)
-(el-get-bundle dired+)
-;;(el-get-bundle diredx-grep)
-;;(el-get-bundle wdired) ;; already bundled and this el-getted one doesn't work on Windows10
+;; (el-get-bundle dired+) ;; removed from melpa
+(el-get-bundle dired+ :url "https://www.emacswiki.org/emacs/download/dired+.el")
+;; (el-get-bundle diredx-grep)
+;; (el-get-bundle wdired) ;; already bundled and this el-getted one doesn't work on Windows10
 (el-get-bundle dired-sort)
 (el-get-bundle bf-mode)
 ;; https://github.com/Fuco1/dired-hacks
