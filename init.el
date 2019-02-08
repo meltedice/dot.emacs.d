@@ -191,6 +191,14 @@
 ;; (el-get-bundle dired-ranger)
 ;; (el-get-bundle dired-open)
 (el-get-bundle dired-k)
+(el-get-bundle find-file-in-project :type git :url "git@github.com:technomancy/find-file-in-project.git")
+;; (el-get-bundle ivy)
+;; (el-get-bundle swiper)
+;; (el-get-bundle counsel)
+;; ivy swiper counsel
+(el-get-bundle ivy :type git :url "git@github.com:abo-abo/swiper.git")
+(el-get-bundle swiper :type git :url "git@github.com:abo-abo/swiper.git")
+(el-get-bundle counsel :type git :url "git@github.com:abo-abo/swiper.git")
 
 (el-get-bundle elscreen :type git :url "git@github.com:knu/elscreen.git")
 (el-get-bundle linum-off)
@@ -311,8 +319,28 @@
 (require 'auto-install)
 (auto-install-compatibility-setup)
 
+;;; ivy swiper counsel
+(ivy-mode 1)
+(counsel-mode 1)
+(global-set-key "\C-s" 'swiper)
+(global-set-key (kbd "C-c C-r") 'ivy-resume)
+(global-set-key (kbd "<f6>") 'ivy-resume)
+(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+(global-set-key (kbd "C-c g") 'counsel-git)
+(global-set-key (kbd "C-c j") 'counsel-git-grep)
+(global-set-key (kbd "C-c k") 'counsel-ag)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+
 ;;; ffap
 (ffap-bindings)
+(require 'find-file-in-project)
+;; (setq-local ffip-ignore-filenames '("*.bmp" "*.jpg"))
+;; (setq ffip-prune-patterns '())
+(add-to-list 'ffip-prune-patterns "*/build")
+(add-to-list 'ffip-prune-patterns "*/coverage")
+(add-to-list 'ffip-prune-patterns "*/dist")
+(add-to-list 'ffip-prune-patterns "*/node_modules")
 
 ;; linum-mode for global
 (eval-after-load 'linum
