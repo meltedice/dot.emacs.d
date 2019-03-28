@@ -122,7 +122,8 @@
 (require 'prettier-js)
 ;; (setq prettier-js-command "eslint") ;; "prettier"
 ;; (setq prettier-js-args '("--fix")) ;; '()
-(setq prettier-js-command "prettier-eslint") ;; "prettier"
+;; (setq prettier-js-command "prettier-eslint") ;; "prettier"
+(setq prettier-js-command "prettier")
 ;; (add-hook 'js2-mode-hook 'prettier-js-mode)
 ;; (add-hook 'web-mode-hook 'prettier-js-mode)
 (add-hook 'rjsx-mode-hook 'prettier-js-mode)
