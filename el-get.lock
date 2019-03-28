@@ -1,5 +1,6 @@
 (setq el-get-lock-package-versions
-      '((counsel :checksum "3216d4060b9614428c1fcf87f324ca83c97d6d24")
+      '((tide :checksum "f1a3d411a3b9b7992d24f53e6afa02840a652780")
+        (counsel :checksum "3216d4060b9614428c1fcf87f324ca83c97d6d24")
         (swiper :checksum "3216d4060b9614428c1fcf87f324ca83c97d6d24")
         (find-file-in-project :checksum "0072b813fc77ef34f776fcafbd13c4aeeae360cf")
         (dired+ :checksum "914dc28d88db0c6082a5d5e3bd4a7933dbf17f5f")

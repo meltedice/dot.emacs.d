@@ -239,6 +239,7 @@
 (el-get-bundle coffee-mode)
 (el-get-bundle jsx-mode)
 (el-get-bundle typescript-mode)
+(el-get-bundle tide)
 ;; (el-get-bundle rjsx-mode)
 (el-get-bundle rjsx-mode :type git :url "git@github.com:felipeochoa/rjsx-mode.git")
 (el-get-bundle flow-minor-mode)
