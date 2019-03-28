@@ -74,6 +74,8 @@
 ;; TypeScript: https://github.com/ananthakumaran/typescript.el
 ;; https://www.emacswiki.org/emacs/TypeScript
 (add-to-list 'auto-mode-alist '("\\.\\(ts\\|tsx\\)\\'" . typescript-mode))
+(add-hook 'typescript-mode-hook 'flycheck-mode)
+
 ;; TODO: tss.el
 ;; TODO: tide
 
@@ -124,5 +126,6 @@
 ;; (add-hook 'js2-mode-hook 'prettier-js-mode)
 ;; (add-hook 'web-mode-hook 'prettier-js-mode)
 (add-hook 'rjsx-mode-hook 'prettier-js-mode)
+(add-hook 'typescript-mode-hook 'prettier-js-mode)
 
 ;;; 50-javascript.el ends here
