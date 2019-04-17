@@ -74,6 +74,11 @@
 ;; https://www.emacswiki.org/emacs/TypeScript
 (add-to-list 'auto-mode-alist '("\\.\\(ts\\|tsx\\)\\'" . typescript-mode))
 
+(defun typescript-mode-custom ()
+  (setq  typescript-indent-level 2) ;; default 4
+  )
+(add-hook 'typescript-mode-hook 'typescript-mode-custom)
+
 ;; TODO: tss.el
 
 
