@@ -210,6 +210,7 @@
 (el-get-bundle markdown-mode)
 (el-get-bundle textile-mode)
 (el-get-bundle apib-mode)
+(el-get-bundle graphql-mode)
 
 (el-get-bundle php-mode)
 (el-get-bundle go-mode)
