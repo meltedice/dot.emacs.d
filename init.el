@@ -372,6 +372,10 @@
 ;; dired face
 (set-face-attribute 'diredp-flag-mark nil :foreground "hot pink")
 
+;; make `↓` font fullwidth
+;; http://misohena.jp/blog/2017-09-26-symbol-font-settings-for-emacs25.html
+(setq use-default-font-for-symbols nil)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -383,7 +387,7 @@
  '(init-loader-show-log-after-init (quote error-only))
  '(package-selected-packages
    (quote
-    (flymake-json dired-subtree package-build shut-up epl git commander f dash s))))
+    (vue-mode flymake-json dired-subtree package-build shut-up epl git commander f dash s))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
