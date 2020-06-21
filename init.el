@@ -124,12 +124,18 @@
 
 ;;; El-Get
 (add-to-list 'load-path (locate-user-emacs-file "el-get/el-get"))
-(unless (require 'el-get nil 'noerror)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
-    (goto-char (point-max))
-    (eval-print-last-sexp)))
+;; (unless (require 'el-get nil 'noerror)
+;;   (with-current-buffer
+;;       (url-retrieve-synchronously
+;;        "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
+;;     (goto-char (point-max))
+;;     (eval-print-last-sexp)))
+(unless (require 'el-get nil t)
+  (url-retrieve
+   "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
+   (lambda (s)
+     (end-of-buffer)
+     (eval-print-last-sexp))))
 
 ;;; Packages via El-Get
 ;;(source gnu)
@@ -178,6 +184,9 @@
 (el-get-bundle direx-grep)
 ;; (el-get-bundle dired+) ;; removed from melpa
 (el-get-bundle dired+ :url "https://www.emacswiki.org/emacs/download/dired+.el")
+;; (el-get-bundle dired+ :url "https://www.emacswiki.org/emacs/download/dired%2b.el") ;; Debugger entered--Lisp error: (file-missing "Cannot open load file" "No such file or directory" "dired+")
+;; (el-get-bundle dired+ emacswiki:dired+)
+;; (el-get-bundle dired+ emacswiki:"dired+")
 ;; (el-get-bundle diredx-grep)
 ;; (el-get-bundle wdired) ;; already bundled and this el-getted one doesn't work on Windows10
 (el-get-bundle dired-sort)
@@ -238,7 +247,8 @@
 (el-get-bundle js2-mode)
 (el-get-bundle js3-mode)
 (el-get-bundle coffee-mode)
-(el-get-bundle jsx-mode)
+;; (el-get-bundle jsx-mode)
+(el-get-bundle jsx-mode :type git :url "git@github.com:jsx/jsx-mode.el.git")
 (el-get-bundle typescript-mode)
 (el-get-bundle tide)
 ;; (el-get-bundle rjsx-mode)
@@ -248,7 +258,9 @@
 (el-get-bundle json-mode)
 
 ;;; ruby
-(el-get-bundle ruby-additional)
+;; (el-get-bundle ruby-additional)
+;; (el-get-bundle ruby-additional) ;; NG
+(el-get-bundle ruby-additional :type git :url "git@github.com:emacsattic/ruby-additional.git")
 (el-get-bundle ruby-block)
 (el-get-bundle ruby-electric)
 (el-get-bundle ruby-end)
@@ -266,6 +278,7 @@
 (el-get-bundle flymake-css)
 (el-get-bundle flymake-gjshint)
 (el-get-bundle flymake-haml)
+;; (el-get-bundle flycheck-flow)
 (el-get-bundle flycheck-flow)
 (el-get-bundle flymake-json)
 (el-get-bundle flymake-less)
@@ -280,12 +293,12 @@
 (el-get-bundle ido-ubiquitous)
 (el-get-bundle smex)
 
-(el-get-bundle simplenote2)
+;; (el-get-bundle simplenote2)
 
 (el-get-bundle migemo)
 
 ;; org-mode
-(el-get-bundle org-mode)
+;; (el-get-bundle org-mode) ;; bundled with emacs
 
 ;;; theme
 (el-get-bundle purple-haze-theme)
