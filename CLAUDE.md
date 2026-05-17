@@ -11,6 +11,70 @@
 - **このドキュメントの役割**: 旧設定が「どんな機能を持っていたか」の機能カタログ。
   細かい変数設定ではなく、機能単位でまとめてある。移植の参照に使う。
 
+## 作業方針・指示の傾向(セッション間で踏襲)
+
+過去セッションで確立した、このユーザー/プロジェクトの進め方。別セッションでも
+これに従うこと。
+
+### コミュニケーション・進め方
+- **日本語**でやり取りする。
+- **決めるのはユーザー**。実装前に選択肢を比較表で提示し、推奨を1つ明示し、
+  確認を取ってから着手する。先に説明・必要なら ASCII モックアップを示し、
+  「説明 → 選び直してもらう」を厭わない。
+- 旧式・非推奨の設定は**黙って変えない**。調査のうえ現状と代替案を提案する。
+- 結果は誠実に報告(検証出力・スキップ・失敗をそのまま)。ミスは隠さず、
+  原因と巻き戻しを明示する(例: noclobber 事故 → `git reset` で完全復旧)。
+
+### 移植の方針
+- 旧 `~/.emacs.d`(HEAD 基準)から機能単位で移植。**主流・標準・管理しやすい**
+  方式を優先(単一 `init.el`、`use-package`、`package.el`、組み込み代替)。
+  例: elscreen→`tab-bar-mode`、linum→`display-line-numbers`、
+  matrix-on-ice→同梱 `wheatgrass`、el-get→package.el+use-package。
+- 未移植の elisp(外部パッケージ/旧 inits のカスタム関数)に依存する
+  キーバインド等は、**移植したうえでコメントアウトし依存先を明記**。
+  該当機能を移植したらコメントを外す運用。
+- 本ファイルの**移植チェックリスト(`[x]`/`[ ]`/`[-]`)を都度更新**する。
+
+### 検証(必須)
+- 検証用 Emacs は **`/Applications/Emacs-30.2-1.app/Contents/MacOS/Emacs`
+  (GNU Emacs 30.2)**。`/Applications/Emacs.app` は 29.x なので使わない。
+- `init.el` を変更したら毎回バッチで load / byte-compile し、結果を報告。
+  パッケージ未導入時の検証は `package-installed-p`/`package-install` を
+  スタブして実施。
+
+### Git・コミット
+- **コミットはユーザーが明示したときだけ**。push しない。
+- メッセージは英語、「要約 + 箇条書き変更リスト」、末尾に
+  `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>`。
+- 手書き config と vendored 依存(`elpa/`)は別コミットに分ける。
+- **コミット前に必ず、ホームディレクトリ絶対パス(シェルの `$HOME` を実行時展開して得る。値はリポジトリに書かない)の混入をスキャン**し、
+  混入があれば中止。混入なしを確認してからコミット。
+
+### プライバシー(厳守)
+- ホームディレクトリ絶対パス(`$HOME` の実体)を **git 履歴に残さない**。
+- マシンローカル設定 `.claude/settings.local.json` は**未追跡 + `.gitignore`**。
+  これは harness が自動再生成し名前入りパスを含むが、ローカル専用なので
+  内容は変えず追跡から外すだけでよい。
+- `elpa/` 等を追跡する前に名前/ホーム絶対パスの混入を必ず確認。
+
+### パッケージ運用
+- `package.el` + `use-package`(`use-package-always-ensure t`)。git のみの
+  パッケージは `use-package :vc`。
+- `elpa/` のソースを git 管理(別マシン・上流リンク切れでも復元可)。
+  再生成物(`*.elc`/`elpa/archives`/`eln-cache`/`package-quickstart.el`)は
+  `.gitignore` で除外。導入後は `elpa/<pkg>/` をコミット。
+
+### シェル環境の注意(別セッションでハマりやすい点)
+- シェルは **zsh**。`noclobber` 有効 → 既存ファイルへの `>` は失敗/プロンプト。
+  `>|`・`/bin/cp -f`・`git checkout <ref> -- path` を使う。
+- `cp` は `cp -i` エイリアス(対話)。スクリプトでは `/bin/cp` を使う。
+- `timeout`/`gtimeout` なし。`mapfile` は bash 専用(zsh では使わない)。
+- 重い処理はバックグラウンド実行。git コミットメッセージは
+  `-F <file>` でファイル渡し(クォート事故回避)。
+- `pip`/`pip3` は PEP 668(Homebrew Python 外部管理)で `install` 不可。
+  CLI ツールは **`pipx install`**(無ければ `brew install pipx`)。
+  GUI Emacs で `~/.local/bin` 等を解決するには `exec-path-from-shell`。
+
 ## 旧設定のアーキテクチャ
 
 - `init.el`: 基本設定 + パッケージ宣言 + ローダ起動。
