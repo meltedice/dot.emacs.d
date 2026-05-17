@@ -41,7 +41,7 @@
 - [x] パッケージ管理基盤 — **package.el + use-package**(Emacs 30 同梱)で**移植済み**。`elpa/` を git 管理し別マシンへ移植・復元(上流リンク切れでも実体を抱える方針、`.gitignore` 調整済)。git のみのパッケージは `use-package :vc`
 - [-] init-loader による分割設定ロード — 主流の単一 `init.el` 構成へ再編したため不採用
 - [ ] 環境判定ユーティリティ(OS/GUI/hostname/which)
-- [ ] シェル PATH 取り込み(exec-path-from-shell, macOS) — パッケージ依存
+- [x] シェル PATH 取り込み — `exec-path-from-shell`(GUI/デーモン時、ログイン非対話 `-l`)で**移植済み**。GUI Emacs でも `~/.local/bin`(pipx: grip 等)を解決
 - [x] 基本 UX(ツールバー非表示、起動画面抑止、`yes/no`→`y/n`、削除→ゴミ箱、ベルは画面フラッシュ、タイトルバー書式、関数名/行桁番号のモードライン表示、インデント既定)
 
 ### 編集支援
@@ -102,7 +102,8 @@
 - [ ] **JavaScript / TypeScript**: rjsx-mode、js2-mode、typescript-mode、tide、flow-minor-mode、prettier-js、coffee-mode、json-mode
 - [ ] **Web**: web-mode(`.html`/`.ctp`、インデント 2、php エンジン)
 - [ ] **PHP**: php-mode / **Lua**: lua-mode / **GraphQL**: graphql-mode(`.graphql`/`.gql`)
-- [ ] **マークアップ/データ**: markdown-mode、textile-mode、yaml-mode、apib-mode、haml/slim/sass/scss/less、shell-script(zsh 系)
+- [x] **Markdown**: `markdown-mode`(+ `gfm-mode` for README)。補助 `markdown-toc`(目次)/ `grip-mode`(GitHub 風プレビュー、要 `pip install grip`)を use-package で**移植済み**
+- [ ] **マークアップ/データ(残り)**: textile-mode、yaml-mode、apib-mode、haml/slim/sass/scss/less、shell-script(zsh 系)
 - [ ] **org-mode**: アジェンダ(C-c a)、`kanban.org`、完了時刻記録 — 組み込み。`C-c a` バインドのみ済
 - [ ] プロジェクト管理 `projectile` — パッケージ依存
 

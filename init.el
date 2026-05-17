@@ -40,6 +40,20 @@
 
 
 ;;; ============================================================
+;;;  環境変数(GUI/デーモンでシェルの PATH 等を継承)
+;;; ============================================================
+;; Finder/Dock から起動した GUI Emacs はシェルの PATH を継承しないため、
+;; exec-path-from-shell でログインシェルの環境を取り込む。
+;; ログイン・非対話(-l のみ)を使う:
+;;   - 非対話なので iTerm2 のシェル統合エスケープや fortune が混入しない
+;;   - ~/.local/bin(pipx: grip 等)はログイン非対話 zsh で既に PATH 上
+(use-package exec-path-from-shell
+  :if (or (memq window-system '(mac ns)) (daemonp))
+  :init (setq exec-path-from-shell-arguments '("-l"))
+  :config (exec-path-from-shell-initialize))
+
+
+;;; ============================================================
 ;;;  基本設定(旧 init.el より移植。現在も有効なもの)
 ;;; ============================================================
 
@@ -207,8 +221,12 @@
 (setq tab-bar-show 1                   ; タブ1個でも常に表示
       tab-bar-new-tab-choice "*scratch*"
       tab-bar-tab-hints t              ; タブに番号を表示
-      tab-bar-close-button-show nil
-      tab-bar-new-button-show nil)
+      tab-bar-close-button-show nil)
+;; 新規タブ「+」ボタンを出さない
+;; (旧 tab-bar-new-button-show は Emacs 28.1 で廃止 → tab-bar-format で制御)
+(setq tab-bar-format '(tab-bar-format-history
+                       tab-bar-format-tabs
+                       tab-bar-separator))
 
 ;; 旧 elscreen 風 C-z プレフィックス(標準は suspend-frame だが踏襲)
 (defvar elscreen-like-tab-map (make-sparse-keymap)
@@ -233,6 +251,47 @@
   (define-key elscreen-like-tab-map (kbd (number-to-string (1+ i)))
     (let ((n (1+ i)))
       (lambda () (interactive) (tab-bar-select-tab n)))))
+
+
+;;; ============================================================
+;;;  メジャーモード(use-package で移植)
+;;; ============================================================
+
+;;; Markdown
+(use-package markdown-mode
+  :mode (("\\.md\\'"             . markdown-mode)
+         ("\\.markdown\\'"       . markdown-mode)
+         ("\\.\\(text\\|mdt\\)\\'" . markdown-mode)
+         ("README\\.md\\'"       . gfm-mode))
+  :custom
+  (markdown-fontify-code-blocks-natively t))
+
+;; 目次生成: M-x markdown-toc-generate-toc
+(use-package markdown-toc
+  :after markdown-mode)
+
+;; grip-mode: GitHub と同じ見た目で Markdown をライブプレビュー。
+;;
+;; 【外部コマンド grip のインストール】
+;;   Homebrew の Python は PEP 668(外部管理)のため `pip install grip` /
+;;   `pip3 install grip` は拒否される。CLI ツールなので pipx を使う:
+;;       pipx install grip          ; -> ~/.local/bin/grip(隔離 venv)
+;;   ※ `pip` という名前のコマンドは無い。pipx も無ければ `brew install pipx`。
+;;   ※ GUI Emacs で PATH を通すため上の exec-path-from-shell が必要
+;;     (~/.local/bin はログインシェルの PATH 上)。
+;;   更新: pipx upgrade grip / 削除: pipx uninstall grip
+;;
+;; 【使い方】
+;;   - Markdown バッファで C-c C-c g    : grip-mode を ON/OFF
+;;     (markdown-mode-command-map の "g"。素の grip-mode コマンドでも可)
+;;   - ON にするとローカルに描画サーバが立ち、ブラウザで GitHub 風表示。
+;;     バッファ保存に追従して自動更新される。
+;;   - 認証なしだと GitHub API のレート制限あり。多用するなら
+;;     ~/.authinfo 等でトークンを設定(grip-github-user/grip-github-password)。
+(use-package grip-mode
+  :after markdown-mode
+  :bind (:map markdown-mode-command-map
+              ("g" . grip-mode)))
 
 
 ;;; ============================================================
