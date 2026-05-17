@@ -17,11 +17,19 @@ __MACOSX
 # emacs
 *.elc
 /.cask
-/elpa
 /auto-save-list
 /.autosave
 /.backup
 /.undohist
+
+# package.el: elpa/ のソース(*.el)は git 管理する。
+# 上流が消えても別マシンで復元できるよう実体を抱える方針。
+# 再生成物(コンパイル結果・アーカイブ索引)のみ除外する。
+/elpa/archives/
+/elpa/.last-refresh
+/eln-cache/
+/.eln-cache/
+package-quickstart.el
 
 # ddskk
 ddskk/*

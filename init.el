@@ -16,6 +16,30 @@
 
 
 ;;; ============================================================
+;;;  パッケージ管理(package.el + use-package、Emacs 30 同梱)
+;;; ============================================================
+;; 方針: elpa/ を git 管理して別マシンへ移植・復元する。
+;;   - elpa/<pkg>/ のソース(*.el)はコミットする(上流が消えても復元可能)
+;;   - *.elc / eln-cache / elpa/archives は再生成物なので .gitignore で除外
+;;   - 新マシンは clone するだけ。elpa/ に実体があるためネット不要で起動できる
+;;   - 新規パッケージ追加時のみ: M-x package-refresh-contents → 導入
+;;   - git からのみ入手のパッケージは use-package :vc(Emacs 30 標準)を使う
+;;       例: (use-package foo :vc (:url "https://github.com/user/foo"))
+
+(require 'package)
+(setq package-user-dir (locate-user-emacs-file "elpa"))
+(setq package-archives
+      '(("gnu"    . "https://elpa.gnu.org/packages/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("melpa"  . "https://melpa.org/packages/")))
+(package-initialize)
+
+(require 'use-package)
+(setq use-package-always-ensure t        ; 各 use-package で自動導入
+      use-package-expand-minimally t)
+
+
+;;; ============================================================
 ;;;  基本設定(旧 init.el より移植。現在も有効なもの)
 ;;; ============================================================
 

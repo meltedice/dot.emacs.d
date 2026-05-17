@@ -37,7 +37,8 @@
 - `[-]` **移植しない / 廃止** — 理由を併記。原機能を別手段に置き換えた場合は「代替」と明記
 
 ### 基盤・全体
-- [-] パッケージ管理(el-get / el-get-lock / auto-install) — 旧構成は移植しない。新パッケージ基盤は今後別途検討(未定)
+- [-] 旧パッケージ管理(el-get / el-get-lock / auto-install) — 旧構成は不採用
+- [x] パッケージ管理基盤 — **package.el + use-package**(Emacs 30 同梱)で**移植済み**。`elpa/` を git 管理し別マシンへ移植・復元(上流リンク切れでも実体を抱える方針、`.gitignore` 調整済)。git のみのパッケージは `use-package :vc`
 - [-] init-loader による分割設定ロード — 主流の単一 `init.el` 構成へ再編したため不採用
 - [ ] 環境判定ユーティリティ(OS/GUI/hostname/which)
 - [ ] シェル PATH 取り込み(exec-path-from-shell, macOS) — パッケージ依存
@@ -170,9 +171,14 @@
   旧 inits のカスタム関数)依存のものは移植のうえコメントアウトし、依存先を明記。
 - **macOS 設定**: NS 修飾キー、`¥`→`\`、Karabiner/iTerm2 メモ。
 
-**未移植(今後の作業対象)**: パッケージ管理基盤、上記「機能リスト」の各パッケージ
-依存機能・カスタム関数群(dired/window/edit/view-mode/検索/Git/各言語モード 等)。
-各機能を移植する際、対応するキーバインドのコメントを外していく運用。
+- **パッケージ管理基盤**: package.el + use-package(Emacs 30 同梱)。
+  `elpa/` を git 管理(`.gitignore` で再生成物のみ除外)。新マシンは clone のみで
+  ネット不要起動、上流が消えても復元可。git のみは `use-package :vc`。
+- **タブ**: 旧 elscreen を `tab-bar-mode` + `tab-bar-history-mode` で代替(C-z プレフィックス踏襲)。
+
+**未移植(今後の作業対象)**: 上記「機能リスト」の各パッケージ依存機能・
+カスタム関数群(dired/window/edit/view-mode/検索/Git/各言語モード 等)。
+各機能を `use-package` 化して移植する際、対応するキーバインドのコメントを外していく運用。
 
 > 検証用 Emacs: `/Applications/Emacs-30.2-1.app/Contents/MacOS/Emacs`(GNU Emacs 30.2)。
 > `/Applications/Emacs.app` は 29.x なので使わない。
