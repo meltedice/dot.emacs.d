@@ -113,7 +113,8 @@
 - [ ] リージョン囲み `quote-region-by`(各種記号で選択範囲を囲む)
 - [ ] `kill-region-or-backward-kill-word`(C-w: 選択時は kill、無選択時は単語削除)
 - [ ] 二度押し C-g でマーク解除
-- [ ] 行折り返しトグル、`kill-whole-line`、UTF-8 コメント挿入
+- [ ] 行折り返しトグル、UTF-8 コメント挿入
+- [x] `kill-whole-line` — 行頭 C-k で行末+改行を kill(`(setq kill-whole-line t)`、組み込み)で**移植済み**
 - [ ] キルリング閲覧 `yank-pop-summary`(M-y / C-M-y) — パッケージ依存
 - [ ] シンボルハイライト & 一括リネーム(auto-highlight-symbol) — パッケージ依存
 - [ ] スニペット展開(yasnippet) — パッケージ依存

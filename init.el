@@ -111,6 +111,10 @@
 (line-number-mode 1)
 (column-number-mode 1)
 
+;; 行頭で C-k すると行末までと改行を一度に kill-ring へ
+;; (旧 inits/50-edit.el: "C-k at beginning of line, kill whole line including \\n")
+(setq kill-whole-line t)
+
 ;; 行番号表示: prog-mode のみ
 ;; (旧 global-linum-mode は linum が Emacs 29 で廃止のため置換)
 (setq-default display-line-numbers-width 3) ; 旧 linum-format "%3d " 相当
