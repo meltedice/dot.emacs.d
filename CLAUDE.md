@@ -178,8 +178,8 @@
 
 ### 文字コード・フォント・表示
 - [ ] 拡張子別 coding-system 設定(`80-encodings.el`)
-- [ ] macOS フォント(Monaco + Hiragino Maru Gothic ProN、rescale 調整)
-- [ ] 全角記号フォント対応(`use-default-font-for-symbols nil`)
+- [x] macOS フォント — **移植済み**(比較用プリセット方式)。`M-x my-font-preset` で 4 プリセット即時切替: `faithful-old`(旧 Monaco+Hiragino Maru ProN+rescale 忠実)/ `stock-modern`(Menlo+Hiragino Kaku ProN)/ `udev-gothic` / `plemol-jp`(CJK 同梱 1 本、`brew install --cask font-udev-gothic` / `font-plemol-jp` 導入済)。**起動時デフォルト = `stock-modern`**(`my-font-default-preset`、GUI 時自動適用、daemon は after-make-frame-functions)
+- [x] 全角記号フォント対応(`use-default-font-for-symbols nil`) — **移植済み**(全プリセット共通で維持)
 - [-] 行番号 `linum-off` + `global-linum-mode` — **linum は Emacs 29 で廃止**。`display-line-numbers`(prog-mode のみ、幅3)で**代替移植済み**
 - [-] テーマ `matrix-on-ice`(auto-install)+ 起動時の緑/黒 仮配色 — パッケージのため不採用。同梱テーマ `wheatgrass` で**代替移植済み**
 

@@ -237,6 +237,98 @@
 
 
 ;;; ============================================================
+;;;  フォント(比較用プリセット切替: M-x my-font-preset)
+;;; ============================================================
+;; 旧 inits/cocoa-emacs-font.el の復元検討。どれを常用するか目視で
+;; 決められるよう、4 プリセットを M-x my-font-preset で即時切替できる。
+;; 起動時は my-font-default-preset(現在 "stock-modern")を GUI 時に
+;; 自動適用する。他プリセットは引き続き M-x で随時比較可能。
+;; 旧 init.el の (setq use-default-font-for-symbols nil)(↓ 等の記号を
+;; fontset 側=全角で出す)は全プリセット共通で維持。
+(setq use-default-font-for-symbols nil)
+
+(defvar my-font-height 140
+  "default フェイスの :height(140 = 14pt、旧設定踏襲)。")
+
+(defun my-font--clear-jp-fontset ()
+  "前プリセットが設定した日本語/Latin fontset 上書きを解除する。"
+  (dolist (s '(katakana-jisx0201 japanese-jisx0208 japanese-jisx0212
+               japanese-jisx0213-1 japanese-jisx0213-2))
+    (set-fontset-font t s nil))
+  (set-fontset-font t '(#x80 . #x24F) nil))
+
+(defun my-font--faithful-old ()
+  "旧設定を忠実復元: Monaco + Hiragino Maru ProN + rescale(レガシ含む)。"
+  (my-font--clear-jp-fontset)
+  (set-face-attribute 'default nil :family "Monaco" :height my-font-height)
+  (dolist (s '(katakana-jisx0201 japanese-jisx0208 japanese-jisx0212
+               japanese-jisx0213-1 japanese-jisx0213-2))
+    (set-fontset-font t s "Hiragino Maru Gothic ProN"))
+  (set-fontset-font t '(#x80 . #x24F) "Monaco")
+  (setq face-font-rescale-alist
+        '(("^-apple-hiragino.*" . 1.2)
+          (".*-Hiragino Maru Gothic ProN-.*" . 1.2)
+          (".*osaka-bold.*" . 1.2)
+          (".*osaka-medium.*" . 1.2)
+          (".*courier-bold-.*-mac-roman" . 1.0)
+          (".*monaco cy-bold-.*-mac-cyrillic" . 0.9)
+          (".*monaco-bold-.*-mac-roman" . 0.9)
+          ("-cdac$" . 1.3))))
+
+(defun my-font--stock-modern ()
+  "ストック現代化: Menlo + Hiragino Kaku ProN + 最小 rescale。"
+  (my-font--clear-jp-fontset)
+  (set-face-attribute 'default nil :family "Menlo" :height my-font-height)
+  (dolist (s '(katakana-jisx0201 japanese-jisx0208
+               japanese-jisx0213-1 japanese-jisx0213-2))
+    (set-fontset-font t s "Hiragino Kaku Gothic ProN"))
+  (setq face-font-rescale-alist '((".*Hiragino.*" . 1.2))))
+
+(defun my-font--udev-gothic ()
+  "CJK 同梱 1 本: UDEV Gothic(要 brew install --cask font-udev-gothic)。"
+  (my-font--clear-jp-fontset)
+  (setq face-font-rescale-alist nil)
+  (set-face-attribute 'default nil :family "UDEV Gothic" :height my-font-height))
+
+(defun my-font--plemol-jp ()
+  "CJK 同梱 1 本: PlemolJP(要 brew install --cask font-plemol-jp)。"
+  (my-font--clear-jp-fontset)
+  (setq face-font-rescale-alist nil)
+  (set-face-attribute 'default nil :family "PlemolJP" :height my-font-height))
+
+(defconst my-font-presets
+  '(("faithful-old" . my-font--faithful-old)
+    ("stock-modern" . my-font--stock-modern)
+    ("udev-gothic"  . my-font--udev-gothic)
+    ("plemol-jp"    . my-font--plemol-jp))
+  "プリセット名 → 適用関数。")
+
+(defun my-font-preset (name)
+  "フォントプリセット NAME を即時適用(目視比較用)。
+未インストールフォントは既定にフォールバックする点に注意。"
+  (interactive
+   (list (completing-read "Font preset: "
+                          (mapcar #'car my-font-presets) nil t)))
+  (funcall (cdr (assoc name my-font-presets)))
+  (message "Font preset: %s → 実フォント family=%s height=%s"
+           name (face-attribute 'default :family) (face-attribute 'default :height)))
+
+(defvar my-font-default-preset "stock-modern"
+  "起動時に GUI フレームへ自動適用するプリセット名。
+M-x my-font-preset で随時切替可能(これは既定値のみ)。")
+
+(defun my-font-apply-default (&optional frame)
+  "FRAME(なければ選択フレーム)が GUI なら既定プリセットを適用。"
+  (when (display-graphic-p frame)
+    (with-selected-frame (or frame (selected-frame))
+      (my-font-preset my-font-default-preset))))
+
+;; 通常起動は即適用。daemon/emacsclient は最初の GUI フレーム生成時に適用。
+(if (daemonp)
+    (add-hook 'after-make-frame-functions #'my-font-apply-default)
+  (my-font-apply-default))
+
+;;; ============================================================
 ;;;  タブ(旧 elscreen の代替: 組み込み tab-bar-mode)
 ;;; ============================================================
 ;; elscreen は未メンテで新しい Emacs で動作しないため、Emacs 27+ 同梱の
