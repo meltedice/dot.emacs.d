@@ -299,6 +299,38 @@
 
 
 ;;; ============================================================
+;;;  Git / 差分(magit, ediff)
+;;; ============================================================
+
+;; ediff(組み込み・旧 inits/50-ediff.el より移植)
+;;   - 上下分割ではなく左右分割
+;;   - control を別フレームにせず単一フレーム内に表示(plain)
+;; 旧 DavidBoon cleanup スニペット(ウィンドウ構成をレジスタ ?b に退避し
+;; 終了時に復元 + ediff-cleanup-mess 除去ハック)は移植しない:
+;; Emacs 30 の ediff は終了時にウィンドウ構成を自前で復元するため不要
+;; (現代簡易版を採用、ユーザー確認済み)。
+(use-package ediff
+  :ensure nil                           ; 組み込み
+  :custom
+  (ediff-split-window-function #'split-window-horizontally)
+  (ediff-window-setup-function #'ediff-setup-windows-plain))
+
+;; magit(Git クライアント)
+;;   旧 inits/20-magit.el は全行コメントアウトで実働設定なし。当時の
+;;   自作 ediff-magit-ediff(auto-install)依存と .git/index.lock 回避
+;;   ハックは、現代 magit 組み込みの magit-ediff に置き換わり不要。
+;;   キー割当(ユーザー確認済み):
+;;     - C-x g→goto-line(既存・移植済み)はそのまま維持
+;;     - magit-status は C-c g(C-c <英字> はユーザー予約領域で衝突最小)
+;;     - 旧 CLAUDE.md キーバインド表の C-c d / C-c D → magit-ediff も
+;;       現代コマンド(working-tree / dwim)で移植
+(use-package magit
+  :bind (("C-c g" . magit-status)
+         ("C-c d" . magit-ediff-show-working-tree)
+         ("C-c D" . magit-ediff-dwim)))
+
+
+;;; ============================================================
 ;;;  未移植: カスタム関数依存
 ;;;  (旧 inits/50-window.el, 50-edit.el, 50-edit-helper.el,
 ;;;   50-view-mode.el を移植したらコメントを外す)

@@ -157,8 +157,8 @@
 - [-] `helm` — `90-helm.el.disabled` として無効。移植しない
 
 ### Git / 差分
-- [ ] `magit`(Git クライアント) — パッケージ依存
-- [ ] `ediff`(左右分割・plain ウィンドウ・終了時クリーンアップ・配色カスタム) — 組み込み、未移植
+- [x] `magit`(Git クライアント) — `use-package magit` で**移植済み**。旧 `inits/20-magit.el` は全行コメントアウトで実働設定なし(自作 ediff-magit-ediff / index.lock ハックは現代 magit 組み込みの magit-ediff に置換され不要)。キー: `C-c g`→magit-status(`C-x g`→goto-line は維持)、`C-c d`/`C-c D`→magit-ediff working-tree/dwim
+- [x] `ediff`(組み込み、旧 `inits/50-ediff.el`) — **移植済み**(左右分割 + plain ウィンドウ)。旧 DavidBoon cleanup スニペットは**移植しない**(現代 ediff が終了時にウィンドウ構成を自前復元、ユーザー確認済み)。旧 `custom-set-faces` の diff 配色 8 フェイスも**移植しない**(wheatgrass 既定配色を使用)
 - [ ] `gitignore-mode` — パッケージ依存
 
 ### 言語・メジャーモード(いずれもパッケージ依存、未移植)
@@ -214,8 +214,9 @@
 | `M-y` / `C-M-y` | yank-pop 前後 | yank-pop-summary |
 | `C-c "` `'` `` ` `` `(` `[` … | リージョン囲み | カスタム |
 | `C-s` | swiper | ivy/swiper |
-| `C-c g/j/k` | counsel git/git-grep/ag | counsel |
-| `C-c d` / `C-c D` | magit-ediff | magit |
+| `C-c g` | **magit-status(移植済み)** | magit |
+| `C-c j/k` | counsel git-grep/ag(未移植。`C-c g` は magit に割当済みのため counsel 移植時は別キーへ) | counsel |
+| `C-c d` / `C-c D` | magit-ediff working-tree / dwim(移植済み) | magit |
 | `C-t …` | ウィンドウ/moccur プレフィックス | カスタム/color-moccur |
 | `C-z …` | elscreen プレフィックス | elscreen |
 | `C-x C-j` | direx プロジェクトルート | direx |
