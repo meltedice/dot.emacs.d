@@ -1,0 +1,348 @@
+;;; init.el --- Personal Emacs configuration -*- lexical-binding: t; -*-
+
+;;; Commentary:
+
+;; 旧 ~/.emacs.d(init-loader + inits/NN-*.el 構成)からキーバインド設定を
+;; 移植したもの。主流の単一 init.el 構成に再編した。
+;;
+;; 方針:
+;;   - 素の Emacs 組み込みコマンドへのバインドはそのまま有効。
+;;   - この設定にまだ移植していない elisp(外部パッケージ / 旧 inits の
+;;     カスタム関数)に依存するものは、移植した上でコメントアウトしてある。
+;;     依存先を各見出し・各行に明記した。該当機能を移植したらコメントを外す。
+;;   - linum は Emacs 29 で廃止されたため display-line-numbers-mode に置換。
+
+;;; Code:
+
+
+;;; ============================================================
+;;;  基本設定(旧 init.el より移植。現在も有効なもの)
+;;; ============================================================
+
+;; default.el を読み込まない
+(setq inhibit-default-init t)
+
+;; 起動画面を出さない
+(setq inhibit-startup-screen t)
+
+;; ツールバー非表示(旧: (cond (window-system (tool-bar-mode 0))))
+(tool-bar-mode -1)
+
+;; *eval* などでリストを省略せず全部表示
+(setq eval-expression-print-length nil)
+(setq eval-expression-print-level nil)
+
+;; カーソル点滅
+(blink-cursor-mode 1)
+
+;; ベルは鳴らさず画面フラッシュ
+(setq visible-bell t)
+
+;; タイトルバーに buffer 名とファイル名
+(setq frame-title-format "%b : %f - emacs")
+
+;; モードライン時刻表示の書式(display-time 自体は未有効)
+(setq display-time-string-forms
+      '((let ((system-time-locale "C"))
+          (format-time-string "%Y-%m-%d(%a) %R" now))))
+
+;; org-mode のタイムスタンプ等を英語表記に
+(setq system-time-locale "C")
+
+;; モードラインに現在の関数名
+(which-function-mode 1)
+
+;; upcase/downcase-region を有効化(確認ダイアログを出さない)
+(put 'upcase-region   'disabled nil)
+(put 'downcase-region 'disabled nil)
+
+;; 削除はゴミ箱へ
+(setq delete-by-moving-to-trash t)
+
+;; yes/no -> y/n(旧: (fset 'yes-or-no-p 'y-or-n-p) の Emacs 28+ 等価)
+(setq use-short-answers t)
+
+;; リージョンをハイライトしない(旧来挙動を明示的に維持)
+(setq-default transient-mark-mode nil)
+
+;; プログラミング共通
+(setq c-basic-offset 4)
+(setq tab-width 4)
+(setq-default indent-tabs-mode nil)
+(show-paren-mode 1)
+(line-number-mode 1)
+(column-number-mode 1)
+
+;; 行番号表示: prog-mode のみ
+;; (旧 global-linum-mode は linum が Emacs 29 で廃止のため置換)
+(setq-default display-line-numbers-width 3) ; 旧 linum-format "%3d " 相当
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
+
+;;; テーマ
+;; 旧 init.el は起動時プレースホルダ配色
+;;   (set-background-color "black") / (set-foreground-color "#7eff00")
+;; を置いたあとパッケージ製テーマ matrix-on-ice を適用していた。
+;; matrix-on-ice はパッケージのため、Emacs 同梱の暗色テーマで代替する。
+;; 同梱テーマで最も Matrix(緑/黒)に近いのは wheatgrass。
+(load-theme 'wheatgrass t)
+;; 差し替え候補(上行をコメントアウトして下のいずれかを有効化):
+;; (load-theme 'modus-vivendi t)  ; モダンで視認性の高い暗色テーマ
+;; (load-theme 'wombat t)
+;; (load-theme 'tango-dark t)
+;; (load-theme 'deeper-blue t)
+;; (load-theme 'misterioso t)
+;; (load-theme 'manoj-dark t)
+
+
+;;; ============================================================
+;;;  Keybindings: 組み込み(有効)
+;;; ============================================================
+
+(keyboard-translate ?\C-h ?\C-?) ; (global-set-key "\C-h" 'delete-backward-char)
+(global-set-key "\C-ch" 'help-command)
+;; (global-set-key "\C-xh" 'mark-whole-buffer)
+(global-set-key "\C-xg" 'goto-line)
+
+;; 旧: (global-set-key "\C-xl" 'linum-mode) ; linum は Emacs 29 で廃止
+(global-set-key "\C-xl" 'display-line-numbers-mode)
+
+(global-set-key "\C-c+" 'text-scale-increase)
+(global-set-key "\C-c-" 'text-scale-decrease)
+(global-set-key "\M-o"  'other-window) ;; 旧: 'other-window-or-split(下記コメント参照)
+(global-set-key "\C-x\C-d" 'delete-region)
+(global-set-key "\C-ci"    'indent-region)
+(global-set-key "\C-cc"    'comment-region)
+(global-set-key "\C-cu"    'uncomment-region)
+
+;; org は Emacs 同梱。org-agenda は autoload されるので単体で有効。
+(global-set-key (kbd "C-c a") 'org-agenda)
+
+;;; C-t プレフィックス(キーマップ定義自体は組み込みのみ)
+(defvar ctl-t-map (make-sparse-keymap)
+  "Keymap for C-t prefix key.")
+(global-set-key "\C-t" ctl-t-map)
+(define-key minibuffer-local-map "\C-t" 'undefined)
+
+
+;;; ============================================================
+;;;  macOS (Cocoa / NS)
+;;; ============================================================
+
+(when (eq system-type 'darwin)
+  ;; --- NS ポート組み込み設定(有効) ---
+  (setq mac-pass-control-to-system nil)
+  (setq mac-pass-command-to-system nil)
+  (setq mac-pass-option-to-system nil)
+  (when (fboundp 'mac-add-ignore-shortcut)
+    (mac-add-ignore-shortcut '(control)))
+
+  ;; option <-> command の入れ替え
+  (setq ns-command-modifier   'meta)
+  (setq ns-alternate-modifier 'super)
+  (setq mac-option-modifier   'super) ;; not in use?
+
+  ;; macOS High Sierra 以降: ¥ を \ として扱う
+  (define-key global-map [?\¥] [?\\])
+  (define-key global-map [?\s-¥] [?\\])
+  (define-key global-map [?\C-¥] [?\C-\\])
+  (define-key global-map [?\M-¥] [?\M-\\])
+  (define-key global-map [?\C-\M-¥] [?\C-\M-\\])
+
+  ;; browse-url-at-mouse は組み込み(有効)
+  (when (memq window-system '(mac ns))
+    (global-set-key [s-mouse-1] 'browse-url-at-mouse))
+
+  ;; --- 未移植: カスタム関数依存(旧 inits/cocoa-emacs-config.el) ---
+  ;; (global-set-key "\C-cm" 'mac-toggle-max-window)
+  ;; (global-set-key "\C-cp" 'mac-toggle-window-alpha)
+  )
+
+;;; macOS 連携メモ(旧 cocoa-emacs-keybindings.el より。設定ではなく覚書)
+;;
+;; Karabiner:
+;;   - Semicolon -> Return(修飾なし時) / Control+Semicolon -> Semicolon
+;;   - EISUU -> Control_L / KANA -> Control_L
+;;   - Underscore(Ro) -> Backslash(¥)
+;;
+;; iTerm2(emacs -nw 用。Terminal.app は command=meta が扱いづらい):
+;;   - Left/Right option key: Normal -> +Esc
+;;   - Cmd+f/b/d を Esc+f / Esc+b / Esc+d の Escape Sequence に
+;;   - Scrollback Buffer: Unlimited scrollback
+
+
+;;; ============================================================
+;;;  タブ(旧 elscreen の代替: 組み込み tab-bar-mode)
+;;; ============================================================
+;; elscreen は未メンテで新しい Emacs で動作しないため、Emacs 27+ 同梱の
+;; tab-bar-mode に置換。各タブ = ウィンドウ構成(作業セット)で elscreen
+;; と同じモデル。操作は旧 elscreen の C-z プレフィックスを踏襲しつつ、
+;; 標準の C-x t 系も併用可。
+
+(tab-bar-mode 1)
+(tab-bar-history-mode 1)               ; タブ単位のレイアウト undo/redo
+(setq tab-bar-show 1                   ; タブ1個でも常に表示
+      tab-bar-new-tab-choice "*scratch*"
+      tab-bar-tab-hints t              ; タブに番号を表示
+      tab-bar-close-button-show nil
+      tab-bar-new-button-show nil)
+
+;; 旧 elscreen 風 C-z プレフィックス(標準は suspend-frame だが踏襲)
+(defvar elscreen-like-tab-map (make-sparse-keymap)
+  "elscreen 風タブ操作プレフィックス (C-z)。")
+(global-set-key (kbd "C-z") elscreen-like-tab-map)
+(define-key elscreen-like-tab-map (kbd "c")   #'tab-new)        ; 新規
+(define-key elscreen-like-tab-map (kbd "C-c") #'tab-new)
+(define-key elscreen-like-tab-map (kbd "k")   #'tab-close)      ; 閉じる
+(define-key elscreen-like-tab-map (kbd "C-k") #'tab-close)
+(define-key elscreen-like-tab-map (kbd "n")   #'tab-next)       ; 次へ
+(define-key elscreen-like-tab-map (kbd "C-n") #'tab-next)
+(define-key elscreen-like-tab-map (kbd "p")   #'tab-previous)   ; 前へ
+(define-key elscreen-like-tab-map (kbd "C-p") #'tab-previous)
+(define-key elscreen-like-tab-map (kbd "C-z") #'tab-recent)     ; 直前タブへ
+(define-key elscreen-like-tab-map (kbd "a")   #'tab-recent)
+(define-key elscreen-like-tab-map (kbd "'")   #'tab-bar-switch-to-tab) ; 名前で選択
+(define-key elscreen-like-tab-map (kbd "r")   #'tab-rename)     ; 改名
+(define-key elscreen-like-tab-map (kbd "b")   #'tab-bar-history-back)
+(define-key elscreen-like-tab-map (kbd "f")   #'tab-bar-history-forward)
+;; C-z 1..9 で番号のタブへ
+(dotimes (i 9)
+  (define-key elscreen-like-tab-map (kbd (number-to-string (1+ i)))
+    (let ((n (1+ i)))
+      (lambda () (interactive) (tab-bar-select-tab n)))))
+
+
+;;; ============================================================
+;;;  未移植: カスタム関数依存
+;;;  (旧 inits/50-window.el, 50-edit.el, 50-edit-helper.el,
+;;;   50-view-mode.el を移植したらコメントを外す)
+;;; ============================================================
+
+;; --- 50-window.el: ウィンドウ操作 ---
+;; (global-set-key "\M-o"     'other-window-or-split)
+;; (global-set-key [C-tab]    'other-window-or-split)
+;; (global-set-key [f2]       'swap-screen)
+;; (global-set-key [S-f2]     'swap-screen-with-cursor)
+;; (global-set-key "\C-x\C-^" 'toggle-enlarge-window-auto-direction)
+;; (global-set-key "\C-^"     'enlarge-window-auto)
+;; (global-set-key "\C-t\C-t" 'window-toggle-division)
+;; (global-set-key "\C-t\C-s" 'swap-screen)
+;; C-, と C-. で buffer をサクサク切り替える
+;; (global-set-key [?\C-,] 'my-grub-buffer)
+;; (global-set-key [?\C-.] 'my-bury-buffer)
+
+;; --- 50-edit.el ---
+;; (global-set-key "\C-a" 'intelli-home-2) ;; based on intelli-home
+;; (global-set-key "\C-w" 'kill-region-or-backward-kill-word)
+;; (define-key minibuffer-local-completion-map "\C-w" 'kill-region-or-backward-kill-word)
+
+;; --- 50-edit-helper.el: Quote region (quote-region-by) ---
+;; (global-set-key "\C-c\"" 'quote-region-by)
+;; (global-set-key "\C-c'"  'quote-region-by)
+;; (global-set-key "\C-c`"  'quote-region-by)
+;; (global-set-key "\C-c/"  'quote-region-by)
+;; (global-set-key "\C-c!"  'quote-region-by)
+;; (global-set-key "\C-c|"  'quote-region-by)
+;; (global-set-key "\C-c%"  'quote-region-by)
+;; (global-set-key "\C-c("  'quote-region-by)
+;; (global-set-key "\C-c{"  'quote-region-by)
+;; (global-set-key "\C-c["  'quote-region-by)
+;; (global-set-key "\C-c<"  'quote-region-by)
+;; (global-set-key "\C-c)"  'quote-region-by)
+;; (global-set-key "\C-c}"  'quote-region-by)
+;; (global-set-key "\C-c]"  'quote-region-by)
+;; (global-set-key "\C-c>"  'quote-region-by)
+
+;; --- 50-view-mode.el: view-mode の pager 風キーマップ ---
+;; define-many-keys / pager-keybind / view-mode-hook0 はカスタム定義。
+;; (add-hook 'view-mode-hook 'view-mode-hook0)
+;; (define-key view-mode-map " " 'scroll-up)
+
+
+;;; ============================================================
+;;;  未移植: 外部パッケージ依存
+;;;  (該当パッケージを導入したらコメントを外す)
+;;; ============================================================
+
+;; --- redo+(Emacs 28+ は組み込み undo-redo も検討可)---
+;; (global-set-key "\M-/"      'redo) ;; Undo C-/  Redo M-/
+;; (global-set-key (kbd "C-M-/") 'redo)
+
+;; --- point-undo ---
+;; (define-key global-map [f5] 'point-undo)
+;; (define-key global-map [f6] 'point-redo)
+
+;; --- yank-pop-summary(旧 auto-install)---
+;; (global-set-key "\M-y"    'yank-pop-forward)
+;; (global-set-key "\C-\M-y" 'yank-pop-backward)
+
+;; --- ddskk ---
+;; (global-set-key "\C-x\C-j" 'skk-mode) ;; overwrite dired-x keybind
+
+;; --- magit / ediff ---
+;; (global-set-key "\C-cd" 'magit-ediff-working-tree)
+;; (global-set-key "\C-cD" 'magit-ediff)
+;; (global-set-key "\C-ce" 'ediff-magit-ediff-working-tree)
+;; (global-set-key "\C-cE" 'ediff-magit-ediff)
+;; (global-set-key "\C-xE" 'ediff-magit-ediff-working-tree)
+
+;; --- color-moccur ---
+;; (global-set-key "\C-tm"    'moccur-grep-find)
+;; (global-set-key "\C-t\C-m" 'moccur-grep-find)
+
+;; --- undo-tree ---
+;; (define-key undo-tree-map (kbd "\C-_") 'undefined)
+
+;; --- key-chord(2つのキー同時押し)---
+;; (when (require 'key-chord nil t)
+;;   (setq key-chord-two-keys-delay 0.1)
+;;   (key-chord-mode 1)
+;;   (key-chord-define-global "jk" 'view-mode))
+
+;; --- elscreen(廃止気味。参考)---
+;; (global-set-key "\C-z\C-m" 'elscreen-moccur-grep-find)
+;; (global-set-key "\C-zm"    'elscreen-moccur-grep-find)
+
+;; --- helm(旧設定では無効化済み。参考)---
+;; (global-set-key "\M-x"     'helm-M-x)
+;; (global-set-key "\C-x\C-f" 'helm-find-files)
+;; (define-key helm-read-file-map  (kbd "C-w") 'kill-region-or-backward-kill-word)
+;; (define-key helm-c-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
+
+
+;;; ============================================================
+;;;  未移植: モジュール別キーマップ
+;;;  (各メジャーモード/パッケージを移植したらコメントを外す。
+;;;   その際は with-eval-after-load でマップ確定後に束ねるのが主流)
+;;; ============================================================
+
+;; --- dired 関連(旧 50-dired.el)---
+;;   r            : wdired-change-to-wdired-mode            (組み込み wdired)
+;;   E            : elscreen-dired-ediff-marked-files       (elscreen)
+;;   i / <tab>    : dired-subtree-insert / -remove          (dired-subtree)
+;;   C-x n n / ^  : dired-subtree-narrow / -up-dwim         (dired-subtree)
+;;   s S a A      : direx-grep:*                            (direx-grep)
+;;   K            : direx-k                                 (dired-k)
+;;   C-x C-j      : direx-project:jump-to-project-root-other-window (direx)
+;; (with-eval-after-load 'dired
+;;   (define-key dired-mode-map "r" 'wdired-change-to-wdired-mode)
+;;   (define-key dired-mode-map "E" 'elscreen-dired-ediff-marked-files)
+;;   (define-key dired-mode-map (kbd "i") 'dired-subtree-insert)
+;;   (define-key dired-mode-map (kbd "<tab>") 'dired-subtree-remove)
+;;   (define-key dired-mode-map (kbd "C-x n n") 'dired-subtree-narrow)
+;;   (define-key dired-mode-map (kbd "^") 'dired-subtree-up-dwim))
+;; (with-eval-after-load 'direx
+;;   (define-key direx:direx-mode-map (kbd "s") 'direx-grep:grep-item)
+;;   (define-key direx:direx-mode-map (kbd "S") 'direx-grep:grep-item-from-root)
+;;   (define-key direx:direx-mode-map (kbd "a") 'direx-grep:show-all-item-at-point)
+;;   (define-key direx:direx-mode-map (kbd "A") 'direx-grep:show-all-item)
+;;   (define-key direx:direx-mode-map (kbd "K") 'direx-k))
+;; (global-set-key "\C-x\C-j" 'direx-project:jump-to-project-root-other-window)
+
+;; --- go-mode(旧 50-go.el)---
+;; (with-eval-after-load 'go-mode
+;;   (define-key go-mode-map (kbd "M-.") 'godef-jump)
+;;   (define-key go-mode-map (kbd "M-,") 'pop-tag-mark))
+
+
+(provide 'init)
+;;; init.el ends here
