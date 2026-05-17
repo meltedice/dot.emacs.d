@@ -194,9 +194,33 @@
   (when (memq window-system '(mac ns))
     (global-set-key [s-mouse-1] 'browse-url-at-mouse))
 
-  ;; --- 未移植: カスタム関数依存(旧 inits/cocoa-emacs-config.el) ---
-  ;; (global-set-key "\C-cm" 'mac-toggle-max-window)
-  ;; (global-set-key "\C-cp" 'mac-toggle-window-alpha)
+  ;; --- フレーム/ウィンドウ(旧 inits/cocoa-emacs-config.el より復元) ---
+  ;; 初期フレームサイズ(GUI 時のみ、旧: width 120 / height 35)
+  (when (display-graphic-p)
+    (push '(width  . 120) default-frame-alist)
+    (push '(height . 35)  default-frame-alist))
+
+  ;; 最大化トグル: 旧 mac-toggle-max-window 相当。Window(Frame) を画面に
+  ;; 合わせる挙動(maximized)= メニューバー/Dock を残してフレームを作業
+  ;; 領域いっぱいに最大化。macOS ネイティブフルスクリーン(別 Space)や
+  ;; fullboth は不採用(ユーザー希望)。
+  (defun mac-toggle-max-window ()
+    "Toggle the selected frame between maximized and normal size."
+    (interactive)
+    (if (frame-parameter nil 'fullscreen)
+        (set-frame-parameter nil 'fullscreen nil)
+      (set-frame-parameter nil 'fullscreen 'maximized)))
+  (global-set-key (kbd "C-c m") 'mac-toggle-max-window)
+
+  ;; 透明度トグル: 組み込み代替が無いため旧 mac-toggle-window-alpha を
+  ;; 忠実移植(外部パッケージ非依存・alpha 100⇔90)。
+  (defun mac-toggle-window-alpha ()
+    "Toggle the selected frame's alpha between 100 and 90."
+    (interactive)
+    (if (eq (frame-parameter nil 'alpha) 100)
+        (set-frame-parameter nil 'alpha 90)
+      (set-frame-parameter nil 'alpha 100)))
+  (global-set-key (kbd "C-c p") 'mac-toggle-window-alpha)
   )
 
 ;;; macOS 連携メモ(旧 cocoa-emacs-keybindings.el より。設定ではなく覚書)

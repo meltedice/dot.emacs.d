@@ -186,7 +186,7 @@
 ### macOS 固有
 - [x] 修飾キー(command=meta、option=super)、`¥`→`\`、ignore-shortcut
 - [x] Karabiner / iTerm2 連携の運用メモ(コメントとして移植)
-- [ ] フレームサイズ既定、全画面トグル(C-c m)、ウィンドウ透明度トグル(C-c p) — カスタム関数、未移植(`init.el` にコメントで配置済)
+- [x] フレームサイズ既定、全画面トグル(C-c m)、ウィンドウ透明度トグル(C-c p) — **移植済み**。初期サイズ width 120 / height 35 は macOS GUI のみ `default-frame-alist`。`C-c m` は `mac-toggle-max-window`(`fullscreen` ⇔ `maximized`)= メニューバー/Dock を残しフレームを作業領域いっぱいに最大化(これが元の体感に一致。`fullboth`/macOS ネイティブフルスクリーン/組み込み `toggle-frame-fullscreen` は不採用、ユーザー希望)。`C-c p` は旧 `mac-toggle-window-alpha`(alpha 100⇔90)を忠実移植(組み込み代替なし・パッケージ非依存)
 - [ ] migemo(cmigemo) — パッケージ依存
 
 ### その他
@@ -222,7 +222,7 @@
 | `C-x C-j` | direx プロジェクトルート | direx |
 | `jk`(同時押し) | view-mode | key-chord |
 | `C-c a` | org-agenda | 組み込み(org) |
-| `C-c m` / `C-c p`(mac) | 全画面 / 透明度トグル | カスタム |
+| `C-c m` / `C-c p`(mac) | 最大化(mac-toggle-max-window、maximized)/ 透明度トグル(移植済み) | カスタム |
 
 ---
 
