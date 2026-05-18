@@ -121,10 +121,10 @@
 - [ ] キーコード同時押し(key-chord: `jk` で view-mode) — パッケージ依存
 
 ### Undo / 履歴
-- [ ] `redo+`(リドゥ、C-M-/) — パッケージ依存。Emacs 28+ 組み込み `undo-redo` で代替検討可
-- [ ] `undo-tree`(分岐 undo) — パッケージ依存
-- [ ] `undohist`(undo 履歴の永続化) — パッケージ依存
-- [ ] `point-undo`(カーソル位置の undo/redo, F5/F6) — パッケージ依存
+- [x] `redo+`(リドゥ、C-M-/) — **組み込み `undo-redo`(Emacs 28+)で代替移植済み**。未保守 EmacsWiki の redo+ は不採用。キーは旧踏襲の `C-M-/`。旧 `undo-limit`/`undo-strong-limit`/`undo-no-redo` は組み込み変数としてコメントで残置(既定のまま、必要時に有効化)
+- [-] `undo-tree`(分岐 undo) — **導入見送り**(ユーザー判断)。巨大ファイルで重く履歴破損歴あり、単純 redo は `undo-redo` で足りる。将来分岐 undo の可視化が要れば軽量 `vundo` を第一候補
+- [x] `undohist`(undo 履歴の永続化) — **移植済み**。`use-package undohist`、`undohist-directory` = `user-emacs-directory/.undohist`(`.gitignore` 除外済)、`undohist-initialize` がディレクトリ自動生成 + フック登録。組み込み代替なしのため導入
+- [-] `point-undo`(カーソル位置の undo/redo, F5/F6) — **導入見送り**(ユーザー判断)。組み込み mark ring(`C-SPC C-SPC` / `C-u C-SPC` / `C-x C-SPC` / `set-mark-command-repeat-pop`)で代用。使い方を init.el にコメント記載。近い体験が要れば将来 `point-history` 検討
 
 ### ウィンドウ・バッファ・画面
 - [ ] バッファ入替 `swap-screen` / `swap-screen-with-cursor`(F2 / S-F2)
@@ -209,8 +209,8 @@
 | `C-tab` | `other-window-or-split` | カスタム |
 | `F2` / `S-F2` | バッファ入替 | カスタム |
 | `C-^` / `C-x C-^` | ウィンドウ自動拡大 / 方向トグル | カスタム |
-| `M-/` `C-M-/` | redo | redo+ |
-| `F5` / `F6` | point-undo / point-redo | point-undo |
+| `C-M-/` | undo-redo(移植済み。旧 redo+ の組み込み代替) | 組み込み |
+| `F5` / `F6` | point-undo 見送り → 組み込み mark ring(`C-u C-SPC` 等)で代用 | 組み込み |
 | `M-y` / `C-M-y` | yank-pop 前後 | yank-pop-summary |
 | `C-c "` `'` `` ` `` `(` `[` … | リージョン囲み | カスタム |
 | `C-s` | swiper | ivy/swiper |

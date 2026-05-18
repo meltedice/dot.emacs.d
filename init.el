@@ -462,6 +462,56 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 
 
 ;;; ============================================================
+;;;  Undo / 履歴(旧 inits/50-history.el の移植・取捨選択)
+;;; ============================================================
+;; 旧構成は redo+ / undo-tree / undohist / point-undo の 4 外部 elisp。
+;; 現代の組み込み機能で置換できるものは置換し、有用なものだけ導入する。
+
+;; --- redo+ → 組み込み undo-redo(Emacs 28+)で代替 ---
+;; 旧: (el-get-bundle redo+) + (global-set-key (kbd "C-M-/") 'redo)
+;; redo+ は未保守の EmacsWiki コード。Emacs 28+ 同梱の `undo-redo` が
+;; 同等の「直前の undo を取り消す(= redo)」を提供するため不採用。
+;; キーは旧 redo+ と同じ C-M-/ を踏襲。
+(global-set-key (kbd "C-M-/") 'undo-redo)
+;; 旧 50-history.el は併せて undo メモリ上限の引き上げと
+;;   (setq undo-no-redo t) を行っていた。これらは redo+ ではなく
+;; 組み込み変数。既定(undo-limit 160000 / undo-strong-limit 240000 /
+;; undo-no-redo nil)から変えたい場合のみ下記を有効化(現状は既定):
+;; (setq undo-limit 600000)
+;; (setq undo-strong-limit 900000)
+;; (setq undo-no-redo t)
+
+;; --- undohist: undo 履歴の永続化(導入) ---
+;; ファイル単位の undo 履歴をディスク保存し、バッファ kill や Emacs
+;; 再起動後の再オープンでも undo 履歴を復元する。組み込み代替なし。
+;; 旧: undohist-directory = dot-emacs-dir/.undohist。新構成では
+;; user-emacs-directory 配下の .undohist(.gitignore で除外済み)。
+;; undohist-initialize がディレクトリを自動生成しフックを登録する。
+(use-package undohist
+  :config
+  (setq undohist-directory (locate-user-emacs-file ".undohist"))
+  (undohist-initialize))
+
+;; --- undo-tree: 導入見送り ---
+;; 分岐 undo + ツリー可視化。動作はするが巨大ファイルで重く、履歴破損の
+;; 不具合歴もある。単純な redo は上記 undo-redo で足りるため見送り。
+;; 将来、分岐 undo の可視化が欲しくなったら軽量な `vundo`(組み込み
+;; undo をそのまま使い可視化のみ追加)を第一候補に検討する。
+
+;; --- point-undo(F5/F6): 導入見送り、組み込み mark ring で代用 ---
+;; 旧 point-undo はカーソル位置の undo/redo(未保守 EmacsWiki)。
+;; 組み込みの mark ring で同等のことができる:
+;;   - C-SPC C-SPC          : 現在位置をマークに積む(移動の起点を記録)
+;;   - C-u C-SPC            : ローカル mark ring を遡り過去の位置へ戻る
+;;                            (連打で順次戻る。set-mark-command-repeat-pop
+;;                             を t にすると 1 回目以降 C-SPC のみで連続)
+;;   - C-x C-SPC            : global-mark-ring を遡る(バッファ跨ぎ)
+;;   - また検索/編集の多くは自動でマークを積むため、戻り先の起点になる。
+;; より point-undo に近い体験が必要になったら `point-history` 等を別途検討。
+;; (setq set-mark-command-repeat-pop t) ; 好みで有効化可
+
+
+;;; ============================================================
 ;;;  未移植: カスタム関数依存
 ;;;  (旧 inits/50-window.el, 50-edit.el, 50-edit-helper.el,
 ;;;   50-view-mode.el を移植したらコメントを外す)
