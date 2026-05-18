@@ -512,6 +512,109 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 
 
 ;;; ============================================================
+;;;  編集支援(旧 inits/50-edit.el, 50-edit-helper.el の移植・取捨選択)
+;;; ============================================================
+
+;; --- スマート行頭 C-a(旧 intelli-home-2 を忠実移植)---
+;; 行頭以外で C-a → 行頭へ。行頭で C-a → 最初の非空白文字へ。
+(defun my-smart-home ()
+  "行頭でなければ行頭へ、行頭なら最初の非空白文字へ(旧 intelli-home-2)。"
+  (interactive)
+  (if (= (point) (line-beginning-position))
+      (beginning-of-line-text)
+    (beginning-of-line)))
+(global-set-key (kbd "C-a") #'my-smart-home)
+
+;; --- C-w: 選択時 kill / 無選択時 単語削除(旧 50-edit.el 忠実)---
+;; 本設定は transient-mark-mode nil を維持しており、旧と同じく
+;; `mark-active' 判定でよい(選択を可視化しない旧来挙動)。
+(defun kill-region-or-backward-kill-word (&optional arg)
+  "選択中は kill-region、無選択は backward-kill-word(旧 50-edit.el 忠実)。"
+  (interactive "p")
+  (if mark-active
+      (kill-region (mark) (point))
+    (backward-kill-word (or arg 1))))
+(global-set-key (kbd "C-w") #'kill-region-or-backward-kill-word)
+(define-key minibuffer-local-completion-map
+            (kbd "C-w") #'kill-region-or-backward-kill-word)
+
+;; --- リージョン囲み(旧 quote-region-by を忠実移植)---
+;; 選択範囲を、押した記号/括弧で囲む。括弧類は対応閉じ括弧を補完。
+;; 代替メモ: 組み込み `electric-pair-mode' を有効化すると、リージョン
+;; 選択中に開き括弧/クォートを打つだけで自動で囲める(Emacs 24+ 標準)。
+;; 本機能(下記 + C-c 記号バインド)を使わなくなったら
+;; `(electric-pair-mode 1)' へ移行すれば自作関数とバインドは不要になる。
+;; ここではユーザー選択に従い忠実移植を採用し electric-pair は有効化しない。
+(defvar quote-region-quoter-alist
+  '(("(" . ")") ("{" . "}") ("[" . "]") ("<" . ">"))
+  "開き → 閉じ の対応。括弧以外は同じ記号で前後を囲む。")
+
+(defun quote-region-by (s e)
+  "リージョン S..E を、直前に押した記号(`last-command-event')で囲む。"
+  (interactive "r")
+  (let* ((str (buffer-substring-no-properties s e))
+         (original-point (point))
+         (quoter (string last-command-event))
+         (quoter-begin (let ((p (rassoc quoter quote-region-quoter-alist)))
+                         (if p (car p) quoter)))
+         (quoter-end   (let ((p (assoc quoter quote-region-quoter-alist)))
+                         (if p (cdr p) quoter)))
+         (quoted-str   (concat quoter-begin str quoter-end)))
+    (delete-region s e)
+    (insert quoted-str)
+    (goto-char (+ original-point (length quoter-begin) (length quoter-end)))))
+
+(dolist (k '("\C-c\"" "\C-c'" "\C-c`" "\C-c/" "\C-c!" "\C-c|" "\C-c%"
+             "\C-c(" "\C-c{" "\C-c[" "\C-c<" "\C-c)" "\C-c}" "\C-c]" "\C-c>"))
+  (global-set-key k #'quote-region-by))
+
+;; --- 行折り返しトグル(組み込み)---
+;; 旧 inits/50-edit.el の自作 walk-windows ラッパは不採用(組み込み
+;; `toggle-truncate-lines' を shadow していた)。組み込みをそのまま使う。
+;; 旧はキー未割当のため、新規に C-c $(未使用を確認)に割当。
+;; 行を折り返して表示したい場合は M-x visual-line-mode(組み込み)。
+(global-set-key (kbd "C-c $") #'toggle-truncate-lines)
+
+;; --- キルリング閲覧 M-y(組み込み yank-from-kill-ring, Emacs 28+)---
+;; 旧 yank-pop-summary(未保守・MELPA 不在)は不採用。組み込みの
+;; `yank-from-kill-ring' が補完 UI で kill-ring を一覧選択でき、旧機能の
+;; 最も近い代替。通常の M-y(yank 直後の yank-pop)も従来どおり動く。
+(when (fboundp 'yank-from-kill-ring)
+  (global-set-key (kbd "M-y") #'yank-from-kill-ring))
+
+;; --- 二度押し C-g でマーク解除(旧 defadvice を advice-add で現代化)---
+;; transient-mark-mode nil 維持下で、短時間に C-g を 2 回押すと mark を
+;; 解除する(旧 inits/50-edit.el 相当。旧 `defadvice' は非推奨のため
+;; `advice-add' で書き直し)。閾値 0.3 秒は旧踏襲。
+(defvar my-keyboard-quit-lasttime (float-time)
+  "前回 `keyboard-quit' 実行時刻(float-time)。")
+(defconst my-keyboard-quit-double-threshold 0.3
+  "この秒数以内に C-g 2 回で mark を解除する。")
+(defun my-keyboard-quit-clear-mark (&rest _)
+  "短時間に二度 C-g されたら mark を解除する(`keyboard-quit' :before)。"
+  (let ((tm (float-time)))
+    (when (> my-keyboard-quit-double-threshold
+             (- tm my-keyboard-quit-lasttime))
+      (set-marker (mark-marker) nil)
+      (setq deactivate-mark t)
+      (setq mark-active nil)
+      (message "Mark killed"))
+    (setq my-keyboard-quit-lasttime tm)))
+(advice-add 'keyboard-quit :before #'my-keyboard-quit-clear-mark)
+
+;; --- シンボルハイライト & 一括 rename(symbol-overlay)---
+;; 旧 auto-highlight-symbol(未保守・~2015 停止)の現代後継。
+;; prog-mode で同一シンボルを自動ハイライトし、移動/一括 rename も可。
+(use-package symbol-overlay
+  :hook (prog-mode . symbol-overlay-mode)
+  :bind (("M-i"  . symbol-overlay-put)
+         ("M-n"  . symbol-overlay-jump-next)
+         ("M-p"  . symbol-overlay-jump-prev)
+         ("<f7>" . symbol-overlay-rename)
+         ("<f8>" . symbol-overlay-remove-all)))
+
+
+;;; ============================================================
 ;;;  未移植: カスタム関数依存
 ;;;  (旧 inits/50-window.el, 50-edit.el, 50-edit-helper.el,
 ;;;   50-view-mode.el を移植したらコメントを外す)
@@ -530,27 +633,10 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 ;; (global-set-key [?\C-,] 'my-grub-buffer)
 ;; (global-set-key [?\C-.] 'my-bury-buffer)
 
-;; --- 50-edit.el ---
-;; (global-set-key "\C-a" 'intelli-home-2) ;; based on intelli-home
-;; (global-set-key "\C-w" 'kill-region-or-backward-kill-word)
-;; (define-key minibuffer-local-completion-map "\C-w" 'kill-region-or-backward-kill-word)
-
-;; --- 50-edit-helper.el: Quote region (quote-region-by) ---
-;; (global-set-key "\C-c\"" 'quote-region-by)
-;; (global-set-key "\C-c'"  'quote-region-by)
-;; (global-set-key "\C-c`"  'quote-region-by)
-;; (global-set-key "\C-c/"  'quote-region-by)
-;; (global-set-key "\C-c!"  'quote-region-by)
-;; (global-set-key "\C-c|"  'quote-region-by)
-;; (global-set-key "\C-c%"  'quote-region-by)
-;; (global-set-key "\C-c("  'quote-region-by)
-;; (global-set-key "\C-c{"  'quote-region-by)
-;; (global-set-key "\C-c["  'quote-region-by)
-;; (global-set-key "\C-c<"  'quote-region-by)
-;; (global-set-key "\C-c)"  'quote-region-by)
-;; (global-set-key "\C-c}"  'quote-region-by)
-;; (global-set-key "\C-c]"  'quote-region-by)
-;; (global-set-key "\C-c>"  'quote-region-by)
+;; --- 50-edit.el / 50-edit-helper.el ---
+;; intelli-home-2(C-a)/ kill-region-or-backward-kill-word(C-w)/
+;; quote-region-by(C-c 記号 ×15)/ 二度押し C-g マーク解除 は上記
+;; 「編集支援」セクションへ移植済み。
 
 ;; --- 50-view-mode.el: view-mode の pager 風キーマップ ---
 ;; define-many-keys / pager-keybind / view-mode-hook0 はカスタム定義。
@@ -572,8 +658,10 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 ;; (define-key global-map [f6] 'point-redo)
 
 ;; --- yank-pop-summary(旧 auto-install)---
-;; (global-set-key "\M-y"    'yank-pop-forward)
-;; (global-set-key "\C-\M-y" 'yank-pop-backward)
+;; 不採用。組み込み yank-from-kill-ring(M-y)へ「編集支援」で移植済み。
+
+;; --- auto-highlight-symbol ---
+;; 不採用。現代後継 symbol-overlay を「編集支援」で use-package 移植済み。
 
 ;; --- ddskk ---
 ;; (global-set-key "\C-x\C-j" 'skk-mode) ;; overwrite dired-x keybind
@@ -593,6 +681,7 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 ;; (define-key undo-tree-map (kbd "\C-_") 'undefined)
 
 ;; --- key-chord(2つのキー同時押し)---
+;; 編集支援バッチでは据え置き(低優先・任意)。導入時にコメント解除。
 ;; (when (require 'key-chord nil t)
 ;;   (setq key-chord-two-keys-delay 0.1)
 ;;   (key-chord-mode 1)

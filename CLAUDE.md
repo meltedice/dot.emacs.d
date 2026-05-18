@@ -109,16 +109,17 @@
 - [x] 基本 UX(ツールバー非表示、起動画面抑止、`yes/no`→`y/n`、削除→ゴミ箱、ベルは画面フラッシュ、タイトルバー書式、関数名/行桁番号のモードライン表示、インデント既定)
 
 ### 編集支援
-- [ ] 賢い行頭移動 `intelli-home-2`(C-a)
-- [ ] リージョン囲み `quote-region-by`(各種記号で選択範囲を囲む)
-- [ ] `kill-region-or-backward-kill-word`(C-w: 選択時は kill、無選択時は単語削除)
-- [ ] 二度押し C-g でマーク解除
-- [ ] 行折り返しトグル、UTF-8 コメント挿入
+- [x] 賢い行頭移動 — **移植済み**。自作 `my-smart-home`(C-a、旧 `intelli-home-2` 忠実: 行頭以外→行頭 / 行頭→最初の非空白)。組み込み API のみ・パッケージ非依存
+- [x] リージョン囲み `quote-region-by` — **移植済み**(旧忠実・C-c 記号 ×15)。代替として組み込み `electric-pair-mode` をコメント併記(未有効化、ユーザー選択は忠実移植)
+- [x] `kill-region-or-backward-kill-word`(C-w: 選択時 kill / 無選択時 単語削除) — **移植済み**(旧忠実・`mark-active` 判定、`transient-mark-mode nil` 維持と整合。minibuffer-local-completion-map にも割当)
+- [x] 二度押し C-g でマーク解除 — **移植済み**。旧非推奨 `defadvice` を `advice-add :before` で現代化(閾値 0.3 秒踏襲)
+- [x] 行折り返しトグル — **移植済み**。組み込み `toggle-truncate-lines` を `C-c $` に割当(旧自作 walk-windows ラッパは組み込みを shadow するため不採用)。折返し表示は `visual-line-mode` をコメント案内
+- [-] UTF-8 コメント挿入(`-*- coding: utf-8 -*-`) — **移植しない**(obsolete: Emacs 30 既定 UTF-8、coding cookie は不要な場面が大半)
 - [x] `kill-whole-line` — 行頭 C-k で行末+改行を kill(`(setq kill-whole-line t)`、組み込み)で**移植済み**
-- [ ] キルリング閲覧 `yank-pop-summary`(M-y / C-M-y) — パッケージ依存
-- [ ] シンボルハイライト & 一括リネーム(auto-highlight-symbol) — パッケージ依存
-- [ ] スニペット展開(yasnippet) — パッケージ依存
-- [ ] キーコード同時押し(key-chord: `jk` で view-mode) — パッケージ依存
+- [x] キルリング閲覧 — **移植済み**。組み込み `yank-from-kill-ring`(Emacs 28+、M-y)。旧 `yank-pop-summary`(未保守・MELPA 不在)は不採用
+- [x] シンボルハイライト & 一括リネーム — **移植済み**。`use-package symbol-overlay`(旧 `auto-highlight-symbol` 未保守の現代後継)。`prog-mode` で自動ハイライト、`M-i`/`M-n`/`M-p`/`F7`(rename)/`F8`。`elpa/` へ vendoring
+- [-] スニペット展開(yasnippet) — **移植しない**(ユーザー判断)。将来必要なら `yasnippet`(+`yasnippet-snippets`)または軽量 `tempel` を再検討
+- [ ] キーコード同時押し(key-chord: `jk` で view-mode) — パッケージ依存。**本バッチでは据え置き**(低優先・任意。導入時 placeholder 解除)
 
 ### Undo / 履歴
 - [x] `redo+`(リドゥ、C-M-/) — **組み込み `undo-redo`(Emacs 28+)で代替移植済み**。未保守 EmacsWiki の redo+ は不採用。キーは旧踏襲の `C-M-/`。旧 `undo-limit`/`undo-strong-limit`/`undo-no-redo` は組み込み変数としてコメントで残置(既定のまま、必要時に有効化)
@@ -202,8 +203,11 @@
 | キー | 機能 | 依存 |
 |---|---|---|
 | `C-h` | backspace(help は `C-c h`) | 組み込み |
-| `C-a` | `intelli-home-2`(賢い行頭) | カスタム |
-| `C-w` | 選択時 kill / 無選択時 単語削除 | カスタム |
+| `C-a` | `my-smart-home`(賢い行頭・移植済み) | カスタム |
+| `C-w` | 選択時 kill / 無選択時 単語削除(移植済み) | カスタム |
+| `C-c $` | 行折り返しトグル `toggle-truncate-lines`(移植済み) | 組み込み |
+| `M-i` / `F7` / `F8` | symbol-overlay put / rename / remove-all(移植済み) | symbol-overlay |
+| `jk`(同時押し) | view-mode(key-chord、本バッチ据え置き) | key-chord |
 | `C-,` / `C-.` | バッファ前後切替 | カスタム |
 | `M-o` | `other-window-or-split` | カスタム |
 | `C-tab` | `other-window-or-split` | カスタム |
@@ -211,8 +215,8 @@
 | `C-^` / `C-x C-^` | ウィンドウ自動拡大 / 方向トグル | カスタム |
 | `C-M-/` | undo-redo(移植済み。旧 redo+ の組み込み代替) | 組み込み |
 | `F5` / `F6` | point-undo 見送り → 組み込み mark ring(`C-u C-SPC` 等)で代用 | 組み込み |
-| `M-y` / `C-M-y` | yank-pop 前後 | yank-pop-summary |
-| `C-c "` `'` `` ` `` `(` `[` … | リージョン囲み | カスタム |
+| `M-y` | `yank-from-kill-ring`(kill-ring 補完選択・移植済み) | 組み込み |
+| `C-c "` `'` `` ` `` `(` `[` … | リージョン囲み `quote-region-by`(移植済み) | カスタム |
 | `C-s` | swiper | ivy/swiper |
 | `C-c g` | **magit-status(移植済み)** | magit |
 | `C-c j/k` | counsel git-grep/ag(未移植。`C-c g` は magit に割当済みのため counsel 移植時は別キーへ) | counsel |
@@ -220,7 +224,6 @@
 | `C-t …` | ウィンドウ/moccur プレフィックス | カスタム/color-moccur |
 | `C-z …` | elscreen プレフィックス | elscreen |
 | `C-x C-j` | direx プロジェクトルート | direx |
-| `jk`(同時押し) | view-mode | key-chord |
 | `C-c a` | org-agenda | 組み込み(org) |
 | `C-c m` / `C-c p`(mac) | 最大化(mac-toggle-max-window、maximized)/ 透明度トグル(移植済み) | カスタム |
 
