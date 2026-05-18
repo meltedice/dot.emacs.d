@@ -445,6 +445,21 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
          ("C-c d" . magit-ediff-show-working-tree)
          ("C-c D" . magit-ediff-dwim)))
 
+;; git-modes(gitignore / gitconfig / gitattributes 3 点セット。Magit 系)
+;;   旧 init.el は (el-get-bundle gitignore-mode) のみ(設定なし)。
+;;   .gitignore 等を fundamental-mode でなく専用モードで開き、# コメント
+;;   や否定 ! を色付け。Git 動作には不要だが、稀に手編集するファイルほど
+;;   モード支援があると安心(ユーザー要望)。標準パターン(.gitignore /
+;;   .gitconfig / .gitattributes / .gitmodules / .git/config /
+;;   info/exclude 等)は git-modes の autoload が auto-mode-alist へ
+;;   自動登録。追加で .dockerignore など *ignore 系も gitignore-mode に。
+(use-package git-modes
+  :mode (("\\.dockerignore\\'"    . gitignore-mode)
+         ("\\.eslintignore\\'"    . gitignore-mode)
+         ("\\.prettierignore\\'"  . gitignore-mode)
+         ("\\.npmignore\\'"       . gitignore-mode)
+         ("\\.stylelintignore\\'" . gitignore-mode)))
+
 
 ;;; ============================================================
 ;;;  未移植: カスタム関数依存

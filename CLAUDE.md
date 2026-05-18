@@ -159,7 +159,7 @@
 ### Git / 差分
 - [x] `magit`(Git クライアント) — `use-package magit` で**移植済み**。旧 `inits/20-magit.el` は全行コメントアウトで実働設定なし(自作 ediff-magit-ediff / index.lock ハックは現代 magit 組み込みの magit-ediff に置換され不要)。キー: `C-c g`→magit-status(`C-x g`→goto-line は維持)、`C-c d`/`C-c D`→magit-ediff working-tree/dwim
 - [x] `ediff`(組み込み、旧 `inits/50-ediff.el`) — **移植済み**(左右分割 + plain ウィンドウ)。旧 DavidBoon cleanup スニペットは**移植しない**(現代 ediff が終了時にウィンドウ構成を自前復元、ユーザー確認済み)。旧 `custom-set-faces` の diff 配色 8 フェイスも**移植しない**(wheatgrass 既定配色を使用)
-- [ ] `gitignore-mode` — パッケージ依存
+- [x] `gitignore-mode` — **移植済み**。`git-modes` パッケージ(Magit 系、`gitignore-mode` / `gitconfig-mode` / `gitattributes-mode` 3 点)を `use-package` で導入。標準パターン(`.gitignore` / `.gitconfig` / `.gitattributes` / `.gitmodules` / `.git/config` / `info/exclude` 等)はパッケージ autoload が `auto-mode-alist` 自動登録。追加で `.dockerignore` / `.eslintignore` / `.prettierignore` / `.npmignore` / `.stylelintignore` も `gitignore-mode` に割当。旧 `(el-get-bundle gitignore-mode)` 相当 + 拡充
 
 ### 言語・メジャーモード(いずれもパッケージ依存、未移植)
 - [ ] **Go**: go-mode + go-autocomplete + go-eldoc、保存時 gofmt、godef-jump(M-.)
