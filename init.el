@@ -615,6 +615,88 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 
 
 ;;; ============================================================
+;;;  ファイル管理(dired)— 旧 inits/50-dired.el の組み込み完結分
+;;; ============================================================
+;; 旧構成のうち「組み込みで完結する」ものを移植。dired-subtree /
+;; dired-preview / treemacs 等のパッケージ系は別途(未着手)。
+;; 旧 defadvice・elscreen 依存は現代化(advice-add / 非依存化)。
+;;
+;; キーバインド一覧(本セクションで定義):
+;;   C-x C-j        : dired-jump            現ファイルの dir を dired で開く
+;;   C-x C-p        : find-file-at-point    カーソル位置のパス/URL を開く
+;;   dired 内 r     : wdired-change-to-wdired-mode  一括リネーム(C-x C-q も可)
+;;   dired 内 E     : dired-ediff-marked-files      マーク 2→ediff / 3→ediff3
+;;   dired 内 (     : dired-hide-details-mode       詳細列の表示トグル(組み込み既定)
+;;   dired 内 M-x dired-omit-mode は hook で自動 ON(.git/.svn/CVS 非表示)
+;;
+;; コンパイル時に dired 系シンボルを解決し byte-compile 警告を抑止
+;; (実行時の挙動は with-eval-after-load で従来どおり遅延)。
+(eval-when-compile
+  (require 'dired)
+  (require 'dired-x)
+  (require 'find-dired))
+(declare-function dired-get-marked-files "dired")
+(declare-function dired-omit-mode "dired-x")
+(declare-function wdired-change-to-wdired-mode "wdired")
+
+;; --- マーク 2/3 ファイルを ediff(旧 dired-ediff-marked-files)---
+;; 旧 active 版は elscreen 依存。elscreen 非依存の単純版を移植。
+;; defun はトップレベル(byte-compile 警告回避。dired-get-marked-files は
+;; 呼び出し時に dired がロード済みのため declare-function で宣言)。
+(defun dired-ediff-marked-files ()
+  "マークした 2 個を ediff、3 個を ediff3(旧 50-dired.el 簡易版)。"
+  (interactive)
+  (let ((fs (dired-get-marked-files)))
+    (cond ((= (length fs) 2)
+           (ediff-files (nth 0 fs) (nth 1 fs)))
+          ((= (length fs) 3)
+           (ediff3 (nth 0 fs) (nth 1 fs) (nth 2 fs)))
+          (t (user-error "ediff には 2 個または 3 個マークしてください")))))
+
+;; --- dired-x: 不要ファイル非表示(.git/.svn/CVS)+ wdired + ediff キー ---
+;; 旧 dired-omit-files-p は obsolete。マイナーモード dired-omit-mode を
+;; dired-mode-hook で有効化するのが現行作法(挙動は旧と同じ)。
+;; wdired は組み込み。dired の r は既定未割当のため衝突なし
+;; (標準の C-x C-q→wdired も併用可)。
+(with-eval-after-load 'dired
+  (require 'dired-x)
+  (setq dired-omit-files
+        (concat dired-omit-files "\\|^\\.git$\\|^\\.svn$\\|^CVS$"))
+  (add-hook 'dired-mode-hook #'dired-omit-mode)
+  (define-key dired-mode-map "r" #'wdired-change-to-wdired-mode)
+  (define-key dired-mode-map "E" #'dired-ediff-marked-files))
+
+;; --- 詳細表示トグル(旧 dired-details → 組み込み)---
+;; dired-details パッケージは不要。組み込み dired-hide-details-mode が
+;; 完全代替で、既定どおり詳細表示・( でトグル(旧 initially-hide nil 相当)。
+;; 追加設定なし(自動で隠したくなったら dired-mode-hook に
+;;  #'dired-hide-details-mode を足す)。
+
+;; --- C-x C-j: dired-jump(旧 direx-project の組み込み代替)---
+;; dired-x の dired-jump。現ファイルのディレクトリを dired で開く。
+;; 旧 direx(未保守)は不採用。常駐ツリーが要れば将来 treemacs/
+;; dired-sidebar を別途検討。
+(global-set-key (kbd "C-x C-j") #'dired-jump)
+
+;; --- find-dired 系のバッファ名ユニーク化(旧 defadvice→advice-add)---
+;; 複数回実行時の単一バッファ上書きを防ぐ。dir/引数 を名前に含める。
+(advice-add 'find-dired :after
+            (lambda (dir args &rest _)
+              (rename-buffer (format "*Find* <%s %s>" dir args) t)))
+(advice-add 'find-name-dired :after
+            (lambda (dir pattern &rest _)
+              (rename-buffer (format "*FindName* <%s %s>" dir pattern) t)))
+(advice-add 'find-grep-dired :after
+            (lambda (dir regexp &rest _)
+              (rename-buffer (format "*FindGrep* <%s %s>" dir regexp) t)))
+
+;; --- ファイル名/URL を文脈で開く(ffap、軽量採用)---
+;; 旧 (ffap-bindings) は C-x C-f 系を全置換するが、誤爆回避のため
+;; 別キー C-x C-p に find-file-at-point のみ割当(ユーザー選択)。
+(global-set-key (kbd "C-x C-p") #'find-file-at-point)
+
+
+;;; ============================================================
 ;;;  未移植: カスタム関数依存
 ;;;  (旧 inits/50-window.el, 50-edit.el, 50-edit-helper.el,
 ;;;   50-view-mode.el を移植したらコメントを外す)
@@ -705,27 +787,18 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 ;;; ============================================================
 
 ;; --- dired 関連(旧 50-dired.el)---
-;;   r            : wdired-change-to-wdired-mode            (組み込み wdired)
-;;   E            : elscreen-dired-ediff-marked-files       (elscreen)
+;; 組み込みで完結する分(dired-omit / wdired=r / ediff=E / dired-jump
+;; =C-x C-j / find-dired 名ユニーク化 / ffap=C-x C-p)は上記
+;; 「ファイル管理(dired)」セクションへ移植済み。以下はパッケージ系で未着手:
 ;;   i / <tab>    : dired-subtree-insert / -remove          (dired-subtree)
 ;;   C-x n n / ^  : dired-subtree-narrow / -up-dwim         (dired-subtree)
-;;   s S a A      : direx-grep:*                            (direx-grep)
-;;   K            : direx-k                                 (dired-k)
-;;   C-x C-j      : direx-project:jump-to-project-root-other-window (direx)
+;;   (preview)    : カーソル下ファイルの自動プレビュー       (dired-preview ※bf-mode 後継)
+;;   s S a A / K  : direx-grep:* / direx-k                  (direx ※未保守, 代替 treemacs 等)
 ;; (with-eval-after-load 'dired
-;;   (define-key dired-mode-map "r" 'wdired-change-to-wdired-mode)
-;;   (define-key dired-mode-map "E" 'elscreen-dired-ediff-marked-files)
 ;;   (define-key dired-mode-map (kbd "i") 'dired-subtree-insert)
 ;;   (define-key dired-mode-map (kbd "<tab>") 'dired-subtree-remove)
 ;;   (define-key dired-mode-map (kbd "C-x n n") 'dired-subtree-narrow)
 ;;   (define-key dired-mode-map (kbd "^") 'dired-subtree-up-dwim))
-;; (with-eval-after-load 'direx
-;;   (define-key direx:direx-mode-map (kbd "s") 'direx-grep:grep-item)
-;;   (define-key direx:direx-mode-map (kbd "S") 'direx-grep:grep-item-from-root)
-;;   (define-key direx:direx-mode-map (kbd "a") 'direx-grep:show-all-item-at-point)
-;;   (define-key direx:direx-mode-map (kbd "A") 'direx-grep:show-all-item)
-;;   (define-key direx:direx-mode-map (kbd "K") 'direx-k))
-;; (global-set-key "\C-x\C-j" 'direx-project:jump-to-project-root-other-window)
 
 ;; --- go-mode(旧 50-go.el)---
 ;; (with-eval-after-load 'go-mode

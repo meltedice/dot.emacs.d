@@ -137,16 +137,19 @@
 - [ ] `C-t` / `C-z` の独自プレフィックスキーマップ(`C-t` 定義のみ済、配下バインドは未)
 
 ### ファイル管理(dired 系)
-- [ ] dired-x(omit で .git/.svn 等を非表示)
-- [ ] `wdired`(dired 上で一括リネーム) — 組み込みだが dired モジュール一式として未移植
-- [ ] `dired-subtree` / `dired-details` / `dired-sort` / `dired+` — パッケージ依存
-- [ ] `bf-mode`(dired でファイル内容プレビュー) — パッケージ依存
-- [ ] ディレクトリツリー `direx` + `direx-grep` — パッケージ依存
-- [ ] `find-dired` 系のバッファ名をユニーク化
-- [ ] マーク 2/3 ファイルを ediff `dired-ediff-marked-files`
-- [ ] ファイルを名前で開く `ffap`(組み込み)
-- [ ] プロジェクト内検索 `find-file-in-project`(build/coverage/dist/node_modules 除外) — パッケージ依存
-- [-] `dired-k`(git 状態表示) — 旧設定で `.git/index.lock` 問題により無効化済み。移植しない
+- [x] dired-x(omit で .git/.svn/CVS 非表示) — **移植済み**。`with-eval-after-load 'dired` で `dired-omit-files` に追加、`dired-mode-hook` で `dired-omit-mode` 有効化(旧 obsolete な `dired-omit-files-p` を現行マイナーモードへ)
+- [x] `wdired`(dired 上で一括リネーム) — **移植済み**。組み込み wdired を `r` に割当(旧忠実、`C-x C-q` も併用可)
+- [x] マーク 2/3 ファイルを ediff `dired-ediff-marked-files` — **移植済み**。elscreen 非依存の単純版を自作 defun(トップレベル + `declare-function`)で `E` に割当
+- [x] `find-dired` 系のバッファ名をユニーク化 — **移植済み**。旧 `defadvice` ×3 を `advice-add :after` で現代化(find-dired / find-name-dired / find-grep-dired)
+- [x] ファイルを名前で開く `ffap`(組み込み) — **移植済み**(軽量採用)。`(ffap-bindings)` 全置換は誤爆回避で不採用、`find-file-at-point` を `C-x C-p` に割当(ユーザー選択)
+- [x] `C-x C-j` — **移植済み**。旧 `direx-project`(未保守)の組み込み代替として dired-x の `dired-jump` を割当
+- [-] `dired-details` — **不採用**。組み込み `dired-hide-details-mode`(既定 `(` トグル・詳細表示)が完全代替のため設定追加なし(旧 initially-hide nil 相当)
+- [ ] `dired-subtree`(`i`/`<tab>`/`C-x n n`/`^`)— パッケージ依存・**未着手**(組み込み代替なし。dired-hacks 系)
+- [ ] `bf-mode`(dired でファイル内容プレビュー) — **未着手**。現代後継 `dired-preview`(GNU ELPA・保守継続)で置換予定
+- [ ] ディレクトリツリー `direx` + `direx-grep` — **未着手**。direx は未保守。常駐ツリーは将来 `treemacs` / `dired-sidebar` を検討
+- [ ] プロジェクト内検索 `find-file-in-project` — **未着手**。現代標準の組み込み `project-find-file`(`C-x p f`、`.gitignore` 自動尊重)で代替予定
+- [-] `dired-sort` / `dired+` — **不採用**。ソートは組み込み `s`/`C-u s` で足りる(簡便化は将来 `dired-quick-sort` 任意)。dired+ は EmacsWiki 由来・重厚で現代 dired が機能吸収
+- [-] `dired-k`(git 状態表示) — 旧設定で `.git/index.lock` 問題により無効化済み。移植しない(git 状態が要れば将来 `diff-hl-dired`)
 
 ### 検索・grep・補完 UI
 - [ ] `color-moccur` + `moccur-edit`(横断検索 → 結果を直接編集、除外マスク多数) — パッケージ依存
@@ -223,7 +226,9 @@
 | `C-c d` / `C-c D` | magit-ediff working-tree / dwim(移植済み) | magit |
 | `C-t …` | ウィンドウ/moccur プレフィックス | カスタム/color-moccur |
 | `C-z …` | elscreen プレフィックス | elscreen |
-| `C-x C-j` | direx プロジェクトルート | direx |
+| `C-x C-j` | `dired-jump`(移植済み。旧 direx の組み込み代替) | 組み込み(dired-x) |
+| `C-x C-p` | `find-file-at-point`(移植済み・ffap 軽量採用) | 組み込み |
+| dired `r` / `E` | wdired 一括リネーム / マーク 2-3 を ediff(移植済み) | 組み込み/カスタム |
 | `C-c a` | org-agenda | 組み込み(org) |
 | `C-c m` / `C-c p`(mac) | 最大化(mac-toggle-max-window、maximized)/ 透明度トグル(移植済み) | カスタム |
 
