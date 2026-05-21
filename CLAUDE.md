@@ -144,10 +144,10 @@
 - [x] ファイルを名前で開く `ffap`(組み込み) — **移植済み**(軽量採用)。`(ffap-bindings)` 全置換は誤爆回避で不採用、`find-file-at-point` を `C-x C-p` に割当(ユーザー選択)
 - [x] `C-x C-j` — **移植済み**。旧 `direx-project`(未保守)の組み込み代替として dired-x の `dired-jump` を割当
 - [-] `dired-details` — **不採用**。組み込み `dired-hide-details-mode`(既定 `(` トグル・詳細表示)が完全代替のため設定追加なし(旧 initially-hide nil 相当)
-- [ ] `dired-subtree`(`i`/`<tab>`/`C-x n n`/`^`)— パッケージ依存・**未着手**(組み込み代替なし。dired-hacks 系)
-- [ ] `bf-mode`(dired でファイル内容プレビュー) — **未着手**。現代後継 `dired-preview`(GNU ELPA・保守継続)で置換予定
-- [ ] ディレクトリツリー `direx` + `direx-grep` — **未着手**。direx は未保守。常駐ツリーは将来 `treemacs` / `dired-sidebar` を検討
-- [ ] プロジェクト内検索 `find-file-in-project` — **未着手**。現代標準の組み込み `project-find-file`(`C-x p f`、`.gitignore` 自動尊重)で代替予定
+- [x] `dired-subtree`(サブディレクトリのインライン展開) — **移植済み**。`use-package dired-subtree`(MELPA、依存 `dired-hacks-utils` 自動導入)。キーは新方針で整理: dired 内 `<tab>` = `dired-subtree-toggle`(insert と remove の統合)/ `<backtab>`(S-TAB) = `dired-subtree-cycle`(全段サイクル)。旧 `i` は組み込み `dired-maybe-insert-subdir` を温存。その他コマンド(narrow / up-dwim / mark-subtree 等)は M-x から
+- [x] `bf-mode` → `dired-preview` で**代替移植済み**。`use-package dired-preview`(GNU ELPA・Protesilaos Stavrou 保守)。`dired-mode-hook` で `dired-preview-mode` を ON、カーソル移動に追従して右ペインに自動プレビュー。表示遅延は `dired-preview-delay`(既定 0.7s)、全バッファ常時 ON が要れば `dired-preview-global-mode` へ
+- [x] `direx` + `direx-grep` → `dired-sidebar` で**代替移植済み**。`use-package dired-sidebar`(MELPA、内部で `dired-subtree` を利用)。`C-x C-n` で開閉トグル(組み込み既定 `set-goal-column` を shadow、ユーザー選択)。サイドバーは通常 dired のため既移植の dired-x omit / wdired=r / ediff=E / dired-subtree=`<tab>` がそのまま使える。テーマは `ascii`(`icons`/`nerd`/`vscode-icons` は all-the-icons 等の別パッケージが前提のため不採用)。`direx-grep` 相当は組み込み `project-find-regexp`(`C-x p g`)で代替
+- [x] プロジェクト内検索 `find-file-in-project` → 組み込み `project.el`(`C-x p f`)で**代替移植済み**。Emacs 28+ 同梱の `project-find-file` がカレント VCS ルートを自動判定し `.gitignore` を尊重(設定不要、autoload 済み)。あわせて `C-x p g`(project-find-regexp)/ `C-x p r`(project-query-replace-regexp)/ `C-x p p`(switch-project)等の標準キーが利用可能
 - [-] `dired-sort` / `dired+` — **不採用**。ソートは組み込み `s`/`C-u s` で足りる(簡便化は将来 `dired-quick-sort` 任意)。dired+ は EmacsWiki 由来・重厚で現代 dired が機能吸収
 - [-] `dired-k`(git 状態表示) — 旧設定で `.git/index.lock` 問題により無効化済み。移植しない(git 状態が要れば将来 `diff-hl-dired`)
 
@@ -228,6 +228,9 @@
 | `C-z …` | elscreen プレフィックス | elscreen |
 | `C-x C-j` | `dired-jump`(移植済み。旧 direx の組み込み代替) | 組み込み(dired-x) |
 | `C-x C-p` | `find-file-at-point`(移植済み・ffap 軽量採用) | 組み込み |
+| `C-x C-n` | `dired-sidebar-toggle-sidebar`(移植済み。旧 direx 常駐ツリーの代替。`set-goal-column` を shadow) | dired-sidebar |
+| `C-x p f` 等 | 組み込み project.el(`f` find-file / `g` find-regexp / `r` query-replace / `p` switch / `d` find-dir 他、`C-x p` プレフィックス) | 組み込み |
+| dired `<tab>` / `<backtab>` | `dired-subtree-toggle` / `dired-subtree-cycle`(移植済み) | dired-subtree |
 | dired `r` / `E` | wdired 一括リネーム / マーク 2-3 を ediff(移植済み) | 組み込み/カスタム |
 | `C-c a` | org-agenda | 組み込み(org) |
 | `C-c m` / `C-c p`(mac) | 最大化(mac-toggle-max-window、maximized)/ 透明度トグル(移植済み) | カスタム |

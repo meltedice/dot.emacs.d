@@ -697,6 +697,77 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 
 
 ;;; ============================================================
+;;;  ファイル管理(dired)拡張: パッケージ
+;;;  (旧 dired-subtree / bf-mode / direx 系の代替・後継)
+;;; ============================================================
+
+;; --- dired-subtree: dired 上でサブディレクトリをツリー展開 ---
+;; 旧 inits/50-dired.el の `i`(insert)/ `<tab>`(remove)/ `C-x n n`
+;; (narrow)/ `^`(up-dwim)を踏襲しつつ、新方針(ユーザー選択)で
+;;   <tab>       : 展開/折りたたみのトグル(insert と remove の統合)
+;;   <backtab>   : ツリー全段を順にサイクル(全展開→部分→全折)
+;; に整理。`i` は組み込み `dired-maybe-insert-subdir' を温存する。
+;; その他コマンド(narrow / up-dwim / mark-subtree 等)は M-x から。
+(use-package dired-subtree
+  :after dired
+  :bind (:map dired-mode-map
+              ("<tab>"     . dired-subtree-toggle)
+              ("<backtab>" . dired-subtree-cycle)))
+
+;; --- dired-sidebar: dired をサイドバー化(旧 direx 常駐ツリーの代替)---
+;; direx(未保守)の常駐ディレクトリツリーの後継。dired-sidebar は内部で
+;; 通常の dired バッファを使うため、本設定で既に整えた dired 機能
+;; (dired-x omit / wdired=r / ediff=E / dired-subtree=<tab> 等)がその
+;; ままサイドバーでも使える。`C-x C-n` で開閉トグル(組み込み既定の
+;; `set-goal-column' を shadow する、ユーザー選択)。
+;;
+;; テーマは `ascii' を選択(icons/nerd/vscode-icons は all-the-icons 等の
+;; 別パッケージ + フォント導入が前提。導入したら theme を変更可能)。
+(use-package dired-sidebar
+  :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
+  :commands (dired-sidebar-toggle-sidebar)
+  :custom
+  (dired-sidebar-theme 'ascii)
+  (dired-sidebar-use-custom-font nil))
+
+;; --- dired-preview: dired でカーソル下ファイルを自動プレビュー ---
+;; 旧 bf-mode(未保守 / 入手困難)の現代後継。GNU ELPA、保守継続
+;; (Protesilaos Stavrou)。dired バッファに入ると `dired-preview-mode'
+;; が ON になり、カーソル移動に追従して右ペインに中身を表示する。
+;; 表示までの遅延 `dired-preview-delay'(既定 0.7s)、無効化したい
+;; 拡張子 `dired-preview-ignored-extensions-regexp' などをカスタマイズ可。
+;; 全バッファで常時 ON にしたい場合は `dired-preview-global-mode' に
+;; 切り替える。
+(use-package dired-preview
+  :hook (dired-mode . dired-preview-mode))
+
+
+;;; ============================================================
+;;;  プロジェクト管理(組み込み project.el / Emacs 28+)
+;;; ============================================================
+;; 旧 find-file-in-project(外部パッケージ)の代替。Emacs 28+ 同梱の
+;; project.el が「カレントプロジェクト(VCS ルートで自動判定)内の
+;; ファイル一覧」をネイティブに提供し、`.gitignore' を自動尊重する。
+;;
+;; 主なキー(`C-x p' プレフィックス、組み込み既定):
+;;   C-x p f : project-find-file       ; プロジェクト内ファイル検索(旧 find-file-in-project 相当)
+;;   C-x p p : project-switch-project  ; プロジェクト切替
+;;   C-x p d : project-find-dir
+;;   C-x p g : project-find-regexp     ; プロジェクト内 grep
+;;   C-x p r : project-query-replace-regexp
+;;   C-x p s : project-shell
+;;   C-x p e : project-eshell
+;;   C-x p ! : project-shell-command
+;;   C-x p k : project-kill-buffers
+;;   C-x p b : project-switch-to-buffer
+;;
+;; project.el は autoload 済みのため、ここでは追加設定なしで利用可能。
+;; プロジェクト判定の追加ヒント(.project ファイル等)を入れたい場合は
+;; `project-vc-extra-root-markers' を設定する(現状は VCS 判定のみで十分)。
+;; (setq project-vc-extra-root-markers '(".project" "package.json"))
+
+
+;;; ============================================================
 ;;;  未移植: カスタム関数依存
 ;;;  (旧 inits/50-window.el, 50-edit.el, 50-edit-helper.el,
 ;;;   50-view-mode.el を移植したらコメントを外す)
@@ -787,18 +858,9 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 ;;; ============================================================
 
 ;; --- dired 関連(旧 50-dired.el)---
-;; 組み込みで完結する分(dired-omit / wdired=r / ediff=E / dired-jump
-;; =C-x C-j / find-dired 名ユニーク化 / ffap=C-x C-p)は上記
-;; 「ファイル管理(dired)」セクションへ移植済み。以下はパッケージ系で未着手:
-;;   i / <tab>    : dired-subtree-insert / -remove          (dired-subtree)
-;;   C-x n n / ^  : dired-subtree-narrow / -up-dwim         (dired-subtree)
-;;   (preview)    : カーソル下ファイルの自動プレビュー       (dired-preview ※bf-mode 後継)
-;;   s S a A / K  : direx-grep:* / direx-k                  (direx ※未保守, 代替 treemacs 等)
-;; (with-eval-after-load 'dired
-;;   (define-key dired-mode-map (kbd "i") 'dired-subtree-insert)
-;;   (define-key dired-mode-map (kbd "<tab>") 'dired-subtree-remove)
-;;   (define-key dired-mode-map (kbd "C-x n n") 'dired-subtree-narrow)
-;;   (define-key dired-mode-map (kbd "^") 'dired-subtree-up-dwim))
+;; すべて上記「ファイル管理(dired)」/「ファイル管理(dired)拡張: パッケージ」
+;; セクションへ移植済み(組み込み分 + dired-subtree / dired-sidebar /
+;; dired-preview)。direx(未保守)は dired-sidebar で代替済み。
 
 ;; --- go-mode(旧 50-go.el)---
 ;; (with-eval-after-load 'go-mode
