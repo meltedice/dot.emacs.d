@@ -119,7 +119,7 @@
 - [x] キルリング閲覧 — **移植済み**。組み込み `yank-from-kill-ring`(Emacs 28+、M-y)。旧 `yank-pop-summary`(未保守・MELPA 不在)は不採用
 - [x] シンボルハイライト & 一括リネーム — **移植済み**。`use-package symbol-overlay`(旧 `auto-highlight-symbol` 未保守の現代後継)。`prog-mode` で自動ハイライト、`M-i`/`M-n`/`M-p`/`F7`(rename)/`F8`。`elpa/` へ vendoring
 - [-] スニペット展開(yasnippet) — **移植しない**(ユーザー判断)。将来必要なら `yasnippet`(+`yasnippet-snippets`)または軽量 `tempel` を再検討
-- [ ] キーコード同時押し(key-chord: `jk` で view-mode) — パッケージ依存。**本バッチでは据え置き**(低優先・任意。導入時 placeholder 解除)
+- [x] キーコード同時押し(key-chord: `jk` で view-mode) — **移植済み**。`use-package key-chord`(MELPA、2025 更新で保守継続。chord の組み込み代替なし)。`key-chord-two-keys-delay` 0.1、`jk` 同時押しで `view-mode` トグル(旧 `20-key-chord.el` 忠実)。旧 `(require 'key-chord nil t)` は use-package 化。`elpa/` へ vendoring
 
 ### Undo / 履歴
 - [x] `redo+`(リドゥ、C-M-/) — **組み込み `undo-redo`(Emacs 28+)で代替移植済み**。未保守 EmacsWiki の redo+ は不採用。キーは旧踏襲の `C-M-/`。旧 `undo-limit`/`undo-strong-limit`/`undo-no-redo` は組み込み変数としてコメントで残置(既定のまま、必要時に有効化)
@@ -133,7 +133,7 @@
 - [ ] 縦横分割トグル `window-toggle-division`、`other-window-or-split`(C-tab)
 - [ ] 自動方向ウィンドウ拡大 `enlarge-window-auto`(C-^)
 - [-] 画面タブ管理 `elscreen` — 未メンテでパッケージ不採用。組み込み `tab-bar-mode` + `tab-bar-history-mode`(C-z プレフィックス踏襲)で**代替移植済み**
-- [ ] ページャ `view-mode` 拡張(vi 風キーバインド、読取専用ファイルを自動 view、書込不可なら view を抜けない)
+- [x] ページャ `view-mode` 拡張(旧 `inits/50-view-mode.el`) — **取捨選択して移植済み**。調査の結果、旧 4 機能のうち現代でも妥当なものだけ採用(ユーザー選択)。**採用**: ① `view-read-only t`(読取専用/書込不可ファイルを開くと自動 `view-mode`。実機検証で chmod 444 が `view-mode` 自動 ON を確認)、② 最小 vi サブセット(`view-mode-map` に `h`/`j`/`k`/`l`=文字移動・`J`/`K`=`scroll-up-line`/`scroll-down-line`。`e`(View-exit)・`n`/`p`(検索反復)等の有用な既定は温存)。**不採用**: 「書込不可ファイルを view で開く」`find-file` advice(①が兼ねるため冗長)、「書込不可なら view を抜けない」advice(`buffer-read-only` で保護済み・obsolete 関数依存)、自作 vi 風 `pager-keybind` ×24(忠実移植不能 — `point-undo`=採用見送り / `bm`=未移植 / `win-delete-current-window-and-squeeze`=旧設定にも定義なし に依存、かつ現代既定を破壊)
 - [ ] `C-t` / `C-z` の独自プレフィックスキーマップ(`C-t` 定義のみ済、配下バインドは未)
 
 ### ファイル管理(dired 系)
@@ -210,7 +210,8 @@
 | `C-w` | 選択時 kill / 無選択時 単語削除(移植済み) | カスタム |
 | `C-c $` | 行折り返しトグル `toggle-truncate-lines`(移植済み) | 組み込み |
 | `M-i` / `F7` / `F8` | symbol-overlay put / rename / remove-all(移植済み) | symbol-overlay |
-| `jk`(同時押し) | view-mode(key-chord、本バッチ据え置き) | key-chord |
+| `jk`(同時押し) | `view-mode` トグル(移植済み) | key-chord |
+| view 内 `h`/`j`/`k`/`l` / `J`/`K` | 最小 vi カーソル移動 / 1 行スクロール(移植済み) | 組み込み(view) |
 | `C-,` / `C-.` | `previous-buffer` / `next-buffer`(移植済み。特殊バッファは `switch-to-prev-buffer-skip-regexp` でスキップ) | 組み込み |
 | `M-o` | `other-window-or-split` | カスタム |
 | `C-tab` | `other-window-or-split` | カスタム |

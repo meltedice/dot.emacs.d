@@ -692,6 +692,51 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 
 
 ;;; ============================================================
+;;;  ビューモード(ページャ)— 旧 inits/50-view-mode.el / 20-key-chord.el
+;;; ============================================================
+;; 旧 50-view-mode.el は 4 機能の複合体。調査のうえ取捨選択した:
+;;   - view-read-only は現役 → 移植(下記 ①)。
+;;   - 「書込不可ファイルを view で開く」find-file advice は冗長 → 不採用。
+;;     view-read-only t だけで chmod 444 等が view-mode 自動 ON になる
+;;     ことを実機確認済み(旧 defadvice は現代では不要)。
+;;   - 「書込不可なら view を抜けない」advice → 不採用(ユーザー選択)。
+;;     view を抜けても buffer-read-only のままで編集は防がれる。
+;;   - 自作 vi 風 pager-keybind ×24 → 忠実移植は不能。依存先が
+;;     point-undo(本リビルドで採用見送り)/ bm(未移植)/
+;;     win-delete-current-window-and-squeeze(旧設定にも定義なし)で、
+;;     かつ現代 view-mode-map の有用な既定(e=View-exit, n/p=検索反復
+;;     ほか)を潰す。よって最小 vi サブセットのみ移植(ユーザー選択)。
+
+;; ① 書込不可・読取専用ファイルを開いたら view-mode を自動 ON。
+(setq view-read-only t)
+
+;; ② 最小 vi サブセットを view-mode-map に追加。現代 view-mode-map で
+;;    未割当のキーのみ使い、有用な既定は温存する。h のみ既定の
+;;    describe-mode を上書きするが(C-h m で代替可)、ページャの左移動
+;;    として vi 風に割当。旧 pager-keybind は h/l=単語移動だったが、
+;;    本来の vi に合わせ h/l=文字移動へ現代化。J/K の 1 行スクロールは
+;;    組み込みコマンド scroll-up-line / scroll-down-line を使用
+;;    (旧は無名 lambda)。
+(with-eval-after-load 'view
+  (define-key view-mode-map (kbd "h") #'backward-char)
+  (define-key view-mode-map (kbd "j") #'next-line)
+  (define-key view-mode-map (kbd "k") #'previous-line)
+  (define-key view-mode-map (kbd "l") #'forward-char)
+  (define-key view-mode-map (kbd "J") #'scroll-up-line)
+  (define-key view-mode-map (kbd "K") #'scroll-down-line))
+
+;; ③ key-chord: "jk" 同時押しで view-mode をトグル(旧 20-key-chord.el)。
+;;    chord の組み込み代替は無く、key-chord は MELPA で保守継続中
+;;    (2025 更新)のためそのまま採用。旧 (require 'key-chord nil t) は
+;;    use-package 化。
+(use-package key-chord
+  :config
+  (setq key-chord-two-keys-delay 0.1)
+  (key-chord-mode 1)
+  (key-chord-define-global "jk" #'view-mode))
+
+
+;;; ============================================================
 ;;;  ファイル管理(dired)— 旧 inits/50-dired.el の組み込み完結分
 ;;; ============================================================
 ;; 旧構成のうち「組み込みで完結する」ものを移植。dired-subtree /
@@ -867,10 +912,11 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 ;; quote-region-by(C-c 記号 ×15)/ 二度押し C-g マーク解除 は上記
 ;; 「編集支援」セクションへ移植済み。
 
-;; --- 50-view-mode.el: view-mode の pager 風キーマップ ---
-;; define-many-keys / pager-keybind / view-mode-hook0 はカスタム定義。
-;; (add-hook 'view-mode-hook 'view-mode-hook0)
-;; (define-key view-mode-map " " 'scroll-up)
+;; --- 50-view-mode.el ---
+;; 上記「ビューモード(ページャ)」セクションへ移植済み(view-read-only +
+;; 最小 vi サブセット)。旧 pager-keybind / define-many-keys /
+;; view-mode-hook0、および find-file / view-mode-exit への defadvice は
+;; 調査のうえ不採用(冗長・依存先未移植・現代既定の破壊)。
 
 
 ;;; ============================================================
@@ -910,11 +956,8 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 ;; (define-key undo-tree-map (kbd "\C-_") 'undefined)
 
 ;; --- key-chord(2つのキー同時押し)---
-;; 編集支援バッチでは据え置き(低優先・任意)。導入時にコメント解除。
-;; (when (require 'key-chord nil t)
-;;   (setq key-chord-two-keys-delay 0.1)
-;;   (key-chord-mode 1)
-;;   (key-chord-define-global "jk" 'view-mode))
+;; 上記「ビューモード(ページャ)」セクションへ use-package で移植済み
+;; (jk → view-mode)。
 
 ;; --- elscreen(廃止気味。参考)---
 ;; (global-set-key "\C-z\C-m" 'elscreen-moccur-grep-find)
