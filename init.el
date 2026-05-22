@@ -374,6 +374,37 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 
 
 ;;; ============================================================
+;;;  バッファ操作(旧 inits/50-window.el の一部)
+;;; ============================================================
+;; 高速バッファ切替 C-, / C-.。
+;; 旧 my-grub-buffer / my-bury-buffer は自作再帰 my-visible-buffer +
+;; 手書き無視リストで「特殊バッファを飛ばして次のバッファへ」を実現して
+;; いた。現在の Emacs はこの用途専用の組み込み next-buffer /
+;; previous-buffer を持ち、スキップ対象も変数で指定できる(実機検証で
+;; 旧挙動を再現できることを確認)。よって自作関数は移植せず組み込みへ。
+;;
+;;   - スペース始まりの内部バッファは next/previous-buffer が自動でスキップ
+;;     (旧 my-visible-buffer の (aref bufn 0) 判定が不要に)。
+;;   - 名前で飛ばしたい特殊バッファは switch-to-prev-buffer-skip-regexp に
+;;     完全一致アンカー付き正規表現で列挙(next/previous 双方に効く)。
+;;     旧 my-ignore-buffer-list 相当。廃れた Mew 用 "*Mew completions*"
+;;     は除外。*scratch* / *Messages* は旧リストにも無く巡回対象のまま。
+;;   - 順序はウィンドウ単位の履歴(各ウィンドウが前後を自前で記憶)。
+;;     旧のグローバル (buffer-list) 順とは異なるが、現代の標準挙動。
+;; 注意: C-, / C-. は端末(emacs -nw)では送出できない環境がある
+;;       (旧設定も同じキー・同条件)。
+(setq switch-to-prev-buffer-skip-regexp
+      '("\\`\\*Help\\*\\'"
+        "\\`\\*Compile-Log\\*\\'"
+        "\\`\\*Completions\\*\\'"
+        "\\`\\*Shell Command Output\\*\\'"
+        "\\`\\*Apropos\\*\\'"
+        "\\`\\*Buffer List\\*\\'"))
+(global-set-key (kbd "C-,") #'previous-buffer)  ; 旧 my-grub-buffer 相当(戻る)
+(global-set-key (kbd "C-.") #'next-buffer)      ; 旧 my-bury-buffer 相当(進む)
+
+
+;;; ============================================================
 ;;;  メジャーモード(use-package で移植)
 ;;; ============================================================
 
@@ -828,9 +859,8 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 ;; (global-set-key "\C-^"     'enlarge-window-auto)
 ;; (global-set-key "\C-t\C-t" 'window-toggle-division)
 ;; (global-set-key "\C-t\C-s" 'swap-screen)
-;; C-, と C-. で buffer をサクサク切り替える
-;; (global-set-key [?\C-,] 'my-grub-buffer)
-;; (global-set-key [?\C-.] 'my-bury-buffer)
+;; 高速バッファ切替 C-, / C-. は組み込み next/previous-buffer で
+;; 上記「バッファ操作」セクションへ移植済み。
 
 ;; --- 50-edit.el / 50-edit-helper.el ---
 ;; intelli-home-2(C-a)/ kill-region-or-backward-kill-word(C-w)/

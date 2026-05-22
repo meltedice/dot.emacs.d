@@ -129,7 +129,7 @@
 
 ### ウィンドウ・バッファ・画面
 - [ ] バッファ入替 `swap-screen` / `swap-screen-with-cursor`(F2 / S-F2)
-- [ ] 高速バッファ切替 `my-grub-buffer` / `my-bury-buffer`(C-, / C-.)
+- [x] 高速バッファ切替 `my-grub-buffer` / `my-bury-buffer`(C-, / C-.) — **組み込み `previous-buffer` / `next-buffer` で代替移植済み**。旧自作再帰 `my-visible-buffer` + 手書き `my-ignore-buffer-list` は、現代 Emacs のこの用途専用組み込み(`next-buffer`/`previous-buffer` + `switch-to-prev-buffer-skip-regexp`)で完全に置換可能なことを実機検証で確認(調査のうえ Option 1 をユーザー選択)。`C-,`→`previous-buffer`(戻る)/ `C-.`→`next-buffer`(進む)。スペース始まり内部バッファは組み込みが自動スキップ。`switch-to-prev-buffer-skip-regexp` に旧無視リスト相当(`*Help*`/`*Compile-Log*`/`*Completions*`/`*Shell Command Output*`/`*Apropos*`/`*Buffer List*`、完全一致アンカー付き)を設定。廃れた Mew 用 `*Mew completions*` は除外。`*scratch*`/`*Messages*` は旧リストにも無く巡回対象のまま。順序はウィンドウ単位履歴(旧グローバル順から現代標準へ)
 - [ ] 縦横分割トグル `window-toggle-division`、`other-window-or-split`(C-tab)
 - [ ] 自動方向ウィンドウ拡大 `enlarge-window-auto`(C-^)
 - [-] 画面タブ管理 `elscreen` — 未メンテでパッケージ不採用。組み込み `tab-bar-mode` + `tab-bar-history-mode`(C-z プレフィックス踏襲)で**代替移植済み**
@@ -211,7 +211,7 @@
 | `C-c $` | 行折り返しトグル `toggle-truncate-lines`(移植済み) | 組み込み |
 | `M-i` / `F7` / `F8` | symbol-overlay put / rename / remove-all(移植済み) | symbol-overlay |
 | `jk`(同時押し) | view-mode(key-chord、本バッチ据え置き) | key-chord |
-| `C-,` / `C-.` | バッファ前後切替 | カスタム |
+| `C-,` / `C-.` | `previous-buffer` / `next-buffer`(移植済み。特殊バッファは `switch-to-prev-buffer-skip-regexp` でスキップ) | 組み込み |
 | `M-o` | `other-window-or-split` | カスタム |
 | `C-tab` | `other-window-or-split` | カスタム |
 | `F2` / `S-F2` | バッファ入替 | カスタム |
