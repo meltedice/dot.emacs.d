@@ -195,7 +195,7 @@
 
 ### その他
 - [ ] `*scratch*` 永続化(Dropbox 優先で保存、kill 時クリアして再生成、起動時ロード)
-- [ ] autosave / backup / undohist のディレクトリ集約(`.autosave` / `.backup` / `.undohist`)
+- [x] autosave / backup / undohist のディレクトリ集約(`.autosave` / `.backup` / `.undohist`) — **移植済み**。Emacs が編集中に作る一時ファイルを `user-emacs-directory` 配下の専用ディレクトリへ集約: ① auto-save 本体 `#file#` → `.autosave/`(`auto-save-file-name-transforms`、UNIQUIFY t)、② auto-save 索引 `saves-PID-HOST` → `.autosave/`(`auto-save-list-file-prefix`)、③ バックアップ `file~` → `.backup/`(`backup-directory-alist`、対象は現代慣用の `"."`)、④ undo 履歴 → `.undohist/`(undohist、移植済み)。**旧 `50-autosave-backup.el` は ②③ のみ集約し ① は散らかしていた**ため、① も集約する方針(ユーザー選択)。出力先は起動時に `make-directory` で明示作成。3 ディレクトリは `.gitignore` 除外済み。バックアップ世代管理(`version-control`/`delete-old-versions`/`backup-by-copying`)は旧設定にも無く集約スコープ外(必要なら別途)
 - [ ] `simplenote2`(Simplenote とメモ同期、`~/.authinfo` 認証) — パッケージ依存
 - [ ] `tramp`(`/sudo:` `/ssh:`、root は ssh 経由 proxy) — 組み込み、未移植
 

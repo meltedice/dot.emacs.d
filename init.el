@@ -512,6 +512,52 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 
 
 ;;; ============================================================
+;;;  ファイルの自動保存・バックアップ(旧 inits/50-autosave-backup.el)
+;;; ============================================================
+;; Emacs が編集中に自動生成する一時ファイルを user-emacs-directory 配下の
+;; 専用ディレクトリへ集約し、編集対象のディレクトリに散らからないようにする。
+;;
+;;   ① auto-save 本体  #file#         -> .autosave/
+;;   ② auto-save 索引  saves-PID-HOST -> .autosave/   (recover-session 用)
+;;   ③ バックアップ    file~          -> .backup/
+;;   ④ undo 履歴       (undohist)     -> .undohist/   (上記「Undo / 履歴」で集約済み)
+;;
+;; 旧 50-autosave-backup.el は ② と ③ のみ集約し、① auto-save 本体は
+;; 散らばったままだった。本設定は ① も含めて集約する(ユーザー選択)。
+;; 出力先 3 つはいずれも .gitignore で除外済み。
+
+(defvar my-autosave-dir (locate-user-emacs-file ".autosave/")
+  "auto-save 関連ファイル(#file# 本体・saves 索引)の集約先。")
+(defvar my-backup-dir (locate-user-emacs-file ".backup/")
+  "バックアップファイル(file~)の集約先。")
+
+;; ディレクトリを用意。Emacs は #file# の出力先を自動作成しないため必須
+;; (backup-directory-alist 先は自動作成されるが、作法統一のため両方作る)。
+(dolist (d (list my-autosave-dir my-backup-dir))
+  (unless (file-directory-p d)
+    (make-directory d t)))
+
+;; ① auto-save 本体: 旧設定に無かった集約。末尾の t = UNIQUIFY、
+;;    元のフルパスをファイル名へ畳み込み、別ディレクトリの同名ファイル
+;;    どうしの衝突を防ぐ。
+(setq auto-save-file-name-transforms
+      `((".*" ,my-autosave-dir t)))
+
+;; ② auto-save リスト索引(M-x recover-session 用)。
+;;    旧は .autosave/PID-HOST、本設定は saves- 接頭辞付き(Emacs 既定流)。
+(setq auto-save-list-file-prefix (expand-file-name "saves-" my-autosave-dir))
+
+;; ③ バックアップ: make-backup-files は既定 t。旧は対象正規表現に
+;;    "\\.*$"(全ファイルに一致する変則表記)を使用 → 現代慣用の "."
+;;    に置換(意味は同じ「全ファイル」)。世代管理(version-control /
+;;    delete-old-versions / backup-by-copying 等)は旧設定にも無く、
+;;    今回の集約スコープ外(必要なら別途追加)。
+(setq make-backup-files t)
+(setq backup-directory-alist
+      (cons (cons "." my-backup-dir) backup-directory-alist))
+
+
+;;; ============================================================
 ;;;  編集支援(旧 inits/50-edit.el, 50-edit-helper.el の移植・取捨選択)
 ;;; ============================================================
 
