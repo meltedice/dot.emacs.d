@@ -230,6 +230,7 @@
 | `C-x C-p` | `find-file-at-point`(移植済み・ffap 軽量採用) | 組み込み |
 | `C-x C-n` | `dired-sidebar-toggle-sidebar`(移植済み。旧 direx 常駐ツリーの代替。`set-goal-column` を shadow) | dired-sidebar |
 | `C-x p f` 等 | 組み込み project.el(`f` find-file / `g` find-regexp / `r` query-replace / `p` switch / `d` find-dir 他、`C-x p` プレフィックス) | 組み込み |
+| `C-x x g` | `revert-buffer-quick`(バッファをディスクの内容で読み込み直す) | 組み込み |
 | dired `<tab>` / `<backtab>` | `dired-subtree-toggle` / `dired-subtree-cycle`(移植済み) | dired-subtree |
 | dired `r` / `E` | wdired 一括リネーム / マーク 2-3 を ediff(移植済み) | 組み込み/カスタム |
 | `C-c a` | org-agenda | 組み込み(org) |
