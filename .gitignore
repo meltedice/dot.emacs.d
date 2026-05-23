@@ -52,3 +52,6 @@ network-security.data
 
 # Claude Code: ローカル個人設定(マシン固有・絶対パスを含むため git 管理しない)
 /.claude/settings.local.json
+
+# 1Password CLI (op) のローカル作業ディレクトリ等
+/.op/
