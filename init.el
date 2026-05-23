@@ -890,6 +890,74 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 
 
 ;;; ============================================================
+;;;  検索 — migemo(ローマ字のまま日本語を検索)
+;;; ============================================================
+;; 旧 inits/cocoa-emacs-migemo.el の移植。ローマ字(ASCII)入力のまま
+;; 日本語(ひらがな/カタカナ/漢字)をインクリメンタル検索できる。
+;; 変換エンジンは外部の cmigemo(C 実装)。
+;;
+;; ── 新マシン setup: cmigemo の導入手順 ───────────────────────────
+;;   macOS (Apple Silicon / Intel 共通):
+;;     brew install cmigemo
+;;       → バイナリ: /opt/homebrew/bin/cmigemo (Intel は /usr/local/bin)
+;;       → 辞書:   /opt/homebrew/share/migemo/utf-8/migemo-dict
+;;                 (Intel は /usr/local/share/migemo/utf-8/migemo-dict)
+;;   Debian / Ubuntu:
+;;     sudo apt install cmigemo
+;;       → バイナリ: /usr/bin/cmigemo
+;;       → 辞書:   /usr/share/cmigemo/utf-8/migemo-dict
+;;   Windows:
+;;     KaoriYa 配布の C/Migemo を入手し PATH 追加。
+;;       https://www.kaoriya.net/software/cmigemo/
+;;     辞書の場所(例): C:\cmigemo-default-win64\dict\utf-8\migemo-dict
+;;     (旧 inits/windows-migemo.el は cp932 辞書を使っていたが、現代は
+;;      utf-8 推奨。本セクションは Windows 設定は同梱しない)
+;;   その他 (Arch / Nix / source build 等):
+;;     上流 https://github.com/koron/cmigemo を参照。
+;;
+;; 上記 4 つの代表的な辞書パスは my-migemo-dictionary が
+;; 実行時に先頭から順に file-exists-p し、見つかったものを採用する。
+;; cmigemo バイナリ or 辞書がどれも見つからないマシンでは
+;; use-package :if が偽となり migemo 関連は全体スキップされる。
+;; ─────────────────────────────────────────────────────────────────
+;;
+;; 方針(Option A): 検索 UI は刷新せず、組み込み isearch をローマ字対応に
+;; するのみ。migemo-init 後は通常の C-s / C-r がそのまま日本語にヒットし、
+;; 検索中 M-m で migemo の ON/OFF をトグルできる。swiper 等の補完系
+;; 検索 UI への移行(Option B)は CLAUDE.md「検索・grep・補完 UI」を参照。
+;;
+;; 移植上の現代化:
+;;   - 旧 init.el の (el-get-bundle migemo) → use-package + elpa/ vendoring。
+;;   - 旧 macOS 設定は辞書を /usr/local/...(Intel Homebrew)に固定して
+;;     いた。Apple Silicon は /opt/homebrew/...。別マシンへの移植性の
+;;     ため、実在する辞書を実行時に候補から選ぶ(ホーム絶対パス不使用)。
+;;   - cmigemo バイナリ or 辞書が無いマシンでは use-package :if で全体を
+;;     スキップ(旧 (migemo-init) 無条件呼び出しのエラーを回避)。
+(defvar my-migemo-dictionary
+  (seq-find #'file-exists-p
+            '("/opt/homebrew/share/migemo/utf-8/migemo-dict"  ; macOS Apple Silicon
+              "/usr/local/share/migemo/utf-8/migemo-dict"     ; macOS Intel
+              "/usr/share/cmigemo/utf-8/migemo-dict"          ; Linux 等
+              "/usr/share/migemo/utf-8/migemo-dict"))
+  "実在する cmigemo 辞書ファイルのパス。見つからなければ nil。")
+
+(declare-function migemo-init "migemo")  ; :config の migemo-init を byte-compile に既知化
+
+(use-package migemo
+  :if (and (executable-find "cmigemo") my-migemo-dictionary)
+  :demand t
+  :init
+  (setq migemo-command          "cmigemo"
+        migemo-options          '("-q" "--emacs")
+        migemo-dictionary       my-migemo-dictionary
+        migemo-user-dictionary  nil
+        migemo-regex-dictionary nil
+        migemo-coding-system    'utf-8)
+  :config
+  (migemo-init))
+
+
+;;; ============================================================
 ;;;  未移植: カスタム関数依存
 ;;;  (旧 inits/50-window.el, 50-edit.el, 50-edit-helper.el,
 ;;;   50-view-mode.el を移植したらコメントを外す)

@@ -154,11 +154,25 @@
 ### 検索・grep・補完 UI
 - [ ] `color-moccur` + `moccur-edit`(横断検索 → 結果を直接編集、除外マスク多数) — パッケージ依存
 - [ ] `ag.el` + `wgrep-ag`(ag 検索 → `r` で結果を一括編集) — パッケージ依存
-- [ ] `migemo`(ローマ字のまま日本語インクリメンタル検索、cmigemo) — パッケージ依存
+- [x] `migemo`(ローマ字のまま日本語インクリメンタル検索、cmigemo) — **移植済み(Option A)**。`use-package migemo`(MELPA `20250616`、保守継続)。調査の結果、この用途で migemo を置き換える定番ツールは現在も存在せず妥当と判断。検索 UI は刷新せず**組み込み `isearch` をローマ字対応にするのみ**(`migemo-init` 後は通常の `C-s`/`C-r` が日本語にヒット、検索中 `M-m` で migemo トグル)。エンジンは外部 `cmigemo`(導入手順は下記ブロック参照)。旧 `cocoa-emacs-migemo.el` の現代化: 旧 `(el-get-bundle migemo)`→use-package + `elpa/` vendoring、辞書パスは旧 Intel 固定 `/usr/local/...` から実行時候補選択(Apple Silicon `/opt/homebrew/...` 等、ホーム絶対パス不使用)、cmigemo/辞書が無いマシンは `use-package :if` で全体スキップ
+
+> **新マシン setup: cmigemo(変換エンジン)のインストール** — `migemo` パッケージ本体は `elpa/` に vendoring 済みのため不要。外部の `cmigemo` バイナリと辞書ファイルだけプラットフォーム別に導入する。
+> - **macOS(Apple Silicon / Intel 共通)**: `brew install cmigemo`
+>   - バイナリ: `/opt/homebrew/bin/cmigemo`(Intel は `/usr/local/bin/cmigemo`)
+>   - 辞書:   `/opt/homebrew/share/migemo/utf-8/migemo-dict`(Intel は `/usr/local/share/migemo/utf-8/migemo-dict`)
+> - **Debian / Ubuntu**: `sudo apt install cmigemo`
+>   - バイナリ: `/usr/bin/cmigemo` / 辞書: `/usr/share/cmigemo/utf-8/migemo-dict`
+> - **Windows**: [KaoriYa 配布版](https://www.kaoriya.net/software/cmigemo/) の ZIP を入手し展開先(例 `C:\cmigemo-default-win64`)を PATH に追加。辞書は `dict\utf-8\migemo-dict`。**本設定は Windows プラットフォーム別ファイルを同梱していない**(旧 `inits/windows-migemo.el` は移植せず)
+> - **Arch / Nix / source build 等**: 上流 <https://github.com/koron/cmigemo> 参照
+>
+> 上記 4 つの代表的辞書パスは init.el の `my-migemo-dictionary` が実行時に `file-exists-p` で順に探索して採用する。いずれも見つからないマシンでは `use-package :if` が偽となり migemo 関連は全体スキップされるため起動エラーにはならない。詳細は `init.el` の「検索 — migemo」セクションコメント参照。
+
 - [ ] `ivy` / `counsel` / `swiper`(補完 UI、C-s/C-c g/j/k 等) — パッケージ依存
 - [ ] `smex`(M-x 履歴) — パッケージ依存
 - [-] `ido` — 旧設定で関連コードはコメントアウト(無効)。移植しない
 - [-] `helm` — `90-helm.el.disabled` として無効。移植しない
+
+> **参考: 検索/補完 UI 現代化(Option B、将来検討)** — 旧 `ivy`/`counsel`/`swiper` は前世代スタック。現行主流は **`vertico`(補完 UI)+ `consult`(`consult-line`=swiper 相当ほか)+ `orderless`(絞り込み)+ `marginalia`(注釈)**。今回 migemo は Option A(`isearch` のみ)で導入したが、Option B として上記スタックへ刷新する場合、migemo はそのスタックとも併用できる(`consult-line` 連携、`orderless` に migemo マッチスタイルを組み込むレシピあり)。`ivy`/`counsel`/`swiper`/`smex` の各 `[ ]` を移植する際は、旧パッケージの忠実移植ではなく Option B(vertico 系)での代替を第一候補に検討する。`smex`(M-x 履歴)は `vertico` + `savehist` で代替可。
 
 ### Git / 差分
 - [x] `magit`(Git クライアント) — `use-package magit` で**移植済み**。旧 `inits/20-magit.el` は全行コメントアウトで実働設定なし(自作 ediff-magit-ediff / index.lock ハックは現代 magit 組み込みの magit-ediff に置換され不要)。キー: `C-c g`→magit-status(`C-x g`→goto-line は維持)、`C-c d`/`C-c D`→magit-ediff working-tree/dwim
@@ -191,7 +205,7 @@
 - [x] 修飾キー(command=meta、option=super)、`¥`→`\`、ignore-shortcut
 - [x] Karabiner / iTerm2 連携の運用メモ(コメントとして移植)
 - [x] フレームサイズ既定、全画面トグル(C-c m)、ウィンドウ透明度トグル(C-c p) — **移植済み**。初期サイズ width 120 / height 35 は macOS GUI のみ `default-frame-alist`。`C-c m` は `mac-toggle-max-window`(`fullscreen` ⇔ `maximized`)= メニューバー/Dock を残しフレームを作業領域いっぱいに最大化(これが元の体感に一致。`fullboth`/macOS ネイティブフルスクリーン/組み込み `toggle-frame-fullscreen` は不採用、ユーザー希望)。`C-c p` は旧 `mac-toggle-window-alpha`(alpha 100⇔90)を忠実移植(組み込み代替なし・パッケージ非依存)
-- [ ] migemo(cmigemo) — パッケージ依存
+- [x] migemo(cmigemo) — **移植済み**。詳細は「検索・grep・補完 UI」の `migemo` 項目を参照(macOS は `brew install cmigemo`、辞書は Apple Silicon `/opt/homebrew/...` を実行時選択)
 
 ### その他
 - [ ] `*scratch*` 永続化(Dropbox 優先で保存、kill 時クリアして再生成、起動時ロード)
@@ -221,7 +235,8 @@
 | `F5` / `F6` | point-undo 見送り → 組み込み mark ring(`C-u C-SPC` 等)で代用 | 組み込み |
 | `M-y` | `yank-from-kill-ring`(kill-ring 補完選択・移植済み) | 組み込み |
 | `C-c "` `'` `` ` `` `(` `[` … | リージョン囲み `quote-region-by`(移植済み) | カスタム |
-| `C-s` | swiper | ivy/swiper |
+| `C-s` / `C-r` | `isearch`(migemo でローマ字→日本語対応・移植済み) | 組み込み + migemo |
+| `isearch` 中 `M-m` | migemo の ON/OFF トグル(移植済み) | migemo |
 | `C-c g` | **magit-status(移植済み)** | magit |
 | `C-c j/k` | counsel git-grep/ag(未移植。`C-c g` は magit に割当済みのため counsel 移植時は別キーへ) | counsel |
 | `C-c d` / `C-c D` | magit-ediff working-tree / dwim(移植済み) | magit |
