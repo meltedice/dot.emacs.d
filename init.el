@@ -958,6 +958,58 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 
 
 ;;; ============================================================
+;;;  検索 — deadgrep(高速 grep + 結果を直接編集)
+;;; ============================================================
+;; 旧 inits/50-ag.el(ag.el + wgrep-ag)の置換移植。調査の結果:
+;;   - `ag.el' は 2020 以降更新が止まっており、推奨できない。
+;;   - 検索バイナリは `ag' → `rg'(ripgrep)が事実上の現代標準。
+;;   - 現代の対応する front-end は `deadgrep'(ag.el と同じ
+;;     Wilfred Hughes 作・保守継続中)。検索→結果バッファ→
+;;     インライン編集 という旧 UX を素直に置き換えられる。
+;;   - 一括編集は `wgrep' + `wgrep-deadgrep' で旧 wgrep-ag の役割を担う。
+;;
+;; ── 新マシン setup: ripgrep のインストール ────────────────────
+;;   macOS:           brew install ripgrep      (rg 本体)
+;;   Debian / Ubuntu: sudo apt install ripgrep
+;;   Arch:            sudo pacman -S ripgrep
+;;   その他: https://github.com/BurntSushi/ripgrep#installation
+;; rg が無いマシンでは use-package :if が偽となり deadgrep/wgrep-deadgrep
+;; 関連は全体スキップされる(起動エラーにはならない)。
+;; ─────────────────────────────────────────────────────────────────
+;;
+;; 使い方:
+;;   M-x deadgrep <RET> <パターン>  で検索。結果バッファに飛ぶ。
+;;   結果バッファ内:
+;;     n / p   次/前のマッチへ
+;;     RET     ファイルを開く
+;;     g       再検索
+;;     r       wgrep モードに入る(旧 ag.el の `wgrep-enable-key "r"' 忠実)
+;;       → 文字列を編集 → C-c C-c でファイルへ反映
+;;       (wgrep-auto-save-buffer t により保存も自動)
+;;
+;; 旧 50-ag.el との対応:
+;;   ag-highlight-search t   → deadgrep 既定でハイライト ON
+;;   ag-reuse-buffers nil    → deadgrep 既定で検索ごとに別バッファ
+;;   wgrep-auto-save-buffer t → そのまま設定(下記)
+;;   wgrep-enable-key "r"     → そのまま設定(下記)
+
+(use-package deadgrep
+  :if (executable-find "rg")
+  :commands (deadgrep))
+
+(use-package wgrep
+  :defer t
+  :init
+  (setq wgrep-auto-save-buffer t   ; 旧 50-ag.el 忠実
+        wgrep-enable-key       "r"))
+
+(use-package wgrep-deadgrep
+  :if (executable-find "rg")
+  :after deadgrep
+  :hook (deadgrep-finished . wgrep-deadgrep-setup))
+
+
+;;; ============================================================
 ;;;  未移植: カスタム関数依存
 ;;;  (旧 inits/50-window.el, 50-edit.el, 50-edit-helper.el,
 ;;;   50-view-mode.el を移植したらコメントを外す)

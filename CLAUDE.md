@@ -153,7 +153,15 @@
 
 ### 検索・grep・補完 UI
 - [ ] `color-moccur` + `moccur-edit`(横断検索 → 結果を直接編集、除外マスク多数) — パッケージ依存
-- [ ] `ag.el` + `wgrep-ag`(ag 検索 → `r` で結果を一括編集) — パッケージ依存
+- [x] `ag.el` + `wgrep-ag`(ag 検索 → `r` で結果を一括編集) — **`deadgrep` + `wgrep` + `wgrep-deadgrep` で代替移植済み**。調査の結果、旧 `ag.el` は 2020 以降更新が止まっており(MELPA `20201031`)推奨できない。検索バイナリ `ag` → **`rg`(ripgrep)が現代の事実上標準**、front-end は `ag.el` の自然な後継である **`deadgrep`**(同じ Wilfred Hughes 作・保守継続、MELPA `20241210`)を採用。`M-x deadgrep` で検索 → リッチな結果バッファ →(旧忠実の)`r` キーで wgrep モード → 編集 → `C-c C-c` でファイル反映(`wgrep-auto-save-buffer t` で自動保存)。旧 50-ag.el の `wgrep-auto-save-buffer t` / `wgrep-enable-key "r"` はそのまま忠実移植。`ag-highlight-search t` / `ag-reuse-buffers nil` は deadgrep の既定挙動と一致するため設定不要。新マシン setup: 外部バイナリ `rg` の導入が必要(下記ブロック参照)。rg が無いマシンでは `use-package :if` で全体スキップ
+
+> **新マシン setup: ripgrep(rg)のインストール** — Emacs パッケージ(`deadgrep` / `wgrep` / `wgrep-deadgrep`)は `elpa/` に vendoring 済みのため不要。外部の `rg` バイナリだけプラットフォーム別に導入する。
+> - **macOS**: `brew install ripgrep` → `/opt/homebrew/bin/rg`(Intel は `/usr/local/bin/rg`)
+> - **Debian / Ubuntu**: `sudo apt install ripgrep` → `/usr/bin/rg`
+> - **Arch**: `sudo pacman -S ripgrep`
+> - **その他(Fedora / Nix / Windows / source build)**: <https://github.com/BurntSushi/ripgrep#installation>
+>
+> `executable-find "rg"` が偽のマシン(rg 未導入)では `deadgrep` / `wgrep-deadgrep` の `use-package :if` が偽となり全体スキップされる(起動エラーにはならない)。詳細は `init.el` の「検索 — deadgrep」セクションコメント参照。
 - [x] `migemo`(ローマ字のまま日本語インクリメンタル検索、cmigemo) — **移植済み(Option A)**。`use-package migemo`(MELPA `20250616`、保守継続)。調査の結果、この用途で migemo を置き換える定番ツールは現在も存在せず妥当と判断。検索 UI は刷新せず**組み込み `isearch` をローマ字対応にするのみ**(`migemo-init` 後は通常の `C-s`/`C-r` が日本語にヒット、検索中 `M-m` で migemo トグル)。エンジンは外部 `cmigemo`(導入手順は下記ブロック参照)。旧 `cocoa-emacs-migemo.el` の現代化: 旧 `(el-get-bundle migemo)`→use-package + `elpa/` vendoring、辞書パスは旧 Intel 固定 `/usr/local/...` から実行時候補選択(Apple Silicon `/opt/homebrew/...` 等、ホーム絶対パス不使用)、cmigemo/辞書が無いマシンは `use-package :if` で全体スキップ
 
 > **新マシン setup: cmigemo(変換エンジン)のインストール** — `migemo` パッケージ本体は `elpa/` に vendoring 済みのため不要。外部の `cmigemo` バイナリと辞書ファイルだけプラットフォーム別に導入する。
@@ -239,6 +247,8 @@
 | `isearch` 中 `M-m` | migemo の ON/OFF トグル(移植済み) | migemo |
 | `C-c g` | **magit-status(移植済み)** | magit |
 | `C-c j/k` | counsel git-grep/ag(未移植。`C-c g` は magit に割当済みのため counsel 移植時は別キーへ) | counsel |
+| `M-x deadgrep` | ripgrep 検索(旧 `M-x ag` の代替・移植済み)。新規バッファに結果 | deadgrep |
+| deadgrep 内 `r` | wgrep モードに入る(編集 → `C-c C-c` でファイル反映、自動保存)| wgrep / wgrep-deadgrep |
 | `C-c d` / `C-c D` | magit-ediff working-tree / dwim(移植済み) | magit |
 | `C-t …` | ウィンドウ/moccur プレフィックス | カスタム/color-moccur |
 | `C-z …` | elscreen プレフィックス | elscreen |
