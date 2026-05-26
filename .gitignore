@@ -55,3 +55,8 @@ network-security.data
 
 # 1Password CLI (op) のローカル作業ディレクトリ等
 /.op/
+
+# transient(Emacs 組み込み)が書き出す per-machine 履歴
+# (history.el / values.el / levels.el 等)。magit 等の transient 利用で
+# 自動生成される実行時状態のため git 管理しない。
+/transient/
