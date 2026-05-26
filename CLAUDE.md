@@ -207,7 +207,8 @@
 - [x] macOS フォント — **移植済み**(比較用プリセット方式)。`M-x my-font-preset` で 4 プリセット即時切替: `faithful-old`(旧 Monaco+Hiragino Maru ProN+rescale 忠実)/ `stock-modern`(Menlo+Hiragino Kaku ProN)/ `udev-gothic` / `plemol-jp`(CJK 同梱 1 本、`brew install --cask font-udev-gothic` / `font-plemol-jp` 導入済)。**起動時デフォルト = `stock-modern`**(`my-font-default-preset`、GUI 時自動適用、daemon は after-make-frame-functions)
 - [x] 全角記号フォント対応(`use-default-font-for-symbols nil`) — **移植済み**(全プリセット共通で維持)
 - [-] 行番号 `linum-off` + `global-linum-mode` — **linum は Emacs 29 で廃止**。`display-line-numbers`(prog-mode のみ、幅3)で**代替移植済み**
-- [-] テーマ `matrix-on-ice`(auto-install)+ 起動時の緑/黒 仮配色 — パッケージのため不採用。同梱テーマ `wheatgrass` で**代替移植済み**
+- [-] テーマ `matrix-on-ice`(auto-install) — パッケージのため不採用。同梱テーマ `wheatgrass` で**代替移植済み**
+- [x] 起動時の緑/黒 仮配色 — **early-init.el 経由で移植済み**(ユーザー要望: 起動時の明色フラッシュ防止)。旧 `~/.emacs.d/init.el` 冒頭の `(set-background-color "black") / (set-foreground-color "#7eff00")` は init.el 1 行目で呼んでもフレーム生成後の上書きでフラッシュが残っていた。本リビルドでは Emacs 27+ の `early-init.el`(GUI フレーム生成前に走る)で `default-frame-alist` に同配色を `push` する方式に変更。フレームが最初からこの配色で生まれるため OS 既定色のフラッシュが発生しない。テーマ本体(`wheatgrass`)は init.el でいつもどおり後追い適用し、起動時遷移は「仮配色(緑/黒)→ wheatgrass」となる(旧の見た目を再現)。注意: `early-init.el` は Emacs が `user-emacs-directory` 配下から自動で読むため、起動時に `--init-directory ~/.emacs.d.30.2-1`(Emacs 29+)等で本リポジトリを `user-emacs-directory` として認識させる必要がある
 
 ### macOS 固有
 - [x] 修飾キー(command=meta、option=super)、`¥`→`\`、ignore-shortcut

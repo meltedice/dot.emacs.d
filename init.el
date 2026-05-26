@@ -124,8 +124,15 @@
 ;; 旧 init.el は起動時プレースホルダ配色
 ;;   (set-background-color "black") / (set-foreground-color "#7eff00")
 ;; を置いたあとパッケージ製テーマ matrix-on-ice を適用していた。
-;; matrix-on-ice はパッケージのため、Emacs 同梱の暗色テーマで代替する。
-;; 同梱テーマで最も Matrix(緑/黒)に近いのは wheatgrass。
+;; - 仮配色(黒+#7eff00 蛍光緑)は早期適用しないとフラッシュ防止に
+;;   ならないため、本リビルドでは early-init.el(GUI フレーム生成前に
+;;   実行)で default-frame-alist 経由で適用する。旧の init.el 内
+;;   set-{background,foreground}-color はフレーム生成後の上書きで
+;;   フラッシュが残っていた弱点を解消。
+;; - matrix-on-ice はパッケージのため不採用。Emacs 同梱の暗色テーマで
+;;   代替する。同梱テーマで最も Matrix(緑/黒)に近いのは wheatgrass。
+;;   起動時の遷移は「仮配色(緑/黒)→ wheatgrass」となり、旧の見た目を
+;;   再現する。
 (load-theme 'wheatgrass t)
 ;; 差し替え候補(上行をコメントアウトして下のいずれかを有効化):
 ;; (load-theme 'modus-vivendi t)  ; モダンで視認性の高い暗色テーマ
