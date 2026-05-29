@@ -29,7 +29,8 @@
 - 旧 `~/.emacs.d`(HEAD 基準)から機能単位で移植。**主流・標準・管理しやすい**
   方式を優先(単一 `init.el`、`use-package`、`package.el`、組み込み代替)。
   例: elscreen→`tab-bar-mode`、linum→`display-line-numbers`、
-  matrix-on-ice→同梱 `wheatgrass`、el-get→package.el+use-package。
+  matrix-on-ice→自前 `themes/matrix-on-ice-theme.el`(deftheme で最小忠実
+  再実装、外部パッケージ非依存)、el-get→package.el+use-package。
 - 未移植の elisp(外部パッケージ/旧 inits のカスタム関数)に依存する
   キーバインド等は、**移植したうえでコメントアウトし依存先を明記**。
   該当機能を移植したらコメントを外す運用。
@@ -207,8 +208,8 @@
 - [x] macOS フォント — **移植済み**(比較用プリセット方式)。`M-x my-font-preset` で 4 プリセット即時切替: `faithful-old`(旧 Monaco+Hiragino Maru ProN+rescale 忠実)/ `stock-modern`(Menlo+Hiragino Kaku ProN)/ `udev-gothic` / `plemol-jp`(CJK 同梱 1 本、`brew install --cask font-udev-gothic` / `font-plemol-jp` 導入済)。**起動時デフォルト = `stock-modern`**(`my-font-default-preset`、GUI 時自動適用、daemon は after-make-frame-functions)
 - [x] 全角記号フォント対応(`use-default-font-for-symbols nil`) — **移植済み**(全プリセット共通で維持)
 - [-] 行番号 `linum-off` + `global-linum-mode` — **linum は Emacs 29 で廃止**。`display-line-numbers`(prog-mode のみ、幅3)で**代替移植済み**
-- [-] テーマ `matrix-on-ice`(auto-install) — パッケージのため不採用。同梱テーマ `wheatgrass` で**代替移植済み**
-- [x] 起動時の明色フラッシュ防止(旧「起動時の緑/黒 仮配色」の現代化) — **`early-init.el` で wheatgrass を先読み**する方式で移植済み(ユーザー要望: 目のチカチカ防止)。旧 `~/.emacs.d/init.el` 冒頭の `(set-background-color "black") / (set-foreground-color "#7eff00")` は init.el 1 行目で呼んでもフレーム生成後の上書きでフラッシュが残っていた。本リビルドでは Emacs 27+ の `early-init.el`(GUI フレーム生成前に走る)で `(load-theme 'wheatgrass t)` を直接呼ぶ方式に統一。フレームが最初から最終テーマの配色で生まれるためフラッシュが完全消滅し、旧の「仮配色(緑/黒)→ matrix-on-ice」のような中間色遷移も発生しない(旧の意図を旧より綺麗に達成)。`init.el` 側にも `(unless (custom-theme-enabled-p 'wheatgrass) (load-theme ...))` のフォールバックを残してある。注意: `early-init.el` は Emacs が `user-emacs-directory` 配下から自動で読むため、起動時に `--init-directory ~/.emacs.d.30.2-1`(Emacs 29+)等で本リポジトリを `user-emacs-directory` として認識させる必要がある
+- [x] テーマ `matrix-on-ice` — **`themes/matrix-on-ice-theme.el` に自前 `deftheme` で再実装し採用**。旧 `~/.emacs.d/auto-install/matrix-on-ice-theme.el` は実装上 elscreen タブ用 4 face しか触っておらず、旧環境で見えていた「matrix-on-ice の色」の大半は **Emacs 既定の face 値**(モードライン=灰色 3D ボタン、リンク=cyan、見出し=ピンク赤太字、font-lock=多彩色)だった事実を batch で実機確認。本リビルドはその事実に従い **「`default` の bg/fg(黒 + #7eff00)だけ指定、他は Emacs 既定に任せる」最小忠実構成** で再現。`custom-theme-load-path` に `themes/` を追加(`early-init.el` と `init.el` の両方、`add-to-list` は冪等)、`(load-theme 'matrix-on-ice t)` を `early-init.el` で先読み、`init.el` に `(unless (custom-theme-enabled-p 'matrix-on-ice) ...)` フォールバック。外部パッケージ非依存
+- [x] 起動時の明色フラッシュ防止(旧「起動時の緑/黒 仮配色」の現代化) — **`early-init.el` で `matrix-on-ice` を先読み**する方式で移植済み(ユーザー要望: 目のチカチカ防止)。旧 `~/.emacs.d/init.el` 冒頭の `(set-background-color "black") / (set-foreground-color "#7eff00")` は init.el 1 行目で呼んでもフレーム生成後の上書きでフラッシュが残っていた。本リビルドでは Emacs 27+ の `early-init.el`(GUI フレーム生成前に走る)で `(load-theme 'matrix-on-ice t)` を直接呼ぶ方式に統一。フレームが最初から採用テーマの配色で生まれるためフラッシュが完全消滅し、旧の「仮配色(緑/黒)→ matrix-on-ice」のような中間色遷移も発生しない(旧の意図を旧より綺麗に達成)。`init.el` 側にも `(unless (custom-theme-enabled-p 'matrix-on-ice) (load-theme ...))` のフォールバックを残してある。注意: `early-init.el` は Emacs が `user-emacs-directory` 配下から自動で読むため、起動時に `--init-directory ~/.emacs.d.30.2-1`(Emacs 29+)等で本リポジトリを `user-emacs-directory` として認識させる必要がある
 
 ### macOS 固有
 - [x] 修飾キー(command=meta、option=super)、`¥`→`\`、ignore-shortcut
@@ -272,7 +273,8 @@
 - **基本設定**: 旧 init.el の現役設定(ツールバー/起動画面/`use-short-answers`/
   ゴミ箱削除/関数名表示/インデント既定 など)。
   `linum`→`display-line-numbers`(prog-mode のみ)、`transient-mark-mode nil` は維持、
-  テーマは同梱 `wheatgrass`(`matrix-on-ice` の代替)。
+  テーマは自前 `themes/matrix-on-ice-theme.el`(旧 `matrix-on-ice` を deftheme で
+  最小忠実再実装)。`early-init.el` で先読みして起動フラッシュ防止。
 - **キーバインド**: 組み込みコマンド向けは有効。未移植の elisp(外部パッケージ /
   旧 inits のカスタム関数)依存のものは移植のうえコメントアウトし、依存先を明記。
 - **macOS 設定**: NS 修飾キー、`¥`→`\`、Karabiner/iTerm2 メモ。

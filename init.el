@@ -121,24 +121,18 @@
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
 ;;; テーマ
-;; テーマ本体は early-init.el で GUI フレーム生成前に先読みする
-;; (起動時の明色フラッシュ完全防止のため)。下記はそれが何らかの理由で
-;; 走らなかった場合のフォールバック。custom-theme-enabled-p で二重 load
-;; を避ける(load-theme 自体は冪等だが、無駄な face 再適用を抑える意図)。
+;; 採用テーマ: matrix-on-ice(本リポジトリ themes/ 配下の自前 deftheme。
+;; 外部パッケージ非依存)。旧 ~/.emacs.d で auto-install されていた
+;; matrix-on-ice の名前を引き継ぎ、旧の最小忠実版として default の bg/fg
+;; (黒+#7eff00)だけを指定する。mode-line / link / outline-* / font-lock
+;; 等は Emacs 既定のまま=旧 Emacs 29.x 環境の見え方を保つ。
 ;;
-;; 旧 init.el はパッケージ製 matrix-on-ice を起動時の仮配色(黒+#7eff00
-;; 蛍光緑)とともに使っていた。本リビルドは matrix-on-ice を不採用とし
-;; Emacs 同梱の暗色テーマで代替。同梱で最も Matrix(緑/黒)に近いのは
-;; wheatgrass。
-(unless (custom-theme-enabled-p 'wheatgrass)
-  (load-theme 'wheatgrass t))
-;; 差し替え候補(上行をコメントアウトして下のいずれかを有効化):
-;; (load-theme 'modus-vivendi t)  ; モダンで視認性の高い暗色テーマ
-;; (load-theme 'wombat t)
-;; (load-theme 'tango-dark t)
-;; (load-theme 'deeper-blue t)
-;; (load-theme 'misterioso t)
-;; (load-theme 'manoj-dark t)
+;; 起動時は early-init.el で GUI フレーム生成前に load 済み。下記は
+;; early-init.el が走らなかった起動経路用のフォールバック(冪等)。
+(add-to-list 'custom-theme-load-path
+             (expand-file-name "themes" user-emacs-directory))
+(unless (custom-theme-enabled-p 'matrix-on-ice)
+  (load-theme 'matrix-on-ice t))
 
 
 ;;; ============================================================
