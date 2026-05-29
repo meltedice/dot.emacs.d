@@ -153,7 +153,7 @@
 - [-] `dired-k`(git 状態表示) — 旧設定で `.git/index.lock` 問題により無効化済み。移植しない(git 状態が要れば将来 `diff-hl-dired`)
 
 ### 検索・grep・補完 UI
-- [ ] `color-moccur` + `moccur-edit`(横断検索 → 結果を直接編集、除外マスク多数) — パッケージ依存
+- [-] `color-moccur` + `moccur-edit`(横断検索 → 結果を直接編集、除外マスク多数) — **移植しない**(調査のうえユーザー判断)。理由: ① `color-moccur` は MELPA で 2014-12 以降更新なし(事実上停止)、② `moccur-edit` は MELPA から消失し入手不能、③ **主用途の再帰ファイル grep+編集(旧 `C-t m`/`moccur-grep-find`)は `deadgrep` + `wgrep-deadgrep` で移植済み**(rg バックエンドに刷新)、④ buffer 横断検索は組み込み `multi-occur` / `multi-occur-in-matching-buffers` で完全代替、⑤ 結果バッファでの編集→ソース反映は組み込み `occur-edit-mode`(`e` で edit、`C-c C-c` で反映)で代替、⑥ dired マーク済みファイル群の検索/置換は組み込み `dired-do-find-regexp`(`A`)/ `dired-do-find-regexp-and-replace`(`Q`)で代替、⑦ `dmoccur-exclusion-mask` 相当は rg の `.gitignore` 自動尊重で原則不要。用途別の代替コマンド早見表は `init.el` の「検索・置換 チートシート」セクション参照(設定不要・autoload 済み)
 - [x] `ag.el` + `wgrep-ag`(ag 検索 → `r` で結果を一括編集) — **`deadgrep` + `wgrep` + `wgrep-deadgrep` で代替移植済み**。調査の結果、旧 `ag.el` は 2020 以降更新が止まっており(MELPA `20201031`)推奨できない。検索バイナリ `ag` → **`rg`(ripgrep)が現代の事実上標準**、front-end は `ag.el` の自然な後継である **`deadgrep`**(同じ Wilfred Hughes 作・保守継続、MELPA `20241210`)を採用。`M-x deadgrep` で検索 → リッチな結果バッファ →(旧忠実の)`r` キーで wgrep モード → 編集 → `C-c C-c` でファイル反映(`wgrep-auto-save-buffer t` で自動保存)。旧 50-ag.el の `wgrep-auto-save-buffer t` / `wgrep-enable-key "r"` はそのまま忠実移植。`ag-highlight-search t` / `ag-reuse-buffers nil` は deadgrep の既定挙動と一致するため設定不要。新マシン setup: 外部バイナリ `rg` の導入が必要(下記ブロック参照)。rg が無いマシンでは `use-package :if` で全体スキップ
 
 > **新マシン setup: ripgrep(rg)のインストール** — Emacs パッケージ(`deadgrep` / `wgrep` / `wgrep-deadgrep`)は `elpa/` に vendoring 済みのため不要。外部の `rg` バイナリだけプラットフォーム別に導入する。
@@ -252,7 +252,7 @@
 | `M-x deadgrep` | ripgrep 検索(旧 `M-x ag` の代替・移植済み)。新規バッファに結果 | deadgrep |
 | deadgrep 内 `r` | wgrep モードに入る(編集 → `C-c C-c` でファイル反映、自動保存)| wgrep / wgrep-deadgrep |
 | `C-c d` / `C-c D` | magit-ediff working-tree / dwim(移植済み) | magit |
-| `C-t …` | ウィンドウ/moccur プレフィックス | カスタム/color-moccur |
+| `C-t …` | ウィンドウ操作プレフィックス(旧 `C-t m` の moccur 系は color-moccur 不採用のため空き) | カスタム |
 | `C-z …` | elscreen プレフィックス | elscreen |
 | `C-x C-j` | `dired-jump`(移植済み。旧 direx の組み込み代替) | 組み込み(dired-x) |
 | `C-x C-p` | `find-file-at-point`(移植済み・ffap 軽量採用) | 組み込み |

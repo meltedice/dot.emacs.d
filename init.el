@@ -1145,6 +1145,59 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
 
 
 ;;; ============================================================
+;;;  検索・置換 チートシート(旧 color-moccur / moccur-edit の代替メモ)
+;;; ============================================================
+;; 旧 inits/20-color-moccur.el(color-moccur + moccur-edit)は
+;; 移植しない方針(CLAUDE.md チェックリスト参照):
+;;   - color-moccur: MELPA 2014-12 以降更新なし、事実上停止
+;;   - moccur-edit:  MELPA から消失して入手不能
+;;   - 主用途(再帰ファイル grep+結果編集)は deadgrep + wgrep-deadgrep
+;;     で移植済み(上のセクション)
+;;   - 残る用途は現代 Emacs の組み込みで完全代替可能
+;; 用途別の代替コマンドを以下にメモする(設定不要、autoload 済み)。
+;;
+;; ── 単一バッファ内の正規表現 occur ──
+;;   M-s o                    `occur'(同 M-x occur)
+;;   ↑ 現バッファで該当行を結果バッファに集約
+;;
+;; ── 複数バッファ横断検索(旧 moccur / C-u moccur 相当)──
+;;   M-x multi-occur                  ← 任意のバッファを対話で選んで一括 occur
+;;   M-x multi-occur-in-matching-buffers
+;;       ← バッファ名の正規表現でフィルタしてから一括 occur
+;;
+;; ── occur 結果バッファ内で編集(旧 moccur-edit 相当)──
+;;   occur 結果バッファに移動して:
+;;     e            ← `occur-edit-mode'(編集モード ON)
+;;     編集する
+;;     C-c C-c      ← 編集をソースバッファに反映して edit-mode を抜ける
+;;     C-c C-k      ← 編集を破棄して抜ける
+;;   反映後はソースバッファが「変更済み」状態になるだけで自動 save
+;;   されない。各バッファで C-x s 等で別途保存。
+;;
+;; ── 再帰ファイル grep(旧 moccur-grep-find / moccur-grep、C-t m 相当)──
+;;   M-x deadgrep                     ← ripgrep バックエンド、上の deadgrep
+;;                                       セクション参照。結果バッファ内 r
+;;                                       で wgrep モード → C-c C-c で反映
+;;
+;; ── dired でマーク済みファイル群に検索(旧 dired-do-moccur 相当)──
+;;   dired バッファで:
+;;     m            ← ファイルをマーク
+;;     A            ← `dired-do-find-regexp'(マーク済みファイル群に正規表現
+;;                    検索、xref バッファに表示)
+;;     Q            ← `dired-do-find-regexp-and-replace'(マーク済みファイル
+;;                    群で正規表現置換)
+;;
+;; ── プロジェクト範囲の検索/置換(関連)──
+;;   C-x p g                  `project-find-regexp'(project.el)
+;;   C-x p r                  `project-query-replace-regexp'
+;;   xref 結果バッファで E    `xref-query-replace-in-results'(一括置換)
+;;
+;; ── 旧 dmoccur-exclusion-mask(.git/.svn/画像/build/coverage 等)──
+;;   deadgrep(rg)は .gitignore を自動尊重するため、明示の除外マスクは
+;;   原則不要。プロジェクト固有の追加除外は .ignore / .rgignore に記述。
+
+
+;;; ============================================================
 ;;;  未移植: カスタム関数依存
 ;;;  (旧 inits/50-window.el, 50-edit.el, 50-edit-helper.el,
 ;;;   50-view-mode.el を移植したらコメントを外す)
@@ -1204,8 +1257,9 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
 ;; (global-set-key "\C-xE" 'ediff-magit-ediff-working-tree)
 
 ;; --- color-moccur ---
-;; (global-set-key "\C-tm"    'moccur-grep-find)
-;; (global-set-key "\C-t\C-m" 'moccur-grep-find)
+;; 不採用(CLAUDE.md チェックリスト参照)。主用途の再帰ファイル grep
+;; +結果編集は deadgrep + wgrep-deadgrep へ移植済み。代替コマンド早見表は
+;; 上記「検索・置換 チートシート」セクションを参照。
 
 ;; --- undo-tree ---
 ;; (define-key undo-tree-map (kbd "\C-_") 'undefined)
@@ -1215,8 +1269,9 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
 ;; (jk → view-mode)。
 
 ;; --- elscreen(廃止気味。参考)---
-;; (global-set-key "\C-z\C-m" 'elscreen-moccur-grep-find)
-;; (global-set-key "\C-zm"    'elscreen-moccur-grep-find)
+;; 旧 elscreen 配下の moccur 連動コマンド(C-z m / C-z C-m)も
+;; color-moccur 不採用に伴い廃止。タブ切替は組み込み tab-bar-mode へ
+;; 移植済み(上の「タブ」セクション)。
 
 ;; --- helm(旧設定では無効化済み。参考)---
 ;; (global-set-key "\M-x"     'helm-M-x)
