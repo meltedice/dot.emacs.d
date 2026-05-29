@@ -588,6 +588,142 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 
 
 ;;; ============================================================
+;;;  *scratch* 永続化(旧 inits/50-scratch.el)
+;;; ============================================================
+;; *scratch* バッファをディスクに保存して起動時に復元する。
+;;   - 起動時: 保存ファイルから *scratch* に読込。
+;;   - Emacs 終了時: 変更があれば保存(advice-add で save-buffers-kill-emacs)。
+;;   - *scratch* で C-x C-s: 専用の保存関数で書き出す。
+;;   - *scratch* を kill-buffer: 実際には削除せず内容クリアにすり替え。
+;;   - 別ファイル save 後に *scratch* が消えていたら自動再生成。
+;;
+;; 保存先は user-emacs-directory(= init.el のあるディレクトリ)直下の
+;; ".scratch-<hostname>"。旧設定は Dropbox 配下を優先していたが現在は
+;; Dropbox を使っていないためシングルマシン用途として emacs home に
+;; 集約(ユーザー指示)。マシン間の取り違え防止のため hostname suffix は
+;; 旧仕様どおり付ける(将来マシンが増えても混線しない)。`.scratch*`
+;; パターンで .gitignore 除外済み。
+;;
+;; 現代化:
+;;   - 旧 (defadvice save-buffers-kill-emacs ...) → advice-add :before。
+;;   - 旧 find-file-noselect + erase + insert + save-buffer の保存処理は
+;;     write-region 一発に簡略化(*scratch* 用の中間バッファを作らない)。
+;;   - 旧 scratch-dirname の Dropbox 分岐は削除。
+;;   - 旧 hostname-short(`inits/00-environments.el` 由来、未移植)への
+;;     依存を解消し、`(system-name)` をドットで分割して先頭=短い
+;;     ホスト名を小文字化する純組み込みロジックに置換。
+;;   - 命名規則を my-* に統一(旧 scratch-* / my-make-scratch が混在)。
+
+(defun my-scratch--short-hostname ()
+  "Return the local short hostname, downcased.
+`(system-name)' の FQDN 先頭部分を切り出して小文字化する。取得不能なら
+空文字列。旧 `hostname-short' ヘルパの置換(`inits/00-environments.el'
+未移植のため自前で実装)。"
+  (let ((h (or (system-name) "")))
+    (downcase (or (car (split-string h "[.]")) ""))))
+
+(defvar my-scratch-file
+  (let* ((host (my-scratch--short-hostname))
+         (name (if (string-empty-p host)
+                   ".scratch"
+                 (concat ".scratch-" host))))
+    (expand-file-name name user-emacs-directory))
+  "*scratch* の永続化ファイルパス。Emacs 終了時に保存、起動時に復元。
+hostname suffix 付き(将来複数マシンに展開した際の混線防止)。")
+
+(defvar my-scratch-save-option 'default
+  "*scratch* を Emacs 終了時に保存するかの判定モード。
+- `force-save'       : 必ず保存
+- `force-donot-save' : 必ず保存しない
+- `default'          : *scratch* が buffer-modified なら保存、無変更なら省略")
+
+(defun my-scratch-donot-save ()
+  "今セッションの Emacs 終了時に *scratch* を保存しない設定にする。"
+  (interactive)
+  (setq my-scratch-save-option 'force-donot-save))
+
+(defun my-scratch-save-p ()
+  "*scratch* を保存すべきなら non-nil。"
+  (pcase my-scratch-save-option
+    ('force-save       t)
+    ('force-donot-save nil)
+    (_ (and (get-buffer "*scratch*")
+            (with-current-buffer "*scratch*" (buffer-modified-p))))))
+
+(defun my-make-scratch (&optional arg)
+  "*scratch* バッファを再生成 / クリアする。
+ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scratch* を
+作るだけ(switch しない)。"
+  (interactive)
+  (with-current-buffer (get-buffer-create "*scratch*")
+    (funcall initial-major-mode)
+    (erase-buffer)
+    (when (and initial-scratch-message (not inhibit-startup-message))
+      (insert initial-scratch-message))
+    (set-buffer-modified-p nil))
+  (cond
+   ((or (null arg) (eq arg 0))
+    (switch-to-buffer "*scratch*")
+    (message "*scratch* is cleared up."))
+   ((eq arg 1)
+    (message "another *scratch* is created"))))
+
+(defun my-scratch-save ()
+  "*scratch* の内容を `my-scratch-file' に書き出す。"
+  (interactive)
+  (when-let* ((buf (get-buffer "*scratch*")))
+    (with-current-buffer buf
+      (write-region (point-min) (point-max) my-scratch-file nil 'silent)
+      (set-buffer-modified-p nil))))
+
+(defun my-scratch-load ()
+  "`my-scratch-file' があれば *scratch* に読み込む。"
+  (interactive)
+  (when (file-exists-p my-scratch-file)
+    (with-current-buffer (get-buffer-create "*scratch*")
+      (erase-buffer)
+      (insert-file-contents my-scratch-file)
+      (set-buffer-modified-p nil))
+    (message "loaded *scratch* from %s" my-scratch-file)))
+
+(defalias 'my-scratch-reload 'my-scratch-load)
+
+;; 起動時に保存ファイルから読込(*scratch* バッファは Emacs 起動初期に
+;; 既に作られているので get-buffer-create で取り直して上書きする)。
+(my-scratch-load)
+
+;; *scratch* で kill-buffer は内容クリアにすり替え。
+(add-hook 'kill-buffer-query-functions
+          (lambda ()
+            (if (string= "*scratch*" (buffer-name))
+                (progn (my-make-scratch 0) nil)
+              t)))
+
+;; 別ファイル save 後に *scratch* が消えていたら自動再生成。
+(add-hook 'after-save-hook
+          (lambda ()
+            (unless (get-buffer "*scratch*")
+              (my-make-scratch 1))))
+
+;; Emacs 終了時に *scratch* を保存(旧 defadvice → advice-add)。
+(advice-add 'save-buffers-kill-emacs :before
+            (lambda (&rest _)
+              (when (my-scratch-save-p)
+                (my-scratch-save))))
+
+;; *scratch* で C-x C-s は `my-scratch-save'(他のバッファは通常通り)。
+(defun my-scratch-save-buffer-wrapper ()
+  "*scratch* なら `my-scratch-save'、それ以外は通常の `save-buffer'。"
+  (interactive)
+  (if (string= (buffer-name) "*scratch*")
+      (my-scratch-save)
+    (save-buffer)))
+(add-hook 'lisp-interaction-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-x C-s") #'my-scratch-save-buffer-wrapper)))
+
+
+;;; ============================================================
 ;;;  編集支援(旧 inits/50-edit.el, 50-edit-helper.el の移植・取捨選択)
 ;;; ============================================================
 
