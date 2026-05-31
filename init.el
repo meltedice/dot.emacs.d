@@ -595,6 +595,41 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
   (add-hook hook #'eglot-ensure))
 
 
+;;; zsh / zprezto 設定ファイル → sh-mode + zsh シェル指定
+;;
+;; 対象:
+;;   - 基本: ~/.zshrc / ~/.zshenv / ~/.zprofile / ~/.zlogin / ~/.zlogout
+;;     (+ .local 派生)
+;;   - zprezto: ~/.zpreztorc、~/.zprezto/runcoms/*(zshrc / zshenv /
+;;     zprofile / zlogin / zlogout / zpreztorc、いずれも拡張子なし)
+;;   - 拡張子: *.zsh(zprezto modules の init.zsh 等)
+;;
+;; Emacs 30 既定では .zshrc 等は sh-mode には行くが、`sh-shell' は system
+;; 依存(macOS は bash になることがある)。`[[ ]]' / `${(P)var}' / `setopt'
+;; / `autoload -U' といった zsh 固有構文を正しく font-lock させるため、
+;; 専用 dispatcher で sh-mode 起動後に `sh-set-shell' で zsh を明示する。
+;; `.zpreztorc' / runcoms/* は既定で auto-mode-alist にも無いので同時に登録。
+(declare-function sh-set-shell "sh-script")  ; byte-compile に既知化
+
+(defun my-zsh-script-mode ()
+  "Enter `sh-mode' and set `sh-shell' to zsh.
+For zsh init files (.zshrc, .zshenv, ~/.zprezto/runcoms/*, etc.) that
+don't carry a #! shebang -- ensures zsh-flavored font-lock and indent.
+NO-QUERY-FLAG=t / INSERT-FLAG=nil で query 抑止+shebang 不挿入。"
+  (sh-mode)
+  (sh-set-shell "zsh" t nil))
+
+(dolist (re '("/\\.zshrc\\(\\.local\\)?\\'"
+              "/\\.zshenv\\(\\.local\\)?\\'"
+              "/\\.zprofile\\(\\.local\\)?\\'"
+              "/\\.zlogin\\(\\.local\\)?\\'"
+              "/\\.zlogout\\(\\.local\\)?\\'"
+              "/\\.zpreztorc\\'"
+              "/\\.zprezto/runcoms/[^/.]+\\'"
+              "\\.zsh\\'"))
+  (add-to-list 'auto-mode-alist (cons re #'my-zsh-script-mode)))
+
+
 ;;; ============================================================
 ;;;  Git / 差分(magit, ediff)
 ;;; ============================================================
