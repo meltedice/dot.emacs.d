@@ -444,6 +444,52 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
               ("g" . grip-mode)))
 
 
+;;; YAML (.yml / .yaml — CI / k8s / Ansible / Compose で頻出)
+;;
+;; Emacs 30 同梱の yaml-ts-mode(tree-sitter ベース、正確なパース)を
+;; 優先採用。ただし:
+;;   - YAML の tree-sitter grammar は同梱されていない。1 度だけ
+;;       M-x treesit-install-language-grammar RET yaml RET
+;;     をマシン上で実行して導入する(treesit-language-source-alist に
+;;     下記で取得元を登録済み)。grammar の compile に C コンパイラと
+;;     git が必要(macOS は Xcode Command Line Tools で揃う)。
+;;   - 同梱モードは auto-mode-alist に自動登録されていない。
+;;
+;; grammar が未導入のマシンでも起動が壊れないよう、yaml-mode(MELPA、
+;; 2026-04 更新で保守継続)を fallback として vendor。my-yaml-mode-dispatch
+;; が visit 時に grammar の有無を見て ts-mode / 旧 mode を自動切替する
+;; (grammar を後から入れて再 visit すれば自動で ts-mode に上がる)。
+;;
+;; LSP: eglot に既定で
+;;   ((yaml-ts-mode yaml-mode) "yaml-language-server" "--stdio")
+;; が登録されているため、yaml-language-server が PATH 上にあれば
+;; eglot-ensure フックで自動起動・スキーマ検証(GitHub Actions / k8s /
+;; Compose ほか)・補完が利く。新マシン setup の install 手順は
+;; README.md「新マシンセットアップ」参照(volta install or pnpm add -g)。
+(use-package yaml-mode :defer t)
+
+(with-eval-after-load 'treesit
+  (add-to-list 'treesit-language-source-alist
+               '(yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+(defun my-yaml-mode-dispatch ()
+  "Pick `yaml-ts-mode' if YAML grammar is available, else `yaml-mode'.
+`auto-mode-alist' で .yml / .yaml に登録するので、ファイル visit 時に
+毎回判定される(grammar を後から入れた場合も再 visit だけで ts-mode に
+切替わる)。"
+  (if (and (fboundp 'treesit-language-available-p)
+           (treesit-language-available-p 'yaml))
+      (yaml-ts-mode)
+    (yaml-mode)))
+
+(add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . my-yaml-mode-dispatch))
+
+;; eglot 起動を YAML モードに hook(yaml-language-server が PATH に無ければ
+;; eglot は静かにスキップする)。
+(add-hook 'yaml-ts-mode-hook #'eglot-ensure)
+(add-hook 'yaml-mode-hook    #'eglot-ensure)
+
+
 ;;; ============================================================
 ;;;  Git / 差分(magit, ediff)
 ;;; ============================================================
