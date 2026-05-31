@@ -490,6 +490,111 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 (add-hook 'yaml-mode-hook    #'eglot-ensure)
 
 
+;;; JavaScript / TypeScript (.js, .mjs, .cjs, .jsx, .ts, .tsx, .json)
+;;
+;; Emacs 30 同梱の tree-sitter 系メジャーモード(js-ts-mode /
+;; typescript-ts-mode / tsx-ts-mode / json-ts-mode)を優先採用。grammar
+;; が無いマシンでも安全に動くよう legacy mode を fallback に置く設計。
+;;
+;; ── mode dispatcher の方針 ─────────────────────────────────────
+;;   .js / .mjs / .cjs   → js-ts-mode (grammar 有り) / js-mode (組み込み)
+;;   .ts                  → typescript-ts-mode / typescript-mode (MELPA fallback)
+;;   .tsx                 → tsx-ts-mode / typescript-mode (同)
+;;   .jsx                 → tsx-ts-mode / typescript-mode  ★ ユーザー選択:
+;;                          JSX も TS+JSX = TSX として一括扱い(現代の主流)
+;;   .json                → json-ts-mode / js-json-mode (組み込み)
+;; ファイル visit 時に dispatcher が grammar の有無を判定するため、grammar
+;; を後から入れて再 visit すれば自動で ts-mode に上がる(YAML と同じ設計)。
+;;
+;; ── tree-sitter grammar ───────────────────────────────────────
+;; 4 種類を treesit-language-source-alist に登録。各マシンで 1 度だけ:
+;;   M-x treesit-install-language-grammar RET javascript RET
+;;   M-x treesit-install-language-grammar RET typescript RET
+;;   M-x treesit-install-language-grammar RET tsx RET
+;;   M-x treesit-install-language-grammar RET json RET
+;; (typescript / tsx は同一 repo の異なるサブディレクトリ)。
+;; いずれの scanner も C(scanner.c)のみで C++ scanner は無いため、
+;; YAML で必要だった c++ ビルドの workaround は要らない。
+;; Apple Silicon でアーキ不一致が出た場合の手動 build は README 参照。
+;;
+;; ── LSP ───────────────────────────────────────────────────────
+;; eglot 既定の eglot-server-programs に
+;;   ((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode typescript-mode)
+;;    "typescript-language-server" "--stdio")
+;; が登録済み。typescript-language-server (volta install) が PATH 上に
+;; あれば各 mode で自動起動・補完・診断。
+;;
+;; ── format-on-save ────────────────────────────────────────────
+;; apheleia を global 有効化。JS / TS / TSX / JSX / JSON / CSS /
+;; Markdown / YAML 等の各種フォーマッタ(主に prettier、volta install
+;; 済み)を保存時に自動適用する。フォーマッタが PATH に無い mode では
+;; 何もしない(silent skip)。
+
+;; TS / TSX の fallback mode(grammar 無いマシン用)
+(use-package typescript-mode :defer t)
+
+;; format-on-save(grammar の有無と無関係に global 有効化)
+(use-package apheleia
+  :config (apheleia-global-mode 1))
+
+;; grammar 取得元の登録
+(with-eval-after-load 'treesit
+  (dolist (entry '((javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+                   (typescript "https://github.com/tree-sitter/tree-sitter-typescript"
+                               "master" "typescript/src")
+                   (tsx        "https://github.com/tree-sitter/tree-sitter-typescript"
+                               "master" "tsx/src")
+                   (json       "https://github.com/tree-sitter/tree-sitter-json")))
+    (add-to-list 'treesit-language-source-alist entry)))
+
+;; dispatcher 関数群
+(defun my-js-mode-dispatch ()
+  "Pick `js-ts-mode' if javascript grammar is available, else `js-mode'."
+  (if (and (fboundp 'treesit-language-available-p)
+           (treesit-language-available-p 'javascript))
+      (js-ts-mode)
+    (js-mode)))
+
+(defun my-typescript-mode-dispatch ()
+  "Pick `typescript-ts-mode' if grammar is available, else `typescript-mode'."
+  (if (and (fboundp 'treesit-language-available-p)
+           (treesit-language-available-p 'typescript))
+      (typescript-ts-mode)
+    (typescript-mode)))
+
+(defun my-tsx-mode-dispatch ()
+  "Pick `tsx-ts-mode' if grammar is available, else `typescript-mode'.
+.tsx / .jsx の両方で使う(JSX も TS+JSX = TSX として扱う)。"
+  (if (and (fboundp 'treesit-language-available-p)
+           (treesit-language-available-p 'tsx))
+      (tsx-ts-mode)
+    (typescript-mode)))
+
+(defun my-json-mode-dispatch ()
+  "Pick `json-ts-mode' if json grammar is available, else `js-json-mode'."
+  (if (and (fboundp 'treesit-language-available-p)
+           (treesit-language-available-p 'json))
+      (json-ts-mode)
+    (js-json-mode)))
+
+;; auto-mode-alist 登録(add-to-list は先頭挿入のため組み込みの
+;; \\.js[mx]?\\' エントリより優先される)。
+(add-to-list 'auto-mode-alist '("\\.[mc]?js\\'" . my-js-mode-dispatch))
+(add-to-list 'auto-mode-alist '("\\.ts\\'"      . my-typescript-mode-dispatch))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'"     . my-tsx-mode-dispatch))
+(add-to-list 'auto-mode-alist '("\\.jsx\\'"     . my-tsx-mode-dispatch))
+(add-to-list 'auto-mode-alist '("\\.json\\'"    . my-json-mode-dispatch))
+
+;; eglot 起動フック(JS/TS 系の主・fallback すべて)。
+;; typescript-language-server が PATH に無ければ eglot は静かにスキップ。
+(dolist (hook '(js-mode-hook
+                js-ts-mode-hook
+                typescript-ts-mode-hook
+                tsx-ts-mode-hook
+                typescript-mode-hook))
+  (add-hook hook #'eglot-ensure))
+
+
 ;;; ============================================================
 ;;;  Git / 差分(magit, ediff)
 ;;; ============================================================
