@@ -1,5 +1,7 @@
 # CLAUDE.md — Emacs 30.2-1 設定リビルド
 
+> **ユーザー向けの使い方は [README.md](README.md) を参照**(キーバインド早見表、新マシンセットアップ手順、機能ごとの使い方、`*scratch*` 永続化やテーマの設計、フォントプリセット、macOS 固有設定など)。本ファイルは Claude / 開発側のメタ情報(方針・移植進捗・設計判断のトレーサビリティ)に絞る。
+
 ## このリポジトリについて
 
 `~/.emacs.d.30.2-1/` は **Emacs 30.2-1 用に作り直し中**の設定ディレクトリ。
@@ -8,8 +10,9 @@
 
 - **移植元の基準**: `~/.emacs.d/` の **git HEAD = `1529d6d` "update elisp packages"(2020-06-22, branch `disabling-...-29.3`)**。
   ローカル作業ツリーには `.disabled` 化などの未コミット変更があるが、本ドキュメントと移植は **HEAD を正**とする(HEAD では `50-elscreen.el` / `50-javascript.el` 等も有効)。
-- **このドキュメントの役割**: 旧設定が「どんな機能を持っていたか」の機能カタログ。
+- **このドキュメントの役割**: 旧設定が「どんな機能を持っていたか」の機能カタログ + 各機能について「採用 / 不採用 / どう現代化したか」の判断記録。
   細かい変数設定ではなく、機能単位でまとめてある。移植の参照に使う。
+  ユーザー向けの「使い方」は [README.md](README.md) を参照。
 
 ## 作業方針・指示の傾向(セッション間で踏襲)
 
@@ -156,25 +159,10 @@
 - [-] `color-moccur` + `moccur-edit`(横断検索 → 結果を直接編集、除外マスク多数) — **移植しない**(調査のうえユーザー判断)。理由: ① `color-moccur` は MELPA で 2014-12 以降更新なし(事実上停止)、② `moccur-edit` は MELPA から消失し入手不能、③ **主用途の再帰ファイル grep+編集(旧 `C-t m`/`moccur-grep-find`)は `deadgrep` + `wgrep-deadgrep` で移植済み**(rg バックエンドに刷新)、④ buffer 横断検索は組み込み `multi-occur` / `multi-occur-in-matching-buffers` で完全代替、⑤ 結果バッファでの編集→ソース反映は組み込み `occur-edit-mode`(`e` で edit、`C-c C-c` で反映)で代替、⑥ dired マーク済みファイル群の検索/置換は組み込み `dired-do-find-regexp`(`A`)/ `dired-do-find-regexp-and-replace`(`Q`)で代替、⑦ `dmoccur-exclusion-mask` 相当は rg の `.gitignore` 自動尊重で原則不要。用途別の代替コマンド早見表は `init.el` の「検索・置換 チートシート」セクション参照(設定不要・autoload 済み)
 - [x] `ag.el` + `wgrep-ag`(ag 検索 → `r` で結果を一括編集) — **`deadgrep` + `wgrep` + `wgrep-deadgrep` で代替移植済み**。調査の結果、旧 `ag.el` は 2020 以降更新が止まっており(MELPA `20201031`)推奨できない。検索バイナリ `ag` → **`rg`(ripgrep)が現代の事実上標準**、front-end は `ag.el` の自然な後継である **`deadgrep`**(同じ Wilfred Hughes 作・保守継続、MELPA `20241210`)を採用。`M-x deadgrep` で検索 → リッチな結果バッファ →(旧忠実の)`r` キーで wgrep モード → 編集 → `C-c C-c` でファイル反映(`wgrep-auto-save-buffer t` で自動保存)。旧 50-ag.el の `wgrep-auto-save-buffer t` / `wgrep-enable-key "r"` はそのまま忠実移植。`ag-highlight-search t` / `ag-reuse-buffers nil` は deadgrep の既定挙動と一致するため設定不要。新マシン setup: 外部バイナリ `rg` の導入が必要(下記ブロック参照)。rg が無いマシンでは `use-package :if` で全体スキップ
 
-> **新マシン setup: ripgrep(rg)のインストール** — Emacs パッケージ(`deadgrep` / `wgrep` / `wgrep-deadgrep`)は `elpa/` に vendoring 済みのため不要。外部の `rg` バイナリだけプラットフォーム別に導入する。
-> - **macOS**: `brew install ripgrep` → `/opt/homebrew/bin/rg`(Intel は `/usr/local/bin/rg`)
-> - **Debian / Ubuntu**: `sudo apt install ripgrep` → `/usr/bin/rg`
-> - **Arch**: `sudo pacman -S ripgrep`
-> - **その他(Fedora / Nix / Windows / source build)**: <https://github.com/BurntSushi/ripgrep#installation>
->
-> `executable-find "rg"` が偽のマシン(rg 未導入)では `deadgrep` / `wgrep-deadgrep` の `use-package :if` が偽となり全体スキップされる(起動エラーにはならない)。詳細は `init.el` の「検索 — deadgrep」セクションコメント参照。
+> **新マシン setup: ripgrep のインストール手順は [README.md「新マシンセットアップ → ripgrep」](README.md#ripgrepdeadgrep--wgrep-deadgrep-のエンジン) を参照**。`rg` 未導入マシンでは `use-package :if` で `deadgrep` / `wgrep-deadgrep` 全体がスキップされ起動エラーにはならない(`init.el` 該当セクションコメント参照)。
 - [x] `migemo`(ローマ字のまま日本語インクリメンタル検索、cmigemo) — **移植済み(Option A)**。`use-package migemo`(MELPA `20250616`、保守継続)。調査の結果、この用途で migemo を置き換える定番ツールは現在も存在せず妥当と判断。検索 UI は刷新せず**組み込み `isearch` をローマ字対応にするのみ**(`migemo-init` 後は通常の `C-s`/`C-r` が日本語にヒット、検索中 `M-m` で migemo トグル)。エンジンは外部 `cmigemo`(導入手順は下記ブロック参照)。旧 `cocoa-emacs-migemo.el` の現代化: 旧 `(el-get-bundle migemo)`→use-package + `elpa/` vendoring、辞書パスは旧 Intel 固定 `/usr/local/...` から実行時候補選択(Apple Silicon `/opt/homebrew/...` 等、ホーム絶対パス不使用)、cmigemo/辞書が無いマシンは `use-package :if` で全体スキップ
 
-> **新マシン setup: cmigemo(変換エンジン)のインストール** — `migemo` パッケージ本体は `elpa/` に vendoring 済みのため不要。外部の `cmigemo` バイナリと辞書ファイルだけプラットフォーム別に導入する。
-> - **macOS(Apple Silicon / Intel 共通)**: `brew install cmigemo`
->   - バイナリ: `/opt/homebrew/bin/cmigemo`(Intel は `/usr/local/bin/cmigemo`)
->   - 辞書:   `/opt/homebrew/share/migemo/utf-8/migemo-dict`(Intel は `/usr/local/share/migemo/utf-8/migemo-dict`)
-> - **Debian / Ubuntu**: `sudo apt install cmigemo`
->   - バイナリ: `/usr/bin/cmigemo` / 辞書: `/usr/share/cmigemo/utf-8/migemo-dict`
-> - **Windows**: [KaoriYa 配布版](https://www.kaoriya.net/software/cmigemo/) の ZIP を入手し展開先(例 `C:\cmigemo-default-win64`)を PATH に追加。辞書は `dict\utf-8\migemo-dict`。**本設定は Windows プラットフォーム別ファイルを同梱していない**(旧 `inits/windows-migemo.el` は移植せず)
-> - **Arch / Nix / source build 等**: 上流 <https://github.com/koron/cmigemo> 参照
->
-> 上記 4 つの代表的辞書パスは init.el の `my-migemo-dictionary` が実行時に `file-exists-p` で順に探索して採用する。いずれも見つからないマシンでは `use-package :if` が偽となり migemo 関連は全体スキップされるため起動エラーにはならない。詳細は `init.el` の「検索 — migemo」セクションコメント参照。
+> **新マシン setup: cmigemo のインストール手順は [README.md「新マシンセットアップ → cmigemo」](README.md#cmigemoローマ字日本語-isearch-のエンジン) を参照**。`init.el` の `my-migemo-dictionary` が代表的な辞書パス候補を実行時に探索する。`cmigemo` バイナリ or 辞書がどれも見つからないマシンでは `use-package :if` で migemo 関連が全体スキップされ起動エラーにはならない(`init.el` 該当セクションコメント参照)。
 
 - [ ] `ivy` / `counsel` / `swiper`(補完 UI、C-s/C-c g/j/k 等) — パッケージ依存
 - [ ] `smex`(M-x 履歴) — パッケージ依存
@@ -225,44 +213,16 @@
 
 ---
 
-## キーバインド体系(主要なもの)
+## キーバインド体系
 
-| キー | 機能 | 依存 |
-|---|---|---|
-| `C-h` | backspace(help は `C-c h`) | 組み込み |
-| `C-a` | `my-smart-home`(賢い行頭・移植済み) | カスタム |
-| `C-w` | 選択時 kill / 無選択時 単語削除(移植済み) | カスタム |
-| `C-c $` | 行折り返しトグル `toggle-truncate-lines`(移植済み) | 組み込み |
-| `M-i` / `F7` / `F8` | symbol-overlay put / rename / remove-all(移植済み) | symbol-overlay |
-| `jk`(同時押し) | `view-mode` トグル(移植済み) | key-chord |
-| view 内 `h`/`j`/`k`/`l` / `J`/`K` | 最小 vi カーソル移動 / 1 行スクロール(移植済み) | 組み込み(view) |
-| `C-,` / `C-.` | `previous-buffer` / `next-buffer`(移植済み。特殊バッファは `switch-to-prev-buffer-skip-regexp` でスキップ) | 組み込み |
-| `M-o` | `other-window-or-split` | カスタム |
-| `C-tab` | `other-window-or-split` | カスタム |
-| `F2` / `S-F2` | バッファ入替 | カスタム |
-| `C-^` / `C-x C-^` | ウィンドウ自動拡大 / 方向トグル | カスタム |
-| `C-M-/` | undo-redo(移植済み。旧 redo+ の組み込み代替) | 組み込み |
-| `F5` / `F6` | point-undo 見送り → 組み込み mark ring(`C-u C-SPC` 等)で代用 | 組み込み |
-| `M-y` | `yank-from-kill-ring`(kill-ring 補完選択・移植済み) | 組み込み |
-| `C-c "` `'` `` ` `` `(` `[` … | リージョン囲み `quote-region-by`(移植済み) | カスタム |
-| `C-s` / `C-r` | `isearch`(migemo でローマ字→日本語対応・移植済み) | 組み込み + migemo |
-| `isearch` 中 `M-m` | migemo の ON/OFF トグル(移植済み) | migemo |
-| `C-c g` | **magit-status(移植済み)** | magit |
-| `C-c j/k` | counsel git-grep/ag(未移植。`C-c g` は magit に割当済みのため counsel 移植時は別キーへ) | counsel |
-| `M-x deadgrep` | ripgrep 検索(旧 `M-x ag` の代替・移植済み)。新規バッファに結果 | deadgrep |
-| deadgrep 内 `r` | wgrep モードに入る(編集 → `C-c C-c` でファイル反映、自動保存)| wgrep / wgrep-deadgrep |
-| `C-c d` / `C-c D` | magit-ediff working-tree / dwim(移植済み) | magit |
-| `C-t …` | ウィンドウ操作プレフィックス(旧 `C-t m` の moccur 系は color-moccur 不採用のため空き) | カスタム |
-| `C-z …` | elscreen プレフィックス | elscreen |
-| `C-x C-j` | `dired-jump`(移植済み。旧 direx の組み込み代替) | 組み込み(dired-x) |
-| `C-x C-p` | `find-file-at-point`(移植済み・ffap 軽量採用) | 組み込み |
-| `C-x C-n` | `dired-sidebar-toggle-sidebar`(移植済み。旧 direx 常駐ツリーの代替。`set-goal-column` を shadow) | dired-sidebar |
-| `C-x p f` 等 | 組み込み project.el(`f` find-file / `g` find-regexp / `r` query-replace / `p` switch / `d` find-dir 他、`C-x p` プレフィックス) | 組み込み |
-| `C-x x g` | `revert-buffer-quick`(バッファをディスクの内容で読み込み直す) | 組み込み |
-| dired `<tab>` / `<backtab>` | `dired-subtree-toggle` / `dired-subtree-cycle`(移植済み) | dired-subtree |
-| dired `r` / `E` | wdired 一括リネーム / マーク 2-3 を ediff(移植済み) | 組み込み/カスタム |
-| `C-c a` | org-agenda | 組み込み(org) |
-| `C-c m` / `C-c p`(mac) | 最大化(mac-toggle-max-window、maximized)/ 透明度トグル(移植済み) | カスタム |
+**キーバインド早見表は [README.md「キーバインド早見表」](README.md#キーバインド早見表) に集約**しているのでそちらを参照(ユーザー向け = 移植済みのバインドのみ)。本ファイルでは「未移植」「不採用」のメモを補足としてここに残す:
+
+- `M-o` / `C-tab` — `other-window-or-split`(未移植・カスタム関数依存。旧 `inits/50-window.el`)
+- `F2` / `S-F2` — `swap-screen` / `swap-screen-with-cursor`(未移植・同上)
+- `C-^` / `C-x C-^` — `enlarge-window-auto` / `toggle-enlarge-window-auto-direction`(未移植・同上)
+- `F5` / `F6` — 旧 `point-undo`(採用見送り → 組み込み mark ring `C-u C-SPC` 等で代用)
+- `C-c j/k` — 旧 counsel git-grep / ag(未移植。`C-c g` は magit に割当済みのため counsel 移植時は別キーへ)
+- `C-t …` — ウィンドウ操作プレフィックス(旧 `C-t m` の moccur 系は color-moccur 不採用のため空き、配下バインドは未移植)
 
 ---
 
