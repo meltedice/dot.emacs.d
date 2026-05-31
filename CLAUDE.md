@@ -108,7 +108,7 @@
 - [-] 旧パッケージ管理(el-get / el-get-lock / auto-install) — 旧構成は不採用
 - [x] パッケージ管理基盤 — **package.el + use-package**(Emacs 30 同梱)で**移植済み**。`elpa/` を git 管理し別マシンへ移植・復元(上流リンク切れでも実体を抱える方針、`.gitignore` 調整済)。git のみのパッケージは `use-package :vc`
 - [-] init-loader による分割設定ロード — 主流の単一 `init.el` 構成へ再編したため不採用
-- [ ] 環境判定ユーティリティ(OS/GUI/hostname/which)
+- [-] 環境判定ユーティリティ(OS/GUI/hostname/which) — **移植しない**(調査済み)。組み込みの `display-graphic-p`(GUI 判定)/ `system-type`(OS 判定)/ `(system-name)`(ホスト名)/ `executable-find`(which 相当)で完全代替。実際 `*scratch*` 永続化(`my-scratch--short-hostname`)で `(system-name)` を直接利用している
 - [x] シェル PATH 取り込み — `exec-path-from-shell`(GUI/デーモン時、ログイン非対話 `-l`)で**移植済み**。GUI Emacs でも `~/.local/bin`(pipx: grip 等)を解決
 - [x] 基本 UX(ツールバー非表示、起動画面抑止、`yes/no`→`y/n`、削除→ゴミ箱、ベルは画面フラッシュ、タイトルバー書式、関数名/行桁番号のモードライン表示、インデント既定)
 
@@ -164,8 +164,8 @@
 
 > **新マシン setup: cmigemo のインストール手順は [README.md「新マシンセットアップ → cmigemo」](README.md#cmigemoローマ字日本語-isearch-のエンジン) を参照**。`init.el` の `my-migemo-dictionary` が代表的な辞書パス候補を実行時に探索する。`cmigemo` バイナリ or 辞書がどれも見つからないマシンでは `use-package :if` で migemo 関連が全体スキップされ起動エラーにはならない(`init.el` 該当セクションコメント参照)。
 
-- [ ] `ivy` / `counsel` / `swiper`(補完 UI、C-s/C-c g/j/k 等) — パッケージ依存
-- [ ] `smex`(M-x 履歴) — パッケージ依存
+- [-] `ivy` / `counsel` / `swiper`(補完 UI、C-s/C-c g/j/k 等) — **移植しない**(調査済み)。旧パッケージは前世代スタック。現代主流の **`vertico` + `consult` + `orderless` + `marginalia`**(下記「参考: Option B」)へ将来刷新する方針。旧 ivy 系の忠実移植は実施しない
+- [-] `smex`(M-x 履歴) — **移植しない**(調査済み)。**`vertico` + 組み込み `savehist-mode`** で完全代替可能(M-x 履歴・頻度順表示)。Option B の刷新時に同時対応
 - [-] `ido` — 旧設定で関連コードはコメントアウト(無効)。移植しない
 - [-] `helm` — `90-helm.el.disabled` として無効。移植しない
 
@@ -177,22 +177,24 @@
 - [x] `gitignore-mode` — **移植済み**。`git-modes` パッケージ(Magit 系、`gitignore-mode` / `gitconfig-mode` / `gitattributes-mode` 3 点)を `use-package` で導入。標準パターン(`.gitignore` / `.gitconfig` / `.gitattributes` / `.gitmodules` / `.git/config` / `info/exclude` 等)はパッケージ autoload が `auto-mode-alist` 自動登録。追加で `.dockerignore` / `.eslintignore` / `.prettierignore` / `.npmignore` / `.stylelintignore` も `gitignore-mode` に割当。旧 `(el-get-bundle gitignore-mode)` 相当 + 拡充
 
 ### 言語・メジャーモード(いずれもパッケージ依存、未移植)
-- [ ] **Go**: go-mode + go-autocomplete + go-eldoc、保存時 gofmt、godef-jump(M-.)
-- [ ] **Ruby**: ruby-mode + ruby-block/ruby-end/ruby-electric ほか、rspec-mode、projectile-rails、robe、rhtml-mode
-- [ ] **JavaScript / TypeScript**: rjsx-mode、js2-mode、typescript-mode、tide、flow-minor-mode、prettier-js、coffee-mode、json-mode
-- [ ] **Web**: web-mode(`.html`/`.ctp`、インデント 2、php エンジン)
-- [ ] **PHP**: php-mode / **Lua**: lua-mode / **GraphQL**: graphql-mode(`.graphql`/`.gql`)
+- [-] **Go**: go-mode + go-autocomplete + go-eldoc、保存時 gofmt、godef-jump(M-.) — **移植しない**(現状の常用言語ではないためユーザー判断で保留)。将来必要時は組み込み **`go-ts-mode`(Emacs 29+)+ `eglot`**(LSP)+ `apheleia`(gofmt)の薄い 5-10 行構成で再導入推奨。`go-autocomplete` / `go-eldoc` / `godef-jump` は eglot が全部担当
+- [-] **Ruby**: ruby-mode + ruby-block/ruby-end/ruby-electric ほか、rspec-mode、projectile-rails、robe、rhtml-mode — **移植しない**(同上、ユーザー判断)。将来は `ruby-ts-mode`(Emacs 29+)+ `eglot`(ruby-lsp / sorbet 等)で。`robe` / `ruby-block` 等の補助系は eglot+ts-mode で大半不要
+- [ ] **JavaScript / TypeScript**: rjsx-mode、js2-mode、typescript-mode、tide、flow-minor-mode、prettier-js、coffee-mode、json-mode — **推奨移行先(調査済み)**: 組み込み **`typescript-ts-mode` / `tsx-ts-mode` / `js-ts-mode` / `json-ts-mode`(すべて Emacs 29+ 同梱)+ `eglot`**(LSP、typescript-language-server を `npm i -g typescript-language-server typescript` で導入)。`tide` / `js2-mode` / `rjsx-mode` は eglot+ts-mode で代替、`flow` / `coffee-mode` は終息で不採用、`prettier-js` は `apheleia`(format-on-save)で代替。`json-mode` は `json-ts-mode` 同梱
+- [-] **Web**: web-mode(`.html`/`.ctp`、インデント 2、php エンジン) — **移植しない**(同上、ユーザー判断)。HTML だけなら組み込み `mhtml-mode`、`.ctp`(CakePHP)を今も書くなら web-mode を別途検討
+- [-] **PHP**: php-mode / **Lua**: lua-mode / **GraphQL**: graphql-mode(`.graphql`/`.gql`) — **移植しない**(同上、ユーザー判断)。将来は各 `*-ts-mode`(PHP は GNU ELPA `php-ts-mode`、Lua は `lua-ts-mode`、GraphQL は `graphql-ts-mode` 等)+ eglot を第一候補に
 - [x] **Markdown**: `markdown-mode`(+ `gfm-mode` for README)。補助 `markdown-toc`(目次)/ `grip-mode`(GitHub 風プレビュー、要 `pip install grip`)を use-package で**移植済み**
-- [ ] **マークアップ/データ(残り)**: textile-mode、yaml-mode、apib-mode、haml/slim/sass/scss/less、shell-script(zsh 系)
-- [ ] **org-mode**: アジェンダ(C-c a)、`kanban.org`、完了時刻記録 — 組み込み。`C-c a` バインドのみ済
-- [ ] プロジェクト管理 `projectile` — パッケージ依存
+- [ ] **YAML**: `yaml-mode` または組み込み `yaml-ts-mode`(Emacs 29+、tree-sitter)— 使用頻度高(CI/k8s/Ansible/GitHub Actions)。`yaml-ts-mode` が同梱で利用可能、grammar は `treesit-install-language-grammar` で導入。`auto-mode-alist` 登録のみで動く最小構成
+- [-] **マークアップ/データ(残り)**: textile-mode / apib-mode / haml-mode / slim-mode / sass-mode / scss-mode / less-css-mode / shell-script(zsh) — **移植しない**(現状の常用ではないためユーザー判断)。zsh ファイルは組み込み `sh-mode` で十分。haml/slim/sass/scss/less は使用言語が変わった場合に個別追加。textile/apib は事実上廃れ
+- [ ] **org-mode**: アジェンダ(C-c a)、`kanban.org`、完了時刻記録 — 組み込み。`C-c a` バインドのみ済。**推奨移行先(調査済み)**: 組み込み org の小さな設定足し込みで完了する(`(setq org-agenda-files '("~/path/to/kanban.org" ...))` / `(setq org-log-done 'time)` で完了時刻自動記録 / `org-todo-keywords` / `org-capture-templates` / `org-refile-targets` 等)。外部パッケージは不要、5-15 行規模
+- [-] プロジェクト管理 `projectile` — **移植しない**(調査済み)。組み込み `project.el`(`C-x p f`/`g`/`r`/`p`/`d` ほか)で**移植済み**=同等以上に代替できる。`projectile-rails` 等の言語固有プラグインが必要になったら個別検討
 
 ### シンタックスチェック
-- [ ] `flycheck`(グローバル)/ `flymake` / 各種 `flymake-*` チェッカ群 — パッケージ依存。flymake は組み込み版あり
-- [ ] JS/TS: eslint + `flycheck-flow`(flow)+ prettier 連携(jshint/jscs は無効)
+- [ ] `flycheck`(グローバル)/ `flymake` / 各種 `flymake-*` チェッカ群 — パッケージ依存。**推奨移行先: 下記の「`flymake`(組み込み)+ `eglot`(組み込み) による diagnostics」**(調査済み)。`flycheck` 自体の忠実移植は不要、現代は flymake + eglot 経由の LSP diagnostics が主流
+- [ ] **`flymake`(組み込み・Emacs 26+)+ `eglot`(組み込み・Emacs 29+)による diagnostics** — 旧 `flycheck` の現代代替。各言語 LSP の警告を flymake が表示。設定は `prog-mode` フックで `flymake-mode` を有効化+ eglot を必要に応じて起動するだけの最小構成。言語固有 checker(`flymake-eslint` 等)は eglot がカバーできない場合のみ補完導入
+- [-] JS/TS: eslint + `flycheck-flow`(flow)+ prettier 連携(jshint/jscs は無効) — **移植しない**(調査済み)。Flow は TypeScript に敗北して終息、jshint/jscs は ESLint に統合済み、prettier 連携は **`apheleia`(format-on-save)**または LSP 経由が現代的。eslint 連携は eglot(LSP)で吸収。下記 JavaScript/TypeScript エントリ参照
 
 ### 文字コード・フォント・表示
-- [ ] 拡張子別 coding-system 設定(`80-encodings.el`)
+- [-] 拡張子別 coding-system 設定(`80-encodings.el`)— **移植しない**(調査済み)。Emacs 30 既定 UTF-8 で大半の場面が不要。Shift_JIS 等の特定ファイル群を継続的に扱う運用が出てきたら個別追加
 - [x] macOS フォント — **移植済み**(比較用プリセット方式)。`M-x my-font-preset` で 4 プリセット即時切替: `faithful-old`(旧 Monaco+Hiragino Maru ProN+rescale 忠実)/ `stock-modern`(Menlo+Hiragino Kaku ProN)/ `udev-gothic` / `plemol-jp`(CJK 同梱 1 本、`brew install --cask font-udev-gothic` / `font-plemol-jp` 導入済)。**起動時デフォルト = `stock-modern`**(`my-font-default-preset`、GUI 時自動適用、daemon は after-make-frame-functions)
 - [x] 全角記号フォント対応(`use-default-font-for-symbols nil`) — **移植済み**(全プリセット共通で維持)
 - [-] 行番号 `linum-off` + `global-linum-mode` — **linum は Emacs 29 で廃止**。`display-line-numbers`(prog-mode のみ、幅3)で**代替移植済み**
@@ -208,8 +210,8 @@
 ### その他
 - [x] `*scratch*` 永続化(旧 `inits/50-scratch.el`) — **移植済み**。保存先は `user-emacs-directory/.scratch-<hostname>`(旧 Dropbox 優先の分岐は現在 Dropbox 未使用のためユーザー指示で除去、ただし将来マシンが増えても混線しないよう **hostname suffix は旧仕様どおり維持**)。挙動: ① 起動時に `my-scratch-load` が `*scratch*` へ復元、② Emacs 終了時に `advice-add :before save-buffers-kill-emacs` で `my-scratch-save`(`my-scratch-save-p` が判定、`my-scratch-donot-save` で当該セッションのみ抑止可)、③ `*scratch*` 上の `C-x C-s` は `lisp-interaction-mode-hook` でローカル上書きして専用保存関数に、④ `kill-buffer-query-functions` で `*scratch*` 削除を内容クリアにすり替え、⑤ 別ファイル save 後の `after-save-hook` で `*scratch*` 消失時の自動再生成。現代化: 旧 `defadvice` を `advice-add` に、`find-file-noselect`+`save-buffer` 経由を `write-region` 一発に、旧 `hostname-short`(`inits/00-environments.el` 由来・未移植)依存を `(system-name)` をドット分割した先頭の小文字化で代替(`my-scratch--short-hostname`)、命名を `my-*` 統一(旧 `scratch-*` / `my-make-scratch` 混在を解消)。保存ファイルは `.scratch*` パターンで `.gitignore` 既存除外
 - [x] autosave / backup / undohist のディレクトリ集約(`.autosave` / `.backup` / `.undohist`) — **移植済み**。Emacs が編集中に作る一時ファイルを `user-emacs-directory` 配下の専用ディレクトリへ集約: ① auto-save 本体 `#file#` → `.autosave/`(`auto-save-file-name-transforms`、UNIQUIFY t)、② auto-save 索引 `saves-PID-HOST` → `.autosave/`(`auto-save-list-file-prefix`)、③ バックアップ `file~` → `.backup/`(`backup-directory-alist`、対象は現代慣用の `"."`)、④ undo 履歴 → `.undohist/`(undohist、移植済み)。**旧 `50-autosave-backup.el` は ②③ のみ集約し ① は散らかしていた**ため、① も集約する方針(ユーザー選択)。出力先は起動時に `make-directory` で明示作成。3 ディレクトリは `.gitignore` 除外済み。バックアップ世代管理(`version-control`/`delete-old-versions`/`backup-by-copying`)は旧設定にも無く集約スコープ外(必要なら別途)
-- [ ] `simplenote2`(Simplenote とメモ同期、`~/.authinfo` 認証) — パッケージ依存
-- [ ] `tramp`(`/sudo:` `/ssh:`、root は ssh 経由 proxy) — 組み込み、未移植
+- [-] `simplenote2`(Simplenote とメモ同期、`~/.authinfo` 認証) — **移植しない**(ユーザー判断)。Simplenote 自体を現在常用していないため。MELPA パッケージも 2020 前後で更新停滞。将来再開する場合は denote / org-roam / Obsidian 等の現代代替の検討余地あり
+- [-] `tramp`(`/sudo:` `/ssh:`、root は ssh 経由 proxy) — **移植しない**(ユーザー判断)。`tramp` は組み込み・autoload 済みで設定ゼロのまま `C-x C-f /ssh:user@host:/path` / `/sudo::/etc/foo` が動作する(=実質既に「移植済み」)。旧の root-via-ssh proxy(`tramp-default-proxies-alist`)が必要になった時点で 5 行程度追記すれば良い
 
 ---
 
