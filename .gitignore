@@ -60,3 +60,9 @@ network-security.data
 # (history.el / values.el / levels.el 等)。magit 等の transient 利用で
 # 自動生成される実行時状態のため git 管理しない。
 /transient/
+
+# treesit-install-language-grammar が書き出す per-machine の grammar 共有
+# ライブラリ(libtree-sitter-<lang>.{dylib,so})。アーキ依存のバイナリ
+# のため git 管理しない。各マシンで treesit-install-language-grammar
+# (または README「YAML tree-sitter grammar」記載の手動ビルド)で生成。
+/tree-sitter/

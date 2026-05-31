@@ -111,6 +111,44 @@ M-x treesit-install-language-grammar RET yaml RET
 
 未導入のまま `.yml` を開いても `yaml-mode`(MELPA、`elpa/` に vendored)が fallback として動く。grammar を後から入れた場合は再 visit するだけで `yaml-ts-mode` に切替わる。
 
+#### Apple Silicon 固有: アーキ不一致警告が出た場合
+
+`M-x treesit-install-language-grammar RET yaml RET` を Apple Silicon の Emacs.app(arm64)で実行すると、`*Warnings*` バッファに大量のエラーが出たうえで grammar が読まれない、というケースが起きうる。核心の 1 行はこれ:
+
+```
+(mach-o file, but is an incompatible architecture
+ (have 'x86_64', need 'arm64e' or 'arm64e.v1' or 'arm64' or 'arm64'))
+```
+
+= **Emacs は arm64 で動いているのに、ビルドされた `.dylib` が x86_64** で `dlopen` が拒否されている。`ARCHFLAGS` 等を設定していなくても、子プロセスチェーンのどこかで x86_64 にフォールバックされて起こるパターン(macOS の universal binary 周りの挙動)。
+
+**対処: arm64 を明示して手動ビルドし、既存の x86_64 dylib を置き換える**。シェルで一括:
+
+```sh
+# 既存の x86_64 dylib を削除
+rm -f ~/.emacs.d.30.2-1/tree-sitter/libtree-sitter-yaml.dylib
+
+# tree-sitter-yaml を一時 clone
+rm -rf /tmp/ts-yaml
+git clone --depth=1 https://github.com/ikatyang/tree-sitter-yaml /tmp/ts-yaml
+cd /tmp/ts-yaml
+
+# arm64 を明示してビルド。tree-sitter-yaml の scanner は C++(scanner.cc)で
+# 書かれており、内部で schema.generated.cc を #include している。
+# C++ コンパイラ (/usr/bin/c++) で parser.c と scanner.cc を一緒にリンクする。
+mkdir -p ~/.emacs.d.30.2-1/tree-sitter
+/usr/bin/c++ -arch arm64 -shared -fPIC -O2 -I src \
+  src/parser.c src/scanner.cc \
+  -o ~/.emacs.d.30.2-1/tree-sitter/libtree-sitter-yaml.dylib
+
+# 確認(arm64 と出れば成功)
+file ~/.emacs.d.30.2-1/tree-sitter/libtree-sitter-yaml.dylib
+```
+
+Emacs 内で `(treesit-language-available-p 'yaml)` が `t` を返せば完了(`M-:` で評価)。
+
+**他の grammar も同じ症状なら**: 一般化のポイントは(1)`/usr/bin/c++ -arch arm64` で C++ link、(2)その grammar の `src/scanner.{c,cc}` を確認して C/C++ の別に応じて適切なコンパイラを使う、(3)`schema.generated.cc` のような追加 `.cc` は通常 `scanner.cc` の中で `#include` されているので個別には渡さない(渡すと重複定義)。
+
 ### Node LSP / Formatter(任意)
 
 JS/TS / YAML を eglot 経由の LSP で書く場合、本マシンは **volta 管理**のため `volta install` で導入する(volta が無い別マシンは `pnpm add -g` を使う。素の `npm install -g` / `npx` は不採用):
