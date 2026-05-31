@@ -201,8 +201,8 @@
 - [-] プロジェクト管理 `projectile` — **移植しない**(調査済み)。組み込み `project.el`(`C-x p f`/`g`/`r`/`p`/`d` ほか)で**移植済み**=同等以上に代替できる。`projectile-rails` 等の言語固有プラグインが必要になったら個別検討
 
 ### シンタックスチェック
-- [ ] `flycheck`(グローバル)/ `flymake` / 各種 `flymake-*` チェッカ群 — パッケージ依存。**推奨移行先: 下記の「`flymake`(組み込み)+ `eglot`(組み込み) による diagnostics」**(調査済み)。`flycheck` 自体の忠実移植は不要、現代は flymake + eglot 経由の LSP diagnostics が主流
-- [ ] **`flymake`(組み込み・Emacs 26+)+ `eglot`(組み込み・Emacs 29+)による diagnostics** — 旧 `flycheck` の現代代替。各言語 LSP の警告を flymake が表示。設定は `prog-mode` フックで `flymake-mode` を有効化+ eglot を必要に応じて起動するだけの最小構成。言語固有 checker(`flymake-eslint` 等)は eglot がカバーできない場合のみ補完導入
+- [-] `flycheck`(グローバル)/ 各種 `flymake-*` チェッカ群 — **移植しない**(下記 `flymake` + `eglot` 統合で完結)。`flycheck` 自体の忠実移植は不要、現代は flymake + eglot 経由の LSP diagnostics が主流
+- [x] **`flymake`(組み込み・Emacs 26+)+ `eglot`(組み込み・Emacs 29+)による diagnostics** — **移植済み**。`init.el` に「Diagnostics 基盤」セクション追加。設計方針: ① 各メジャーモードでの eglot 起動は **当該メジャーモードのセクション**で `(add-hook '<lang>-(ts-)mode-hook #'eglot-ensure)` を足すパターンに統一(YAML で実証)、② flymake は **elisp 編集中だけ常時 on**(`emacs-lisp-mode-hook` のみ)— `prog-mode` 全般 push は no-backend モードで minor mode が走る副作用を避けるため不採用、LSP 連動が必要な言語は eglot 起動時に自動で flymake-mode が enable される、③ ナビゲーションは flymake が `next-error` フレームワークに登録されるため組み込み `M-g n` / `M-g p` で diagnostic 間移動可(symbol-overlay の M-n/M-p と衝突しない)、④ `eglot-autoshutdown t` で最後のバッファが閉じたら LSP サーバ自動 shutdown(リソース節約)。使い方とコマンド早見表は README.md「コード診断 / LSP」参照
 - [-] JS/TS: eslint + `flycheck-flow`(flow)+ prettier 連携(jshint/jscs は無効) — **移植しない**(調査済み)。Flow は TypeScript に敗北して終息、jshint/jscs は ESLint に統合済み、prettier 連携は **`apheleia`(format-on-save)**または LSP 経由が現代的。eslint 連携は eglot(LSP)で吸収。下記 JavaScript/TypeScript エントリ参照
 
 ### 文字コード・フォント・表示

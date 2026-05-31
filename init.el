@@ -1071,6 +1071,40 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
 
 
 ;;; ============================================================
+;;;  Diagnostics 基盤: flymake + eglot(両方 Emacs 同梱)
+;;; ============================================================
+;; 旧 `flycheck` + 各 `flymake-*` チェッカ群の現代代替。
+;;   - `flymake` (Emacs 26+) は警告表示フレームワーク。バッファ内
+;;     ハイライト + fringe マーカで diagnostics を出す。
+;;   - `eglot` (Emacs 29+) は LSP クライアント。各言語サーバの警告を
+;;     flymake をディスプレイとして表示する。
+;; どちらも autoload 済みのため追加 elpa 不要。
+;;
+;; 設計方針:
+;;   - 各メジャーモードへの eglot 起動は **当該メジャーモードのセクション**
+;;     で `(add-hook '<lang>-(ts-)mode-hook #'eglot-ensure)` を足す形に
+;;     統一(YAML セクションで実証済)。今後 JS/TS / PHP / Lua 等を
+;;     移植する時も同じ。本セクションは「土台」だけ持つ。
+;;   - flymake は **elisp 編集中だけ常時 on**。`prog-mode` 全般へ push
+;;     すると backend を持たないモードでも minor mode が走るため避ける。
+;;     LSP 連動が必要な言語では eglot が起動時に flymake-mode も
+;;     enable してくれる(eglot 既定挙動)。
+;;   - diagnostic 間の移動: flymake は `next-error` フレームワークに
+;;     登録されるため、**組み込み `M-g n` / `M-g p`** (next-error /
+;;     previous-error)で前後の警告へジャンプ可。専用キーは追加しない
+;;     (symbol-overlay の M-n / M-p と衝突しない)。
+;;   - `C-h .` (display-local-help) でカーソル位置の diagnostic 詳細表示。
+
+;; elisp 編集中の byte-compile 警告 / checkdoc をリアルタイム表示。
+(add-hook 'emacs-lisp-mode-hook #'flymake-mode)
+
+(with-eval-after-load 'eglot
+  ;; 最後のバッファが閉じたら eglot サーバを自動 shutdown
+  ;; (サーバプロセスが残らないようリソース節約)。
+  (setq eglot-autoshutdown t))
+
+
+;;; ============================================================
 ;;;  検索 — migemo(ローマ字のまま日本語を検索)
 ;;; ============================================================
 ;; 旧 inits/cocoa-emacs-migemo.el の移植。ローマ字(ASCII)入力のまま
