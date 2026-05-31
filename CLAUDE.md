@@ -78,12 +78,18 @@
 - `pip`/`pip3` は PEP 668(Homebrew Python 外部管理)で `install` 不可。
   CLI ツールは **`pipx install`**(無ければ `brew install pipx`)。
   GUI Emacs で `~/.local/bin` 等を解決するには `exec-path-from-shell`。
-- Node のグローバル CLI / LSP サーバは **`npm` / `npx` を使わず `pnpm` 経由で導入する**(ユーザー方針)。
-  - インストール: `pnpm add -g <pkg>`(旧 `npm install -g` の代替)
-  - 一発実行:   `pnpm dlx <pkg>`(旧 `npx` の代替)
-  - 例: `pnpm add -g typescript-language-server typescript` /
-        `pnpm add -g yaml-language-server` / `pnpm add -g prettier`
-  - 回答・コミット内で Node CLI 導入を勧める時は常に上記表記を使う。
+- Node のグローバル CLI / LSP サーバ(ユーザー方針 — 素の `npm install -g` / `npx` は使わない):
+  - **本マシンは volta が global を管理しているため第一選択は `volta install <pkg>`**。
+    volta シム下では `pnpm add -g` がブロックされるうえ、`volta uninstall pnpm` で
+    シムを外すと他プロジェクトの volta-pinned pnpm を壊しうるため、シム除去
+    アプローチは取らない(本リポジトリで検証済)。
+  - volta が無い別マシンに展開する場合は **`pnpm add -g <pkg>`** / **`pnpm dlx <pkg>`**(旧 `npm install -g` / `npx` の代替)を使う。
+  - 例(volta 環境):
+      `volta install typescript-language-server typescript`
+      `volta install yaml-language-server`
+      `volta install prettier`
+    例(volta なし環境):同名パッケージを `pnpm add -g` で。
+  - 回答・コミット内で Node CLI 導入を勧める時は volta か pnpm の上記表記を使う(素の npm/npx は書かない)。
 
 ## 旧設定のアーキテクチャ
 
@@ -185,7 +191,7 @@
 ### 言語・メジャーモード(いずれもパッケージ依存、未移植)
 - [-] **Go**: go-mode + go-autocomplete + go-eldoc、保存時 gofmt、godef-jump(M-.) — **移植しない**(現状の常用言語ではないためユーザー判断で保留)。将来必要時は組み込み **`go-ts-mode`(Emacs 29+)+ `eglot`**(LSP)+ `apheleia`(gofmt)の薄い 5-10 行構成で再導入推奨。`go-autocomplete` / `go-eldoc` / `godef-jump` は eglot が全部担当
 - [-] **Ruby**: ruby-mode + ruby-block/ruby-end/ruby-electric ほか、rspec-mode、projectile-rails、robe、rhtml-mode — **移植しない**(同上、ユーザー判断)。将来は `ruby-ts-mode`(Emacs 29+)+ `eglot`(ruby-lsp / sorbet 等)で。`robe` / `ruby-block` 等の補助系は eglot+ts-mode で大半不要
-- [ ] **JavaScript / TypeScript**: rjsx-mode、js2-mode、typescript-mode、tide、flow-minor-mode、prettier-js、coffee-mode、json-mode — **推奨移行先(調査済み)**: 組み込み **`typescript-ts-mode` / `tsx-ts-mode` / `js-ts-mode` / `json-ts-mode`(すべて Emacs 29+ 同梱)+ `eglot`**(LSP、typescript-language-server を `pnpm add -g typescript-language-server typescript` で導入)。`tide` / `js2-mode` / `rjsx-mode` は eglot+ts-mode で代替、`flow` / `coffee-mode` は終息で不採用、`prettier-js` は `apheleia`(format-on-save)で代替。`json-mode` は `json-ts-mode` 同梱
+- [ ] **JavaScript / TypeScript**: rjsx-mode、js2-mode、typescript-mode、tide、flow-minor-mode、prettier-js、coffee-mode、json-mode — **推奨移行先(調査済み)**: 組み込み **`typescript-ts-mode` / `tsx-ts-mode` / `js-ts-mode` / `json-ts-mode`(すべて Emacs 29+ 同梱)+ `eglot`**(LSP、typescript-language-server を `volta install typescript-language-server typescript`(volta 環境)/ `pnpm add -g typescript-language-server typescript`(volta なし)で導入)。`tide` / `js2-mode` / `rjsx-mode` は eglot+ts-mode で代替、`flow` / `coffee-mode` は終息で不採用、`prettier-js` は `apheleia`(format-on-save)で代替。`json-mode` は `json-ts-mode` 同梱
 - [-] **Web**: web-mode(`.html`/`.ctp`、インデント 2、php エンジン) — **移植しない**(同上、ユーザー判断)。HTML だけなら組み込み `mhtml-mode`、`.ctp`(CakePHP)を今も書くなら web-mode を別途検討
 - [-] **PHP**: php-mode / **Lua**: lua-mode / **GraphQL**: graphql-mode(`.graphql`/`.gql`) — **移植しない**(同上、ユーザー判断)。将来は各 `*-ts-mode`(PHP は GNU ELPA `php-ts-mode`、Lua は `lua-ts-mode`、GraphQL は `graphql-ts-mode` 等)+ eglot を第一候補に
 - [x] **Markdown**: `markdown-mode`(+ `gfm-mode` for README)。補助 `markdown-toc`(目次)/ `grip-mode`(GitHub 風プレビュー、要 `pip install grip`)を use-package で**移植済み**
