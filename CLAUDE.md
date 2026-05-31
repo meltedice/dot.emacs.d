@@ -45,6 +45,14 @@
 - `init.el` を変更したら毎回バッチで load / byte-compile し、結果を報告。
   パッケージ未導入時の検証は `package-installed-p`/`package-install` を
   スタブして実施。
+- **既定で batch Emacs で検証する**(`emacs --batch ... --eval ...`)。
+  ディスク状態 / 静的変数(`treesit-language-available-p`、
+  `executable-find`、`fboundp`、`auto-mode-alist`、`eglot-server-programs`
+  等)はすべて batch で同じ結果になるため、ユーザーに GUI 確認を
+  依頼するのは「**実 frame / face / mode-line の見た目**」「**対話 UX**」
+  「**起動中 GUI Emacs の現セッション状態**」が必要なときだけに絞る。
+  最近のミス例: tree-sitter grammar の availability 確認を `M-:` で
+  ユーザーに依頼してしまった(batch で完結すべきだった)。
 
 ### Git・コミット
 - **コミットはユーザーが明示したときだけ**。push しない。
@@ -90,6 +98,28 @@
       `volta install prettier`
     例(volta なし環境):同名パッケージを `pnpm add -g` で。
   - 回答・コミット内で Node CLI 導入を勧める時は volta か pnpm の上記表記を使う(素の npm/npx は書かない)。
+- **PATH 系の環境変数(volta / pipx / Homebrew 等)は `~/.zshrc` ではなく
+  `~/.zshenv` に書く**。`exec-path-from-shell-arguments` は本リビルドで
+  `'("-l")` のため login shell(`.zshenv` → `.zprofile` → `.zlogin`)
+  しか読まれず、対話用の `.zshrc` は対象外。GUI Emacs / launchd / cron 等
+  非対話経路から PATH が見えないとハマる(本マシンで volta を `.zshrc`
+  に置いていて発生 → `.zshenv` に移して解消)。`-l -i` で `.zshrc` も
+  読ませる手はあるが、対話用 init を全部評価するため起動が遅く副作用も
+  出る。`.zshenv` 集約が zsh の流儀でかつ最速。
+- **Apple Silicon の treesit-install-language-grammar は `x86_64` dylib を
+  吐くことがある**(本マシンで YAML / javascript / typescript / tsx / json
+  すべてで再現済)。Emacs.app は universal だが GUI 起動時 arm64 として
+  動いていても build chain のどこかで x86_64 に落ちる。対処は
+  **`/usr/bin/cc -arch arm64` で手動 build**:
+    `cc -arch arm64 -shared -fPIC -O2 -I src src/parser.c [src/scanner.c]`
+  C++ scanner(`scanner.cc`)を持つ grammar(YAML 等)は `/usr/bin/c++`
+  に置換、`scanner.cc` 内で `#include` される追加 `.cc`(例:
+  `schema.generated.cc`)は個別に渡さない。grammar 別の具体手順は
+  README.md「YAML tree-sitter grammar → Apple Silicon 固有」と
+  「JavaScript / TypeScript / JSON tree-sitter grammar」参照。
+  新しい言語を追加するときは scanner の言語(C/C++)と追加 `.cc` の
+  inclusion を `git ls-files | grep scanner` で先に確認すると無駄なく
+  進む。
 
 ## 旧設定のアーキテクチャ
 
