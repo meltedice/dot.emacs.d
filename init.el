@@ -1011,6 +1011,71 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
          ("<f7>" . symbol-overlay-rename)
          ("<f8>" . symbol-overlay-remove-all)))
 
+;; --- Multi-cursor: multiple-cursors + 拡張 3 つ ---
+;; 複数カーソルを同時に持って並列編集する(VS Code / Sublime 風)。
+;; 旧設定では未使用、本リビルドで新規追加。
+;;
+;; ## 構成
+;;   - multiple-cursors (本命): 実カーソルを複数化、ほぼ全 Emacs コマンドが
+;;     並列実行される
+;;   - mc-extras: cycle / rectangle 連動 等の追加コマンド集
+;;   - phi-search: multiple-cursors と互換性のある isearch 代替
+;;                 (mc モード中だけ C-s/C-r が phi-search に切替わる)
+;;   - iedit: 別パラダイム — シンボルの全出現を overlay で同時編集
+;;
+;; ## 主なキーバインド
+;;   --- mc カーソル増殖の入口(global)---
+;;   C-S-c C-S-c   mc/edit-lines               選択範囲の各行先頭に cursor
+;;   C->           mc/mark-next-like-this      現選択 (or word) と同じ語の
+;;                                             次の出現に cursor 追加
+;;   C-<           mc/mark-previous-like-this  前の出現に追加
+;;   C-c C-<       mc/mark-all-like-this       全出現に一気に
+;;   C-c C-S-l     mc/edit-lines               同上の alias(2 ストローク版)
+;;
+;;   --- mc-extras / mc/insert-* ---
+;;   C-c C-n       mc/insert-numbers           各 cursor 位置に 0,1,2,...
+;;   C-c C-l       mc/insert-letters           各 cursor 位置に a,b,c,...
+;;
+;;   --- mc 終了 ---
+;;   C-g                 全 cursor を解除
+;;   RET                 mc を抜けて通常の cursor 1 個に戻る
+;;
+;;   --- mc モード中の検索(phi-search 自動切替)---
+;;   C-s / C-r           通常時は isearch、mc モード中は phi-search に切替
+;;
+;;   --- iedit ---
+;;   C-;                 iedit-mode (point 上のシンボル全出現を同時編集)
+;;                       同じキーで終了
+;;
+;; ## 補助ファイル
+;;   mc は「ユーザーが許可した一回限り/全体実行コマンドのリスト」を
+;;   .mc-lists.el に保存する。本リビルドでは user-emacs-directory 配下に
+;;   集約し、.gitignore で除外(per-machine 状態のため)。
+(use-package multiple-cursors
+  :bind (("C-S-c C-S-c" . mc/edit-lines)
+         ("C-c C-S-l"   . mc/edit-lines)        ; 上の alias(2 ストローク)
+         ("C->"         . mc/mark-next-like-this)
+         ("C-<"         . mc/mark-previous-like-this)
+         ("C-c C-<"     . mc/mark-all-like-this)
+         ("C-c C-n"     . mc/insert-numbers)
+         ("C-c C-l"     . mc/insert-letters))
+  :custom
+  (mc/list-file (expand-file-name ".mc-lists.el" user-emacs-directory)))
+
+(use-package mc-extras :after multiple-cursors)
+
+(use-package phi-search
+  :after multiple-cursors
+  :config
+  ;; mc モード中だけ C-s / C-r を phi-search に切替(mc/keymap は
+  ;; cursor が複数の間だけ有効になる minor keymap)。
+  (with-eval-after-load 'multiple-cursors-core
+    (define-key mc/keymap (kbd "C-s") #'phi-search)
+    (define-key mc/keymap (kbd "C-r") #'phi-search-backward)))
+
+(use-package iedit
+  :bind (("C-;" . iedit-mode)))
+
 
 ;;; ============================================================
 ;;;  ビューモード(ページャ)— 旧 inits/50-view-mode.el / 20-key-chord.el

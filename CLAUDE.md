@@ -166,6 +166,7 @@
 - [x] シンボルハイライト & 一括リネーム — **移植済み**。`use-package symbol-overlay`(旧 `auto-highlight-symbol` 未保守の現代後継)。`prog-mode` で自動ハイライト、`M-i`/`M-n`/`M-p`/`F7`(rename)/`F8`。`elpa/` へ vendoring
 - [-] スニペット展開(yasnippet) — **移植しない**(ユーザー判断)。将来必要なら `yasnippet`(+`yasnippet-snippets`)または軽量 `tempel` を再検討
 - [x] キーコード同時押し(key-chord: `jk` で view-mode) — **移植済み**。`use-package key-chord`(MELPA、2025 更新で保守継続。chord の組み込み代替なし)。`key-chord-two-keys-delay` 0.1、`jk` 同時押しで `view-mode` トグル(旧 `20-key-chord.el` 忠実)。旧 `(require 'key-chord nil t)` は use-package 化。`elpa/` へ vendoring
+- [x] Multi-cursor(複数カーソル同時編集) — **新規追加**(旧設定では未使用、ユーザー要望で本リビルドに導入)。`multiple-cursors`(本命、MELPA 2026-04 更新)+ 拡張 3 つ(`mc-extras` / `phi-search` / `iedit`)を `elpa/` に vendoring。**キーバインド**: `C->`(`mc/mark-next-like-this`)/`C-<`(prev)/`C-c C-<`(`mc/mark-all-like-this`)/`C-S-c C-S-c` または `C-c C-S-l`(`mc/edit-lines`)/`C-c C-n`(連番挿入)/`C-c C-l`(連続文字挿入)。**phi-search 連携**: `mc/keymap` で `C-s`/`C-r` を `phi-search`/`phi-search-backward` に差し替え(mc モード中だけ。通常時は素の isearch 継続)。**iedit**: 別パラダイムの「シンボル全出現を overlay で同時編集」を `C-;` でトグル。**補助ファイル**: `mc/list-file` を `user-emacs-directory/.mc-lists.el` に集約し `.gitignore` で除外(per-machine 状態)。使い方早見表は README.md「Multi-cursor(複数カーソル同時編集)」参照
 
 ### Undo / 履歴
 - [x] `redo+`(リドゥ、C-M-/) — **組み込み `undo-redo`(Emacs 28+)で代替移植済み**。未保守 EmacsWiki の redo+ は不採用。キーは旧踏襲の `C-M-/`。旧 `undo-limit`/`undo-strong-limit`/`undo-no-redo` は組み込み変数としてコメントで残置(既定のまま、必要時に有効化)

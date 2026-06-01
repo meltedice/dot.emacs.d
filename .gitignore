@@ -66,3 +66,7 @@ network-security.data
 # のため git 管理しない。各マシンで treesit-install-language-grammar
 # (または README「YAML tree-sitter grammar」記載の手動ビルド)で生成。
 /tree-sitter/
+
+# multiple-cursors が書き出す per-machine の認可リスト(ユーザーが「全
+# cursor で実行する/しない」を確定したコマンドの記録)。
+/.mc-lists.el
