@@ -38,6 +38,12 @@ ddskk-*
 # *scratch*
 .scratch*
 
+# 組み込み UX(recentf / savehist / save-place)が書き出す per-machine の
+# 履歴・カーソル位置。実行時状態のため git 管理しない。
+/.recentf
+/.savehist
+/.saveplace
+
 # ido
 ido.last
 smex-items

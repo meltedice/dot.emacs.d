@@ -239,6 +239,7 @@ volta install prettier
 | `jk` 同時押し | `view-mode` トグル | key-chord |
 | view-mode 内 `h`/`j`/`k`/`l` / `J`/`K` | 文字移動 / 1 行スクロール | 組み込み (view) |
 | `C-x x g` | `revert-buffer-quick`(ディスクの内容で読み直し) | 組み込み |
+| `C-x C-r` | `recentf-open`(最近開いたファイルを補完選択) | 組み込み (recentf) |
 | `C-c g` | `magit-status` | magit |
 | `C-c d` / `C-c D` | `magit-ediff-working-tree` / `magit-ediff` (dwim) | magit |
 | `C-s` / `C-r` | `isearch`(migemo でローマ字 → 日本語) | 組み込み + migemo |
@@ -261,6 +262,18 @@ volta install prettier
 ---
 
 ## 機能と使い方
+
+### セッション永続化・操作補助(すべて組み込み)
+
+いずれも Emacs 同梱の機能。設定なしでもそのまま使える(状態ファイルは per-machine
+なので git 管理しない)。
+
+- **`recentf`(最近のファイル)** — `C-x C-r` で最近開いたファイルを補完選択して開く。履歴は最大 300 件、`elpa/` 配下や `.git/` は除外。
+- **`savehist`(履歴の永続化)** — ミニバッファ入力・`M-x` の履歴を終了後も保持。前回の `M-x` コマンドや検索文字列が次回起動でも候補に出る。
+- **`save-place`(カーソル位置の復元)** — 一度開いたファイルを再訪すると前回のカーソル位置に戻る。
+- **`which-key`(キー候補表示、Emacs 30 同梱)** — プレフィックスキーを押して少し待つと、続けて押せるキーの一覧がエコーエリアに出る。`C-z`(タブ)/ `C-c` / `C-x` 等の確認に便利。
+- **`auto-revert`(自動再読込)** — ファイルが外部で変わると自動で読み直す。git の `pull` / ブランチ切替や、保存時フォーマッタ(apheleia)実行後の追従に有用。dired バッファも対象。
+- **`repeat-mode`(連打、Emacs 28+)** — 同種コマンドを 1 キーで繰り返せる。例: `C-x o` のあと `o o o…` でウィンドウ循環、`C-x {` / `}` のあと `{ }` 連打でリサイズ。`describe-repeat-maps` で対象一覧。
 
 ### 編集
 

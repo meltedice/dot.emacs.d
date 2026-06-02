@@ -136,6 +136,52 @@
 
 
 ;;; ============================================================
+;;;  組み込み UX(セッション永続化・操作補助)
+;;; ============================================================
+;; いずれも Emacs 同梱(外部パッケージ不要)。多くの設定で定番だが本リビルドに
+;; 未導入だったものをまとめて有効化。生成される per-machine の状態ファイル
+;; (.recentf / .savehist / .saveplace)は .gitignore で除外する。
+
+;; --- recentf: 最近開いたファイルの履歴 ---
+;; C-x C-r で履歴から補完選択して開く(既定の find-file-read-only を上書き。
+;; 読取専用で開く用途は view-read-only / view-mode 側で代替済み)。
+(setq recentf-save-file       (locate-user-emacs-file ".recentf"))
+(setq recentf-max-saved-items 300)
+(setq recentf-max-menu-items  30)
+(setq recentf-exclude
+      (list (regexp-quote (expand-file-name "elpa/" user-emacs-directory))
+            "\\.recentf\\'" "\\.savehist\\'" "\\.saveplace\\'"
+            "/\\.git/" "/COMMIT_EDITMSG\\'" "\\.gz\\'"))
+(recentf-mode 1)
+(global-set-key (kbd "C-x C-r") #'recentf-open) ; Emacs 29+ の補完版
+
+;; --- savehist: ミニバッファ・M-x 等の入力履歴をセッション間で永続化 ---
+;; (将来 vertico 系に刷新する際もそのまま土台として使える)
+(setq savehist-file   (locate-user-emacs-file ".savehist"))
+(setq history-length  1000)
+(savehist-mode 1)
+
+;; --- save-place: ファイルごとに前回のカーソル位置を復元 ---
+(setq save-place-file (locate-user-emacs-file ".saveplace"))
+(save-place-mode 1)
+
+;; --- which-key: キー入力途中で後続キー候補をエコーエリアに表示 ---
+;; (Emacs 30 で本体同梱。プレフィックスキー C-z / C-t / C-c 等の確認に有用)
+(setq which-key-idle-delay 0.8)
+(which-key-mode 1)
+
+;; --- auto-revert: 外部で変更されたファイル/dired を自動再読込 ---
+;; (git のブランチ切替・pull やフォーマッタ実行後の追従に有用)
+(setq global-auto-revert-non-file-buffers t) ; dired/Buffer-list 等も対象
+(global-auto-revert-mode 1)
+
+;; --- repeat-mode: 同種コマンドを 1 キーで連打可能に(Emacs 28+) ---
+;; 例) C-x o o o…(other-window)、C-x { / } から ^ v < > でウィンドウリサイズ、
+;;     C-x C-+ / C-- で文字サイズの連続調整 など。
+(repeat-mode 1)
+
+
+;;; ============================================================
 ;;;  Keybindings: 組み込み(有効)
 ;;; ============================================================
 
