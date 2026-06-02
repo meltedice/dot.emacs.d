@@ -294,6 +294,10 @@ volta install prettier
 - **`F7`** — ハイライト中のシンボルを一括リネーム。
 - **`F8`** — 全ハイライト解除。
 
+### 括弧の深さ色分け(rainbow-delimiters)
+
+`prog-mode` で自動 ON。ネストした括弧 `()` `[]` `{}` を深さごとに違う色で表示し、対応関係を見やすくする(lisp 系で特に有用)。`show-paren-mode`(対応する 1 組を強調)と併用でき、rainbow-delimiters は全階層を常時色分けする。キーバインドなし(表示のみ)。
+
 ### Multi-cursor(複数カーソル同時編集)
 
 VS Code / Sublime 風の複数カーソル編集。`multiple-cursors` 本体 + 拡張 3 つ(`mc-extras` / `phi-search` / `iedit`)を `elpa/` に vendoring 済み。

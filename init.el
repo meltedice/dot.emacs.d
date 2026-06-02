@@ -1068,6 +1068,13 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
          ("<f7>" . symbol-overlay-rename)
          ("<f8>" . symbol-overlay-remove-all)))
 
+;; --- 括弧の深さ色分け(rainbow-delimiters)---
+;; ネストした括弧 () [] {} を深さごとに色分けして対応関係を見やすくする。
+;; lisp 系で特に有用だが prog-mode 全般で無害なため prog-mode 共通で有効化。
+;; (show-paren-mode との併用可: show-paren は対応 1 組の強調、rainbow は全階層)
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
 ;; --- Multi-cursor: multiple-cursors + 拡張 3 つ ---
 ;; 複数カーソルを同時に持って並列編集する(VS Code / Sublime 風)。
 ;; 旧設定では未使用、本リビルドで新規追加。

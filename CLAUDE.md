@@ -164,6 +164,7 @@
 - [-] UTF-8 コメント挿入(`-*- coding: utf-8 -*-`) — **移植しない**(obsolete: Emacs 30 既定 UTF-8、coding cookie は不要な場面が大半)
 - [x] `kill-whole-line` — 行頭 C-k で行末+改行を kill(`(setq kill-whole-line t)`、組み込み)で**移植済み**
 - [x] キルリング閲覧 — **移植済み**。組み込み `yank-from-kill-ring`(Emacs 28+、M-y)。旧 `yank-pop-summary`(未保守・MELPA 不在)は不採用
+- [x] 括弧の深さ色分け(rainbow-delimiters) — **新規追加**(旧設定では未使用、「定番なのに未導入」枠でユーザー要望により導入)。`use-package rainbow-delimiters`(GNU ELPA / MELPA、`elpa/` へ vendoring)。`prog-mode-hook` で自動 ON、ネスト括弧を深さ別に色分け。`show-paren-mode`(対応 1 組強調)と併用(役割が異なる)。キーバインドなし(表示のみ)。組み込み代替なしのため導入
 - [x] シンボルハイライト & 一括リネーム — **移植済み**。`use-package symbol-overlay`(旧 `auto-highlight-symbol` 未保守の現代後継)。`prog-mode` で自動ハイライト、`M-i`/`M-n`/`M-p`/`F7`(rename)/`F8`。`elpa/` へ vendoring
 - [-] スニペット展開(yasnippet) — **移植しない**(ユーザー判断)。将来必要なら `yasnippet`(+`yasnippet-snippets`)または軽量 `tempel` を再検討
 - [x] キーコード同時押し(key-chord: `jk` で view-mode) — **移植済み**。`use-package key-chord`(MELPA、2025 更新で保守継続。chord の組み込み代替なし)。`key-chord-two-keys-delay` 0.1、`jk` 同時押しで `view-mode` トグル(旧 `20-key-chord.el` 忠実)。旧 `(require 'key-chord nil t)` は use-package 化。`elpa/` へ vendoring
