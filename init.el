@@ -718,6 +718,32 @@ NO-QUERY-FLAG=t / INSERT-FLAG=nil で query 抑止+shebang 不挿入。"
          ("C-c d" . magit-ediff-show-working-tree)
          ("C-c D" . magit-ediff-dwim)))
 
+;; diff-hl(VCS の未コミット変更をフリンジ表示)
+;;   git 等で追跡中のファイルを編集すると、各行の変更(追加/変更/削除)を
+;;   バッファ左端フリンジに色付き表示。magit とは補完関係(magit=コミット/
+;;   差分閲覧、diff-hl=編集中の行レベル可視化)。
+;;   - global-diff-hl-mode: 全ファイルで ON
+;;   - diff-hl-flydiff-mode: 保存前でもライブに更新
+;;   - magit 連携フック: stage/commit 後にフリンジ表示を自動更新
+;;   - dired 連携: dired のファイル一覧にも変更状態を表示
+;;   キーは diff-hl 既定の C-x v 配下(diff-hl-mode-map)をそのまま使用:
+;;     C-x v [ / ]  前/次のハンクへ
+;;     C-x v *      そのハンクの変更内容をポップアップ表示
+;;     C-x v n      そのハンクだけ HEAD に戻す(diff-hl-revert-hunk)
+;;     C-x v S      そのハンクをステージ(diff-hl-stage-dwim)
+;;     C-x v =      diff-hl-diff-goto-hunk(組み込み vc-diff を remap。
+;;                  diff-hl-mode のバッファ内のみ。diff 表示の役割は維持)
+;;   端末(-nw、フリンジ無し)では M-x diff-hl-margin-mode でマージン表示に。
+(use-package diff-hl
+  :demand t                               ; :hook で遅延化されるのを上書きし
+                                          ; 起動時にロード→global mode を有効化
+  :hook ((magit-pre-refresh  . diff-hl-magit-pre-refresh)
+         (magit-post-refresh . diff-hl-magit-post-refresh)
+         (dired-mode         . diff-hl-dired-mode))
+  :config
+  (global-diff-hl-mode 1)
+  (diff-hl-flydiff-mode 1))
+
 ;; git-modes(gitignore / gitconfig / gitattributes 3 点セット。Magit 系)
 ;;   旧 init.el は (el-get-bundle gitignore-mode) のみ(設定なし)。
 ;;   .gitignore 等を fundamental-mode でなく専用モードで開き、# コメント
