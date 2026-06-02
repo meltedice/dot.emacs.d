@@ -1075,6 +1075,16 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
+;; --- 意味単位での選択範囲の拡大/縮小(expand-region)---
+;; C-= を押すごとに「単語 → 文字列 → 括弧内 → 式 → 行 → 関数 …」と
+;; 意味のまとまり単位でリージョンを段階的に拡大する。拡大ループ中は
+;; - で 1 段縮小、0 で最初に戻す。multiple-cursors と好相性
+;; (選択を広げてから C->/C-c C-< 等で増殖させる使い方)。
+;; transient-mark-mode nil でもリージョンをアクティブ化するため、
+;; delete-selection-mode(入力で置換)もそのまま効く。
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
+
 ;; --- Multi-cursor: multiple-cursors + 拡張 3 つ ---
 ;; 複数カーソルを同時に持って並列編集する(VS Code / Sublime 風)。
 ;; 旧設定では未使用、本リビルドで新規追加。

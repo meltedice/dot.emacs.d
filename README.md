@@ -234,6 +234,7 @@ volta install prettier
 | `M-y` | `yank-from-kill-ring`(kill-ring 補完選択) | 組み込み |
 | `C-g` ×2(0.3 秒以内) | マーク解除 + リージョン解除 | カスタム |
 | `M-i` / `M-n` / `M-p` / `F7` / `F8` | symbol-overlay put / next / prev / rename / remove-all | symbol-overlay |
+| `C-=` | 選択範囲を意味単位で拡大(`er/expand-region`。`-` で縮小 / `0` で戻す) | expand-region |
 | `C-M-/` | redo(`undo-redo`、Emacs 28+) | 組み込み |
 | `C-,` / `C-.` | 前/次のバッファ(特殊バッファは skip-regexp で除外) | 組み込み |
 | `jk` 同時押し | `view-mode` トグル | key-chord |
@@ -297,6 +298,13 @@ volta install prettier
 ### 括弧の深さ色分け(rainbow-delimiters)
 
 `prog-mode` で自動 ON。ネストした括弧 `()` `[]` `{}` を深さごとに違う色で表示し、対応関係を見やすくする(lisp 系で特に有用)。`show-paren-mode`(対応する 1 組を強調)と併用でき、rainbow-delimiters は全階層を常時色分けする。キーバインドなし(表示のみ)。
+
+### 意味単位で選択を広げる(expand-region)
+
+- **`C-=`** — 押すごとに選択範囲を意味のまとまり単位で段階的に拡大(単語 → 文字列 → 括弧内 → 式 → 行 → 関数 …)。
+- 拡大ループ中: **`=`**(または続けて `C-=`)でさらに拡大、**`-`** で 1 段縮小、**`0`** で最初に戻す。
+- `multiple-cursors` と好相性 — `C-=` で対象を選んでから `C->` / `C-c C-<` でカーソルを増やす、という流れが使いやすい。
+- リージョンをアクティブ化するので、選択後に文字入力すれば `delete-selection-mode` で置換も効く。
 
 ### Multi-cursor(複数カーソル同時編集)
 
