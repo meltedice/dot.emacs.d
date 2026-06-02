@@ -175,6 +175,17 @@
 (setq global-auto-revert-non-file-buffers t) ; dired/Buffer-list 等も対象
 (global-auto-revert-mode 1)
 
+;; --- delete-selection: アクティブなリージョンを入力文字で置換 ---
+;; 本設定は transient-mark-mode が nil のため、リージョンは「アクティブ
+;; (ハイライト)」のときしか delete-selection の対象にならない。
+;;   - 単一 C-SPC: マークを置くだけ(非アクティブ)→ region-active-p nil
+;;                 → 発火しない。文字入力はカーソル位置に普通に挿入される。
+;;   - C-SPC 2度押し: 一時的 transient-mark-mode(lambda)でリージョンが
+;;                 アクティブ化 → region-active-p t → 入力で選択範囲を置換。
+;; よって実質「選択がハイライトされている時だけ置換」という挙動になる
+;; (shift 選択 / マウスドラッグ / C-x C-x の再アクティブ化も同様に対象)。
+(delete-selection-mode 1)
+
 ;; --- repeat-mode: 同種コマンドを 1 キーで連打可能に(Emacs 28+) ---
 ;; 例) C-x o o o…(other-window)、C-x { / } から ^ v < > でウィンドウリサイズ、
 ;;     C-x C-+ / C-- で文字サイズの連続調整 など。
