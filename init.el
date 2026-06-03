@@ -807,11 +807,20 @@ NO-QUERY-FLAG=t / INSERT-FLAG=nil で query 抑止+shebang 不挿入。"
   (setq undohist-directory (locate-user-emacs-file ".undohist"))
   (undohist-initialize))
 
-;; --- undo-tree: 導入見送り ---
+;; --- undo-tree: 導入見送り(代わりに vundo を採用)---
 ;; 分岐 undo + ツリー可視化。動作はするが巨大ファイルで重く、履歴破損の
-;; 不具合歴もある。単純な redo は上記 undo-redo で足りるため見送り。
-;; 将来、分岐 undo の可視化が欲しくなったら軽量な `vundo`(組み込み
-;; undo をそのまま使い可視化のみ追加)を第一候補に検討する。
+;; 不具合歴もある。そのため undo-tree 自体は不採用とし、分岐の可視化は
+;; 軽量な `vundo`(組み込み undo をそのまま使い、可視化 UI だけ足す)で行う。
+
+;; --- vundo: undo 履歴の分岐をツリー表示して行き来 ---
+;; 組み込み undo は線形に巻き戻すが、分岐した過去状態へ移りたいときに
+;; vundo でツリーを表示し視覚的に移動できる。組み込み undo をそのまま
+;; 可視化するだけなので undo-tree のような履歴破損がなく軽量。
+;; C-x u を既定 undo(C-/ や C-_ と重複)から vundo に置換。
+;; vundo バッファ内: f/b=次/前の状態へ、n/p=分岐の上下、d=diff、q=終了、
+;;   RET=その状態で確定。
+(use-package vundo
+  :bind ("C-x u" . vundo))
 
 ;; --- point-undo(F5/F6): 導入見送り、組み込み mark ring で代用 ---
 ;; 旧 point-undo はカーソル位置の undo/redo(未保守 EmacsWiki)。

@@ -174,7 +174,8 @@
 
 ### Undo / 履歴
 - [x] `redo+`(リドゥ、C-M-/) — **組み込み `undo-redo`(Emacs 28+)で代替移植済み**。未保守 EmacsWiki の redo+ は不採用。キーは旧踏襲の `C-M-/`。旧 `undo-limit`/`undo-strong-limit`/`undo-no-redo` は組み込み変数としてコメントで残置(既定のまま、必要時に有効化)
-- [-] `undo-tree`(分岐 undo) — **導入見送り**(ユーザー判断)。巨大ファイルで重く履歴破損歴あり、単純 redo は `undo-redo` で足りる。将来分岐 undo の可視化が要れば軽量 `vundo` を第一候補
+- [-] `undo-tree`(分岐 undo) — **不採用**(ユーザー判断)。巨大ファイルで重く履歴破損歴あり。単純 redo は `undo-redo` で足りる。分岐 undo の**可視化は下記 vundo で実施**(undo-tree 本体は使わない)
+- [x] 分岐 undo の可視化(vundo) — **新規追加**(当初 undo-tree の代替第一候補としてメモ → ユーザー要望で導入)。`use-package vundo`(GNU ELPA、`elpa/` へ vendoring、依存なし)。**組み込み undo をそのまま使い可視化 UI だけを足す**ため undo-tree のような履歴破損がなく軽量。`C-x u` を既定 undo(`C-/`/`C-_` と重複)から `vundo` に置換。vundo バッファ内: `f`/`b`=次/前の状態、`n`/`p`=分岐の上下、`d`=diff、`RET`=確定、`q`=終了。線形 undo/redo は従来どおり `C-/` / `C-M-/`(undo-redo)を維持
 - [x] `undohist`(undo 履歴の永続化) — **移植済み**。`use-package undohist`、`undohist-directory` = `user-emacs-directory/.undohist`(`.gitignore` 除外済)、`undohist-initialize` がディレクトリ自動生成 + フック登録。組み込み代替なしのため導入
 - [-] `point-undo`(カーソル位置の undo/redo, F5/F6) — **導入見送り**(ユーザー判断)。組み込み mark ring(`C-SPC C-SPC` / `C-u C-SPC` / `C-x C-SPC` / `set-mark-command-repeat-pop`)で代用。使い方を init.el にコメント記載。近い体験が要れば将来 `point-history` 検討
 
