@@ -306,6 +306,21 @@ volta install prettier
 - `multiple-cursors` と好相性 — `C-=` で対象を選んでから `C->` / `C-c C-<` でカーソルを増やす、という流れが使いやすい。
 - リージョンをアクティブ化するので、選択後に文字入力すれば `delete-selection-mode` で置換も効く。
 
+### ヘルプバッファの強化(helpful)
+
+組み込み `describe-*` の上位互換。docstring に加えて、ソースコードの埋め込み・変数の現在値・呼び出し元・付与された advice / symbol property・その場での edebug/trace などを 1 画面で表示する。自作 defun や `advice-add` の多いこの設定を読むときに便利。
+
+このリポジトリは `C-h` を backspace(DEL)に割り当てており、ヘルプの入口は **`C-c h`**(と **`<f1>`**)。その help-map の以下 4 キーを helpful 版に差し替えてある(入口キーや `C-h`→DEL はそのまま):
+
+| キー | 機能 |
+|---|---|
+| **`C-c h f`** / `<f1> f` | `helpful-callable`(関数 + マクロ) |
+| **`C-c h v`** / `<f1> v` | `helpful-variable` |
+| **`C-c h k`** / `<f1> k` | `helpful-key` |
+| **`C-c h o`** / `<f1> o` | `helpful-symbol` |
+
+`C-c h F`(`Info-goto-emacs-command-node`)など他の help 既定はそのまま。helpful バッファ内は `RET` でリンク先へ、`g` で更新、`q` で閉じる。
+
 ### Multi-cursor(複数カーソル同時編集)
 
 VS Code / Sublime 風の複数カーソル編集。`multiple-cursors` 本体 + 拡張 3 つ(`mc-extras` / `phi-search` / `iedit`)を `elpa/` に vendoring 済み。

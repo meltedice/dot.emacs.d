@@ -1111,6 +1111,23 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
 
+;; --- ヘルプバッファの強化(helpful)---
+;; 組み込み describe-* の上位互換。docstring に加えてソース埋め込み・変数の
+;; 現在値・呼び出し元・付与された advice / symbol property・edebug/trace 等を
+;; 1 画面で表示する(deadgrep と同じ Wilfred Hughes 作)。
+;;
+;; キー方針(ユーザー確認済み): 本設定は C-h を backspace(DEL)に
+;; keyboard-translate 済みで、ヘルプの入口は C-c h(= help-command = help-map)
+;; と <f1>。そのため help-map 内の f/v/k/o だけを helpful 版へ差し替える。
+;; これで C-c h f / <f1> f 等が helpful になり、C-h→DEL や入口キーには触れない。
+;; 他の help 既定(C-c h F = Info-goto-emacs-command-node 等)は温存。
+(use-package helpful
+  :bind (:map help-map
+              ("f" . helpful-callable)    ; was describe-function(関数+マクロ)
+              ("v" . helpful-variable)    ; was describe-variable
+              ("k" . helpful-key)         ; was describe-key
+              ("o" . helpful-symbol)))    ; was describe-symbol
+
 ;; --- Multi-cursor: multiple-cursors + 拡張 3 つ ---
 ;; 複数カーソルを同時に持って並列編集する(VS Code / Sublime 風)。
 ;; 旧設定では未使用、本リビルドで新規追加。
