@@ -1535,6 +1535,16 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
   :after (embark consult)
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
+;; --- avy: 画面内の任意位置へ数キーでジャンプ ---
+;; 表示中の文字/単語/行に、入力に応じたヒントキーが割り振られ、それを打つと
+;; 一気にカーソル移動する(マウスや長距離移動の代替)。
+;; キーはいずれも空きを確認済み(C-: / C-' / M-g w / M-g l)。
+(use-package avy
+  :bind (("C-:"   . avy-goto-char-timer)   ; 文字列を打つと候補が絞られてジャンプ
+         ("C-'"   . avy-goto-char-2)        ; 連続 2 文字でジャンプ
+         ("M-g w" . avy-goto-word-1)        ; 単語の先頭へジャンプ
+         ("M-g l" . avy-goto-line)))        ; 行頭へジャンプ(consult-goto-line とは別系統)
+
 
 ;;; ============================================================
 ;;;  検索 — migemo(ローマ字のまま日本語を検索)
