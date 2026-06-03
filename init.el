@@ -1443,6 +1443,39 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
 
 
 ;;; ============================================================
+;;;  バッファ内補完 UI(corfu + cape)
+;;; ============================================================
+;; corfu: completion-at-point(CAPF)の候補を、点の位置にポップアップ表示する
+;;   現代版の補完 UI(company の後継)。eglot(LSP)の補完もそのまま corfu に出る。
+;; cape: CAPF を増やす拡張。dabbrev(開いているバッファ内の語)やファイルパス等の
+;;   汎用補完源をフォールバックとして足す。
+;; ミニバッファ補完は global-corfu-mode の対象外(既定)。将来 vertico を入れても
+;;   棲み分けるため衝突しない。補完スタイルに orderless を入れると corfu とミニ
+;;   バッファの双方に効く(現状は Emacs 既定スタイルのまま)。
+(use-package corfu
+  :custom
+  (corfu-auto t)                  ; 入力に応じて自動でポップアップ(手動派は nil に)
+  (corfu-auto-delay 0.2)          ; ポップアップ表示までの遅延(秒)
+  (corfu-auto-prefix 2)           ; 2 文字以上入力で自動発火
+  (corfu-cycle t)                 ; 候補の末尾↔先頭を循環移動
+  (corfu-quit-no-match 'separator) ; 候補ゼロでも separator 入力中は閉じない
+  :init
+  (global-corfu-mode)             ; 全バッファ(ミニバッファ除く)で有効化
+  (corfu-popupinfo-mode)          ; 選択中候補の説明を遅延ポップアップ表示
+  (corfu-history-mode)            ; 確定履歴順で候補をソート(savehist と連携)
+  :config
+  (with-eval-after-load 'savehist
+    (add-to-list 'savehist-additional-variables 'corfu-history)))
+
+(use-package cape
+  :init
+  ;; 末尾に追加(add-hook の APPEND=t)。各メジャーモード固有 / eglot の CAPF を
+  ;; 優先させ、dabbrev・file はフォールバックとして後ろに置く。
+  (add-hook 'completion-at-point-functions #'cape-dabbrev t)  ; 開いている語
+  (add-hook 'completion-at-point-functions #'cape-file t))    ; ファイルパス
+
+
+;;; ============================================================
 ;;;  検索 — migemo(ローマ字のまま日本語を検索)
 ;;; ============================================================
 ;; 旧 inits/cocoa-emacs-migemo.el の移植。ローマ字(ASCII)入力のまま
