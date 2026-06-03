@@ -1476,6 +1476,51 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
 
 
 ;;; ============================================================
+;;;  ミニバッファ補完 UI(vertico + orderless + marginalia + consult)
+;;; ============================================================
+;; corfu(バッファ内補完)と対になる「ミニバッファ側」の刷新スタック。
+;; 旧 ivy / counsel / swiper / smex の現代代替(CLAUDE.md「Option B」)。
+;;   - vertico:    M-x / C-x C-f / C-x b 等の候補を縦型リストで表示する UI
+;;   - orderless:  スペース区切りで部分一致を AND 絞り込みする補完スタイル
+;;                 (corfu のバッファ内補完にも同時に効く)
+;;   - marginalia: 候補の右に注釈(コマンドのキー/docstring、変数の値、
+;;                 ファイル属性など)を表示
+;;   - consult:    completing-read を使う高機能コマンド群(行検索/バッファ
+;;                 切替/grep/imenu/flymake 等)。多くがプレビュー付き
+;; ミニバッファ履歴は既に有効な savehist-mode が永続化する。
+;; C-s(isearch+migemo)と M-y(yank-from-kill-ring)は従来方針を尊重し不変更。
+
+(use-package vertico
+  :custom (vertico-cycle t)             ; 候補の末尾↔先頭を循環
+  :init (vertico-mode))
+
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+
+(use-package marginalia
+  :init (marginalia-mode))
+
+(use-package consult
+  :bind (("C-x b"   . consult-buffer)          ; 強化版バッファ切替(+ recentf 等)
+         ("C-x p b" . consult-project-buffer)  ; プロジェクト内バッファ
+         ("M-g g"   . consult-goto-line)       ; 行ジャンプ(プレビュー付)
+         ("M-g M-g" . consult-goto-line)
+         ("M-g i"   . consult-imenu)           ; 関数/見出しへジャンプ
+         ("M-g f"   . consult-flymake)         ; diagnostics 一覧へ
+         ("M-s l"   . consult-line)            ; バッファ内 行検索(swiper 相当)
+         ("M-s r"   . consult-ripgrep)         ; プロジェクト grep(要 rg)
+         ("M-s d"   . consult-find))           ; ファイル名で検索
+  :init
+  ;; xref(eglot の定義ジャンプ等)の結果一覧も consult UI で表示
+  (setq xref-show-xrefs-function       #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+  :config
+  (setq consult-narrow-key "<"))               ; 絞り込みソース切替キー
+
+
+;;; ============================================================
 ;;;  検索 — migemo(ローマ字のまま日本語を検索)
 ;;; ============================================================
 ;; 旧 inits/cocoa-emacs-migemo.el の移植。ローマ字(ASCII)入力のまま

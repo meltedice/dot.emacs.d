@@ -213,12 +213,13 @@
 
 > **新マシン setup: cmigemo のインストール手順は [README.md「新マシンセットアップ → cmigemo」](README.md#cmigemoローマ字日本語-isearch-のエンジン) を参照**。`init.el` の `my-migemo-dictionary` が代表的な辞書パス候補を実行時に探索する。`cmigemo` バイナリ or 辞書がどれも見つからないマシンでは `use-package :if` で migemo 関連が全体スキップされ起動エラーにはならない(`init.el` 該当セクションコメント参照)。
 
-- [-] `ivy` / `counsel` / `swiper`(補完 UI、C-s/C-c g/j/k 等) — **移植しない**(調査済み)。旧パッケージは前世代スタック。現代主流の **`vertico` + `consult` + `orderless` + `marginalia`**(下記「参考: Option B」)へ将来刷新する方針。旧 ivy 系の忠実移植は実施しない
-- [-] `smex`(M-x 履歴) — **移植しない**(調査済み)。**`vertico` + 組み込み `savehist-mode`** で完全代替可能(M-x 履歴・頻度順表示)。Option B の刷新時に同時対応
+- [x] ミニバッファ補完 UI(vertico + orderless + marginalia + consult) — **新規追加(Option B を実施)**。旧 `ivy`/`counsel`/`swiper`/`smex` の現代代替として導入(ユーザー要望)。`elpa/` へ vendoring(依存 `compat` は既存)。**vertico** = `vertico-mode`(`vertico-cycle t`)で `M-x`/`C-x C-f`/`C-x b` 等を縦型リスト化。**orderless** = `completion-styles '(orderless basic)` + file カテゴリは `(basic partial-completion)`。**ミニバッファと corfu(バッファ内)の双方に効く**。**marginalia** = `marginalia-mode` で候補注釈。**consult** = キーは consult README 準拠の非衝突サブセット: `C-x b`(consult-buffer)/ `C-x p b`(consult-project-buffer)/ `M-g g`・`M-g M-g`(consult-goto-line)/ `M-g i`(imenu)/ `M-g f`(flymake)/ `M-s l`(consult-line=swiper 相当)/ `M-s r`(consult-ripgrep、要 rg)/ `M-s d`(consult-find)。`xref-show-xrefs-function`/`-definitions-function` を `consult-xref` にして eglot の定義ジャンプ一覧も consult UI 化。`consult-narrow-key "<"`。ミニバッファ履歴は既存 `savehist-mode` が永続化(旧 smex 相当を代替)。**据え置き(従来方針尊重)**: `C-s`(isearch+migemo)と `M-y`(yank-from-kill-ring)は不変更。corfu との競合なし(global-corfu-mode はミニバッファ対象外、batch 検証済)
+- [-] `ivy` / `counsel` / `swiper`(旧 補完 UI) — **忠実移植はしない**(調査済み)。前世代スタックのため、上記の `vertico` + `consult` + `orderless` + `marginalia` で**代替済み**(`swiper`→`consult-line`、`counsel`→`consult-*`、`ivy`→`vertico`)
+- [-] `smex`(M-x 履歴) — **忠実移植はしない**(調査済み)。**`vertico` + 組み込み `savehist-mode`** で代替済み(M-x 履歴・最近使用順表示。上記 vertico スタック導入で対応済み)
 - [-] `ido` — 旧設定で関連コードはコメントアウト(無効)。移植しない
 - [-] `helm` — `90-helm.el.disabled` として無効。移植しない
 
-> **参考: 検索/補完 UI 現代化(Option B、将来検討)** — 旧 `ivy`/`counsel`/`swiper` は前世代スタック。現行主流は **`vertico`(補完 UI)+ `consult`(`consult-line`=swiper 相当ほか)+ `orderless`(絞り込み)+ `marginalia`(注釈)**。今回 migemo は Option A(`isearch` のみ)で導入したが、Option B として上記スタックへ刷新する場合、migemo はそのスタックとも併用できる(`consult-line` 連携、`orderless` に migemo マッチスタイルを組み込むレシピあり)。`ivy`/`counsel`/`swiper`/`smex` の各 `[ ]` を移植する際は、旧パッケージの忠実移植ではなく Option B(vertico 系)での代替を第一候補に検討する。`smex`(M-x 履歴)は `vertico` + `savehist` で代替可。
+> **検索/補完 UI 現代化(Option B、実施済み)** — 旧 `ivy`/`counsel`/`swiper`/`smex`(前世代スタック)を **`vertico`(補完 UI)+ `consult`(`consult-line`=swiper 相当ほか)+ `orderless`(絞り込み)+ `marginalia`(注釈)** へ刷新済み(上の `[x]` 項目参照)。migemo は Option A(`isearch` のみ)で別途導入済みで、`C-s`/`C-r` の日本語検索はそのまま据え置き(consult-line とは別系統で共存)。**今後の発展余地**: `orderless` に migemo マッチスタイルを組み込んで `consult-line` でもローマ字→日本語を効かせるレシピ、`embark`(候補に対するアクション群)、`consult` の追加コマンド(`consult-outline` / `consult-mark` 等)を必要に応じて。`vertico-directory`(ファイルパス編集の快適化)等の vertico 拡張も任意。
 
 ### Git / 差分
 - [x] `magit`(Git クライアント) — `use-package magit` で**移植済み**。旧 `inits/20-magit.el` は全行コメントアウトで実働設定なし(自作 ediff-magit-ediff / index.lock ハックは現代 magit 組み込みの magit-ediff に置換され不要)。キー: `C-c g`→magit-status(`C-x g`→goto-line は維持)、`C-c d`/`C-c D`→magit-ediff working-tree/dwim
