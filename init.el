@@ -1519,6 +1519,22 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
   :config
   (setq consult-narrow-key "<"))               ; 絞り込みソース切替キー
 
+;; --- embark: 候補/対象への文脈アクション(右クリック相当)---
+;; ミニバッファ候補やカーソル下の対象(ファイル/シンボル/URL/バッファ 等)に
+;; 「定義へ/削除/kill/ブラウズ/別ウィンドウで開く…」等を一覧から実行する。
+;; vertico/consult と好相性。embark-consult を入れると consult 結果バッファ
+;; からも同じアクション + プレビューが効く。
+;; キー: 定番の C-. / C-; は既存(next-buffer / iedit)で使用済みのため
+;;       C-c . / C-c ; に割当(衝突回避、ユーザー確認済み)。
+(use-package embark
+  :bind (("C-c ." . embark-act)          ; 対象にアクションを実行
+         ("C-c ;" . embark-dwim)         ; 既定アクションを実行(dwim)
+         (:map help-map ("B" . embark-bindings)))) ; C-c h B / <f1> B: キー一覧
+
+(use-package embark-consult
+  :after (embark consult)
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
+
 
 ;;; ============================================================
 ;;;  検索 — migemo(ローマ字のまま日本語を検索)
