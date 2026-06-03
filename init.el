@@ -206,7 +206,23 @@
 
 (global-set-key "\C-c+" 'text-scale-increase)
 (global-set-key "\C-c-" 'text-scale-decrease)
-(global-set-key "\M-o"  'other-window) ;; 旧: 'other-window-or-split(下記コメント参照)
+
+;; M-o: ウィンドウが 1 つなら分割してから移動、2 つ以上なら次のウィンドウへ移動。
+;; 旧 inits/50-window.el の other-window-or-split を移植(ユーザー判断で復活)。
+;; 分割方向は旧の split-window-horizontally(左右固定)から split-window-sensibly
+;; (フレームの縦横比で左右/上下を自動選択)へ現代化(B 案)。C-tab には割当てない。
+(defun my-other-window-or-split ()
+  "Move to the next window; if only one window, split the frame first.
+When there is a single window, split it via `split-window-sensibly'
+(left/right or top/bottom chosen from the frame's geometry) and then
+move into the new window.  With two or more windows, just move to the
+next one."
+  (interactive)
+  (when (one-window-p)
+    (split-window-sensibly))
+  (other-window 1))
+(global-set-key "\M-o" #'my-other-window-or-split) ;; 旧 other-window-or-split 相当
+
 (global-set-key "\C-x\C-d" 'delete-region)
 (global-set-key "\C-ci"    'indent-region)
 (global-set-key "\C-cc"    'comment-region)
@@ -1606,7 +1622,8 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
 ;;; ============================================================
 
 ;; --- 50-window.el: ウィンドウ操作 ---
-;; (global-set-key "\M-o"     'other-window-or-split)
+;; M-o の other-window-or-split は移植済み(上の Keybindings セクション参照、
+;; my-other-window-or-split / split-window-sensibly 版)。C-tab には割当てない。
 ;; (global-set-key [C-tab]    'other-window-or-split)
 ;; (global-set-key [f2]       'swap-screen)
 ;; (global-set-key [S-f2]     'swap-screen-with-cursor)
