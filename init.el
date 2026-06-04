@@ -667,6 +667,17 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
                 typescript-mode-hook))
   (add-hook hook #'eglot-ensure))
 
+;; インデント幅: JS/TS はスペース 2 を既定に(prettier の既定・一般的な
+;; プロジェクト慣習に合わせる。indent-tabs-mode は大域設定で既に nil)。
+;; いずれも defcustom の大域変数で、setq した値は以後の新規バッファに既定と
+;; して効く(defcustom はロード時に既存値を上書きしないため先 setq で安全)。
+;;   - js-indent-level                 : js-mode / js-ts-mode (.js/.mjs/.cjs)
+;;   - typescript-ts-mode-indent-offset: typescript-ts-mode / tsx-ts-mode (.ts/.tsx/.jsx)
+;;   - typescript-indent-level         : typescript-mode (MELPA fallback)
+(setq js-indent-level 2)
+(setq typescript-ts-mode-indent-offset 2)
+(setq typescript-indent-level 2)
+
 
 ;;; zsh / zprezto 設定ファイル → sh-mode + zsh シェル指定
 ;;
