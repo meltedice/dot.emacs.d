@@ -749,7 +749,7 @@ NO-QUERY-FLAG=t / INSERT-FLAG=nil で query 抑止+shebang 不挿入。"
 ;;   git 等で追跡中のファイルを編集すると、各行の変更(追加/変更/削除)を
 ;;   バッファ左端フリンジに色付き表示。magit とは補完関係(magit=コミット/
 ;;   差分閲覧、diff-hl=編集中の行レベル可視化)。
-;;   - global-diff-hl-mode: 全ファイルで ON
+;;   - global-diff-hl-mode: 全ファイルで ON(ただし ~/ob/ 配下は除外。下記)
 ;;   - diff-hl-flydiff-mode: 保存前でもライブに更新
 ;;   - magit 連携フック: stage/commit 後にフリンジ表示を自動更新
 ;;   - dired 連携: dired のファイル一覧にも変更状態を表示
@@ -768,6 +768,23 @@ NO-QUERY-FLAG=t / INSERT-FLAG=nil で query 抑止+shebang 不挿入。"
          (magit-post-refresh . diff-hl-magit-post-refresh)
          (dired-mode         . diff-hl-dired-mode))
   :config
+  ;; ~/ob/(Obsidian vault)配下では diff-hl を無効化する。
+  ;;   例: ~/journal.md は vault 内ファイルへの symlink で、Emacs は truename
+  ;;   (~/ob/Main/Journals/...)で開くため git 配下と認識される。すると編集の
+  ;;   たびに diff-hl-flydiff が同期 git diff を起動し、初回コールド時に一瞬
+  ;;   固まる。ジャーナルに git ガターは不要なのでバッファ単位で OFF にする。
+  ;;   diff-hl-flydiff-update は (not diff-hl-mode) で即 return するため、
+  ;;   diff-hl-mode を切れば flydiff の git 起動も止まる。
+  (defun my-diff-hl-disable-under-ob ()
+    "Turn off `diff-hl-mode' for files under ~/ob/ (Obsidian vault)."
+    (when (and diff-hl-mode              ; ON にされた時だけ作用(再帰防止ガード)
+               buffer-file-name
+               (string-prefix-p
+                (file-name-as-directory
+                 (file-truename (expand-file-name "ob" "~")))
+                (file-truename buffer-file-name)))
+      (diff-hl-mode -1)))
+  (add-hook 'diff-hl-mode-hook #'my-diff-hl-disable-under-ob)
   (global-diff-hl-mode 1)
   (diff-hl-flydiff-mode 1))
 
