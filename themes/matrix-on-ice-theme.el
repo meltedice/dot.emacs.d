@@ -55,7 +55,39 @@
  ;; タブ(ユーザーが M-: で決定した配色。アクティブのみテーマ色で際立たせる)
  '(tab-bar              ((t (:background "Gray50" :foreground "black"))))
  '(tab-bar-tab          ((t (:background "black"  :foreground "#7eff00" :weight bold))))
- '(tab-bar-tab-inactive ((t (:background "Gray50" :foreground "black" :weight normal)))))
+ '(tab-bar-tab-inactive ((t (:background "Gray50" :foreground "black" :weight normal))))
+ ;; ── ediff の差分配色(現代化版 B)──
+ ;;
+ ;; Emacs 既定の ediff face は明背景前提で、本テーマ(黒地+緑字 #7eff00)では
+ ;; current-diff-B(既定 bg #335533)や fine-diff-B(#22aa22)が「緑地に緑字」に
+ ;; なり判読不能だった。旧 ~/.emacs.d は current-B/C を紫・even/odd を紺に塗って
+ ;; 回避していたが current-A / fine-* は未指定で行内差分の緑on緑が残っていた。
+ ;; ここでは緑字とぶつからない色相に統一して再設計する:
+ ;;   バッファ A = 青系 / B = 紫系 / C = 琥珀系 / Ancestor(マージ祖先)= 灰系
+ ;;   コンテキスト(even/odd)= 暗め控えめ → current(注目ハンク)= 鮮やか
+ ;;   fine(行内の実変更)= 最も明るく前景も明示し「変わった文字」を際立たせる
+ ;; region 系は既定同様 :extend t(行末まで伸長)、fine は文字単位(:extend なし)。
+ ;;
+ ;; --- バッファ A(青系)---
+ '(ediff-even-diff-A    ((t (:background "#12233f" :extend t))))
+ '(ediff-odd-diff-A     ((t (:background "#18345c" :extend t))))
+ '(ediff-current-diff-A ((t (:background "#1f4f96" :extend t))))
+ '(ediff-fine-diff-A    ((t (:background "#2f74d6" :foreground "white" :weight bold))))
+ ;; --- バッファ B(紫系)---
+ '(ediff-even-diff-B    ((t (:background "#2a1640" :extend t))))
+ '(ediff-odd-diff-B     ((t (:background "#3c2160" :extend t))))
+ '(ediff-current-diff-B ((t (:background "#5c2d8c" :extend t))))
+ '(ediff-fine-diff-B    ((t (:background "#9040c8" :foreground "white" :weight bold))))
+ ;; --- バッファ C(琥珀系。3-way / magit-ediff-stage の worktree 列など)---
+ '(ediff-even-diff-C    ((t (:background "#3a2810" :extend t))))
+ '(ediff-odd-diff-C     ((t (:background "#54380f" :extend t))))
+ '(ediff-current-diff-C ((t (:background "#8a5510" :extend t))))
+ '(ediff-fine-diff-C    ((t (:background "#c07a12" :foreground "black" :weight bold))))
+ ;; --- Ancestor(灰系。マージ競合解決時の共通祖先バッファ)---
+ '(ediff-even-diff-Ancestor    ((t (:background "#242424" :extend t))))
+ '(ediff-odd-diff-Ancestor     ((t (:background "#313131" :extend t))))
+ '(ediff-current-diff-Ancestor ((t (:background "#4a4a4a" :extend t))))
+ '(ediff-fine-diff-Ancestor    ((t (:background "#6f6f6f" :foreground "white" :weight bold)))))
 
 (provide-theme 'matrix-on-ice)
 
