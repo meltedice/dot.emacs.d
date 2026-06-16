@@ -1857,5 +1857,28 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
 ;;   (define-key go-mode-map (kbd "M-,") 'pop-tag-mark))
 
 
+;;; ============================================================
+;;;  外部プロジェクト統合: worklog (Workday Log 入力補助)
+;;; ============================================================
+;; 別プロジェクト ~/cm/meltedice/worklog/ で作成した integrations/worklog.el を
+;; lisp/worklog.el にそのままコピーして取り込んだもの(無改変)。
+;; journal の Workday Log 行末で RET → 改行 + 現在の勤務日・時刻 prefix を自動挿入。
+;; 詳細・仕様は lisp/worklog.el 冒頭の Commentary を参照。
+(add-to-list 'load-path (locate-user-emacs-file "lisp"))
+(require 'worklog)
+
+;; journal を開いたら worklog-journal-mode を自動 ON。
+;; 実ファイルは ~/ob/Main/Journals/journal-<YYYY>.md だが、実運用では
+;; symlink "journal.md" 経由で開く。find-file-visit-truename は nil(既定)の
+;; ため buffer-file-name は symlink 名(journal.md)になる(batch で実証済)。
+;; よって symlink 名・実体名どちらでも拾えるよう、journal.md と
+;; journal-<YYYY>.md(数字サフィックス)の両方にだけマッチさせる。
+(add-hook 'find-file-hook
+          (lambda ()
+            (when (and buffer-file-name
+                       (string-match-p "/journal\\(-[0-9]+\\)?\\.md\\'" buffer-file-name))
+              (worklog-journal-mode 1))))
+
+
 (provide 'init)
 ;;; init.el ends here
