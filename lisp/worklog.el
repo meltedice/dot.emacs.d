@@ -1,9 +1,9 @@
-;;; integrations/worklog.el --- Workday Log の入力補助 (Emacs) -*- lexical-binding: t; -*-
+;;; integrations/emacs/worklog.el --- Workday Log の入力補助 (Emacs) -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;
-;; Workday Log（勤務時間の使途記録）を Obsidian の journal ファイル
-;; (`~/ob/Main/Journals/journal-<YYYY>.md') に書くときの入力補助。
+;; Workday Log（勤務時間の使途記録）を Obsidian の worklog ファイル
+;; (`~/ob/Main/Journals/worklog-<YYYY>.md') に書くときの入力補助。
 ;;
 ;; ログ行の形式:
 ;;   - YYYY-MM-DD HH:MM context:activity コメント
@@ -20,17 +20,20 @@
 ;;
 ;; 有効化スニペット（init.el 等に追記）:
 ;;
-;;   (add-to-list 'load-path "~/cm/meltedice/worklog/integrations")
+;;   (add-to-list 'load-path "~/path/to/worklog/integrations/emacs")
 ;;   (require 'worklog)
-;;   ;; journal-*.md を開いたら自動で有効化したい場合の例:
+;;   ;; worklog.md / worklog-<YYYY>.md を開いたら自動で有効化したい場合の例:
 ;;   (add-hook 'find-file-hook
 ;;             (lambda ()
 ;;               (when (and buffer-file-name
-;;                          (string-match-p "/journal-[0-9]\\{4\\}\\.md\\'"
+;;                          (string-match-p "/worklog\\(?:-[0-9]\\{4\\}\\)?\\.md\\'"
 ;;                                          buffer-file-name))
-;;                 (worklog-journal-mode 1))))
+;;                 (worklog-mode 1)
+;;                 ;; フェーズ2（Alfred）が worklog.md に直接書き込むため、
+;;                 ;; 外部変更を自動取り込みして未保存バッファとの競合を緩和する。
+;;                 (auto-revert-mode 1))))
 ;;
-;; もしくはバッファで手動: M-x worklog-journal-mode
+;; もしくはバッファで手動: M-x worklog-mode
 
 ;;; Code:
 
@@ -78,21 +81,21 @@
         (insert (worklog--now-prefix)))
     (newline)))
 
-(defvar worklog-journal-mode-map
+(defvar worklog-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "RET") #'worklog-newline)
     (define-key map [return] #'worklog-newline)
     map)
-  "`worklog-journal-mode' のキーマップ。")
+  "`worklog-mode' のキーマップ。")
 
 ;;;###autoload
-(define-minor-mode worklog-journal-mode
-  "Workday Log の journal 入力補助マイナーモード。
+(define-minor-mode worklog-mode
+  "Workday Log の worklog 入力補助マイナーモード。
 
 有効時、ログ行の行末で RET を押すと改行して現在の勤務日・時刻の
 prefix を自動挿入する。"
   :lighter " WL"
-  :keymap worklog-journal-mode-map)
+  :keymap worklog-mode-map)
 
 (provide 'worklog)
 
