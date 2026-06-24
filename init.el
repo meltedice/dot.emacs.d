@@ -420,6 +420,29 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
                        tab-bar-format-tabs
                        tab-bar-separator))
 
+;; 旧 elscreen の C-z b(elscreen-find-and-goto-by-buffer)相当。
+;; 指定バッファが既にどれかのタブで表示中ならそのタブ(+そのウィンドウ)へ
+;; 移動し、どのタブにも無ければ新しいタブを作ってそこに開く。
+;; 組み込み tab-bar-get-buffer-tab(バッファを表示しているタブを返す)を利用。
+(defun my-tab-find-buffer (buffer-or-name)
+  "BUFFER-OR-NAME を表示しているタブへ移動、無ければ新タブで開く。"
+  (interactive
+   (list (read-buffer "Buffer (タブ移動 / 無ければ新タブ): "
+                      (other-buffer (current-buffer)))))
+  (let* ((buffer (get-buffer-create buffer-or-name))
+         (tab (tab-bar-get-buffer-tab buffer)))
+    (if tab
+        ;; 既存タブで表示中 → そのタブへ切替し、当該ウィンドウを選択
+        ;; (tab-bar-get-buffer-tab の戻り値に 0 始まりの index が入る。
+        ;;  tab-bar-select-tab は 1 始まりのため 1+ する)
+        (progn
+          (tab-bar-select-tab (1+ (alist-get 'index tab)))
+          (when-let ((win (get-buffer-window buffer)))
+            (select-window win)))
+      ;; どのタブにも無い → 新タブを作って開く
+      (tab-bar-new-tab)
+      (switch-to-buffer buffer))))
+
 ;; 旧 elscreen 風 C-z プレフィックス(標準は suspend-frame だが踏襲)
 (defvar elscreen-like-tab-map (make-sparse-keymap)
   "elscreen 風タブ操作プレフィックス (C-z)。")
@@ -436,7 +459,12 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 (define-key elscreen-like-tab-map (kbd "a")   #'tab-recent)
 (define-key elscreen-like-tab-map (kbd "'")   #'tab-bar-switch-to-tab) ; 名前で選択
 (define-key elscreen-like-tab-map (kbd "r")   #'tab-rename)     ; 改名
-(define-key elscreen-like-tab-map (kbd "b")   #'tab-bar-history-back)
+;; C-z b = 指定バッファのタブへ移動 / 無ければ新タブで開く
+;;   (旧 elscreen の C-z b = elscreen-find-and-goto-by-buffer 相当)
+(define-key elscreen-like-tab-map (kbd "b")   #'my-tab-find-buffer)
+(define-key elscreen-like-tab-map (kbd "C-b") #'my-tab-find-buffer)
+;; タブ構成の undo/redo(履歴)。旧 b/f から u/f へ移動(b はバッファ用に明渡し)
+(define-key elscreen-like-tab-map (kbd "u")   #'tab-bar-history-back)
 (define-key elscreen-like-tab-map (kbd "f")   #'tab-bar-history-forward)
 ;; C-z 1..9 で番号のタブへ
 (dotimes (i 9)
