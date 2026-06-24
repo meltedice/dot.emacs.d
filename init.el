@@ -742,6 +742,27 @@ NO-QUERY-FLAG=t / INSERT-FLAG=nil で query 抑止+shebang 不挿入。"
   (add-to-list 'auto-mode-alist (cons re #'my-zsh-script-mode)))
 
 
+;;; direnv の .envrc → sh-mode + bash シェル指定
+;;
+;; .envrc は direnv の設定ファイルで、中身は bash スクリプト(direnv の
+;; stdlib `export` / `layout` / `use` / `source_env` / `[[ ]]' 等を使う)。
+;; 拡張子が無いため既定では fundamental-mode になり色付けもインデントも
+;; 効かない。bash として編集できるよう sh-mode を割り当て、zsh と同様に
+;; `sh-set-shell' で bash を明示して font-lock を bash 方言に固定する。
+;; ここで足すのは「.envrc を編集するモード」のみ。direnv が設定する環境
+;; 変数を Emacs 内のバッファへ反映する統合(envrc / direnv パッケージ)は
+;; 別機能のため導入しない(必要になったら別途検討)。
+(defun my-envrc-mode ()
+  "Enter `sh-mode' and set `sh-shell' to bash for direnv .envrc files.
+.envrc は shebang を持たないため、bash 方言の font-lock / indent を
+得るよう明示する。NO-QUERY-FLAG=t / INSERT-FLAG=nil で query 抑止+
+shebang 不挿入。"
+  (sh-mode)
+  (sh-set-shell "bash" t nil))
+
+(add-to-list 'auto-mode-alist '("/\\.envrc\\(\\.local\\)?\\'" . my-envrc-mode))
+
+
 ;;; ============================================================
 ;;;  Git / 差分(magit, ediff)
 ;;; ============================================================
