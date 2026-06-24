@@ -412,6 +412,7 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 (tab-bar-history-mode 1)               ; タブ単位のレイアウト undo/redo
 (setq tab-bar-show 1                   ; タブ1個でも常に表示
       tab-bar-new-tab-choice "*scratch*"
+      tab-bar-new-tab-to 'rightmost    ; 新規タブは末尾に追加(旧 elscreen 風)
       tab-bar-tab-hints t              ; タブに番号を表示
       tab-bar-close-button-show nil)
 ;; 新規タブ「+」ボタンを出さない
