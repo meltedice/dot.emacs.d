@@ -17,11 +17,19 @@ __MACOSX
 # emacs
 *.elc
 /.cask
-/elpa
 /auto-save-list
 /.autosave
 /.backup
 /.undohist
+
+# package.el: elpa/ のソース(*.el)は git 管理する。
+# 上流が消えても別マシンで復元できるよう実体を抱える方針。
+# 再生成物(コンパイル結果・アーカイブ索引)のみ除外する。
+/elpa/archives/
+/elpa/.last-refresh
+/eln-cache/
+/.eln-cache/
+package-quickstart.el
 
 # ddskk
 ddskk/*
@@ -29,6 +37,12 @@ ddskk-*
 
 # *scratch*
 .scratch*
+
+# 組み込み UX(recentf / savehist / save-place)が書き出す per-machine の
+# 履歴・カーソル位置。実行時状態のため git 管理しない。
+/.recentf
+/.savehist
+/.saveplace
 
 # ido
 ido.last
@@ -41,3 +55,26 @@ network-security.data
 
 # curl
 /request
+
+.envrc
+
+# Claude Code: ローカル個人設定(マシン固有・絶対パスを含むため git 管理しない)
+/.claude/settings.local.json
+
+# 1Password CLI (op) のローカル作業ディレクトリ等
+/.op/
+
+# transient(Emacs 組み込み)が書き出す per-machine 履歴
+# (history.el / values.el / levels.el 等)。magit 等の transient 利用で
+# 自動生成される実行時状態のため git 管理しない。
+/transient/
+
+# treesit-install-language-grammar が書き出す per-machine の grammar 共有
+# ライブラリ(libtree-sitter-<lang>.{dylib,so})。アーキ依存のバイナリ
+# のため git 管理しない。各マシンで treesit-install-language-grammar
+# (または README「YAML tree-sitter grammar」記載の手動ビルド)で生成。
+/tree-sitter/
+
+# multiple-cursors が書き出す per-machine の認可リスト(ユーザーが「全
+# cursor で実行する/しない」を確定したコマンドの記録)。
+/.mc-lists.el
