@@ -27,6 +27,8 @@ __MACOSX
 # 再生成物(コンパイル結果・アーカイブ索引)のみ除外する。
 /elpa/archives/
 /elpa/.last-refresh
+# package-install が署名検証用に生成する GPG キーリング(per-machine)。
+/elpa/gnupg/
 /eln-cache/
 /.eln-cache/
 package-quickstart.el

@@ -58,8 +58,9 @@
 
 ### Git・コミット
 - **コミットはユーザーが明示したときだけ**。push しない。
-- メッセージは英語、「要約 + 箇条書き変更リスト」、末尾に
-  `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>`。
+- メッセージは英語、「要約 + 箇条書き変更リスト」。**Co-Authored-By などの
+  attribution trailer は付けない**(ユーザーの `~/.claude/settings.json` が
+  `attribution.commit: ""` で自動付与を無効化しているため、それに合わせる)。
 - 手書き config と vendored 依存(`elpa/`)は別コミットに分ける。
 - **コミット前に必ず、ホームディレクトリ絶対パス(シェルの `$HOME` を実行時展開して得る。値はリポジトリに書かない)の混入をスキャン**し、
   混入があれば中止。混入なしを確認してからコミット。
@@ -268,6 +269,7 @@
 - [x] autosave / backup / undohist のディレクトリ集約(`.autosave` / `.backup` / `.undohist`) — **移植済み**。Emacs が編集中に作る一時ファイルを `user-emacs-directory` 配下の専用ディレクトリへ集約: ① auto-save 本体 `#file#` → `.autosave/`(`auto-save-file-name-transforms`、UNIQUIFY t)、② auto-save 索引 `saves-PID-HOST` → `.autosave/`(`auto-save-list-file-prefix`)、③ バックアップ `file~` → `.backup/`(`backup-directory-alist`、対象は現代慣用の `"."`)、④ undo 履歴 → `.undohist/`(undohist、移植済み)。**旧 `50-autosave-backup.el` は ②③ のみ集約し ① は散らかしていた**ため、① も集約する方針(ユーザー選択)。出力先は起動時に `make-directory` で明示作成。3 ディレクトリは `.gitignore` 除外済み。バックアップ世代管理(`version-control`/`delete-old-versions`/`backup-by-copying`)は旧設定にも無く集約スコープ外(必要なら別途)
 - [-] `simplenote2`(Simplenote とメモ同期、`~/.authinfo` 認証) — **移植しない**(ユーザー判断)。Simplenote 自体を現在常用していないため。MELPA パッケージも 2020 前後で更新停滞。将来再開する場合は denote / org-roam / Obsidian 等の現代代替の検討余地あり
 - [-] `tramp`(`/sudo:` `/ssh:`、root は ssh 経由 proxy) — **移植しない**(ユーザー判断)。`tramp` は組み込み・autoload 済みで設定ゼロのまま `C-x C-f /ssh:user@host:/path` / `/sudo::/etc/foo` が動作する(=実質既に「移植済み」)。旧の root-via-ssh proxy(`tramp-default-proxies-alist`)が必要になった時点で 5 行程度追記すれば良い
+- [x] `agent-shell`(AI コーディングエージェント連携) — **新規追加**(旧設定では未使用、ユーザー要望で導入)。`use-package agent-shell` を `elpa/` へ vendoring(依存 `acp` / `shell-maker` も同梱)。判断記録: ① **Claude バックエンドのみ**(他プロバイダ設定は入れない)、② モデル実行は外部 ACP アダプタ `claude-agent-acp`(`volta install @agentclientprotocol/claude-agent-acp`、`~/.volta/bin`)に委譲、③ 認証は `:login t`(サブスクリプション = Keychain 保存トークンを再利用。**API キーを init.el に直書きしない** — 鍵を使う場合のみ auth-source 経由の lambda、コメント例を併記)、④ 起動は **`M-x agent-shell` のみ**(グローバルキー未割当 = 既存バインドとの衝突回避)、⑤ 状態ディレクトリ `.agent-shell/` は**グローバル `~/.config/git/ignore`** で除外し、agent-shell に追跡 `.gitignore` を書き換えさせない(本体は `.git/info/exclude` を触りにいくが、グローバル ignore で「無視済み」判定なら触らない)、⑥ `claude-agent-acp` が無いマシンは `use-package :if` で全体スキップ(起動エラーなし)。**セキュリティ要点**: ファイル編集/コマンド実行は権限ゲート(承認ボタン)を経るが、若いソフトのため取りこぼし事例あり・作業ディレクトリ制限はベストエフォート。隔離したい場合は devcontainer 運用 + `agent-shell-text-file-capabilities nil`(コメントで案内)。使い方(キー表・権限フロー・新マシン手順)は README.md に集約
 
 ---
 

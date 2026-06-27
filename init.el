@@ -1918,6 +1918,46 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
 
 
 ;;; ============================================================
+;;;  AI エージェント連携: agent-shell (ACP / Claude)
+;;; ============================================================
+;; Claude 等の AI コーディングエージェントを Emacs バッファから対話操作する
+;; フロントエンド。モデル実行は外部 ACP アダプタ claude-agent-acp に委譲。
+;; 依存 acp / shell-maker は use-package が自動導入(elpa/ を git 管理)。
+;;
+;; ── 事前セットアップ(ターミナルで1回、詳細は README) ──────────
+;;   volta install @agentclientprotocol/claude-agent-acp
+;;   which claude-agent-acp           ; ~/.volta/bin に入ることを確認
+;;   (:login t はサブスク認証。Claude Code で一度ログイン済みであること)
+;; ── 認証 ───────────────────────────────────────────────
+;;   :login t = サブスクリプション(claude ログイン)を再利用。
+;;   ★ API キーを init.el に直書きしない(git に乗る)。鍵を使う場合のみ
+;;     auth-source 経由の lambda 形式にする(下のコメント参照)。
+;; ── claude-agent-acp が無いマシンでは :if で全体スキップ(起動エラーなし) ──
+
+(use-package agent-shell
+  :if (executable-find "claude-agent-acp")
+  :commands (agent-shell)              ; 起動はグローバルキー無し = M-x agent-shell
+  :config
+  ;; サブスクリプション認証(鍵を書かない・推奨)
+  (setq agent-shell-anthropic-authentication
+        (agent-shell-anthropic-make-authentication :login t))
+
+  ;; (任意) API キーを使う場合の例。リテラル直書きは厳禁。auth-source 経由:
+  ;; (setq agent-shell-anthropic-authentication
+  ;;       (agent-shell-anthropic-make-authentication
+  ;;        :api-key (lambda () (auth-source-pick-first-password
+  ;;                             :host "api.anthropic.com"))))
+
+  ;; (任意) PATH で解決できない場合はアダプタの絶対パスを明示:
+  ;; (setq agent-shell-anthropic-claude-acp-command
+  ;;       (list (expand-file-name "claude-agent-acp" "~/.volta/bin")))
+
+  ;; (任意・隔離寄せ) ファイル読み書き能力を切る(devcontainer 運用時など):
+  ;; (setq agent-shell-text-file-capabilities nil)
+  )
+
+
+;;; ============================================================
 ;;;  外部プロジェクト統合: worklog (Workday Log 入力補助)
 ;;; ============================================================
 ;; 別プロジェクト ~/cm/meltedice/worklog/ で作成した
