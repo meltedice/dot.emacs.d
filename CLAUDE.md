@@ -40,8 +40,10 @@
 - 本ファイルの**移植チェックリスト(`[x]`/`[ ]`/`[-]`)を都度更新**する。
 
 ### 検証(必須)
-- 検証用 Emacs は **`/Applications/Emacs-30.2-1.app/Contents/MacOS/Emacs`
-  (GNU Emacs 30.2)**。`/Applications/Emacs.app` は 29.x なので使わない。
+- 検証用 Emacs は **`/Applications/Emacs.app/Contents/MacOS/Emacs`
+  (GNU Emacs 30.2)**。(旧 `/Applications/Emacs-30.2-1.app` は廃止し
+  `/Applications/Emacs.app` 一本へ移行済み。現在の `/Applications/Emacs.app`
+  が 30.2 = 検証対象本体。Homebrew の `emacs` も 30.2)。
 - `init.el` を変更したら毎回バッチで load / byte-compile し、結果を報告。
   パッケージ未導入時の検証は `package-installed-p`/`package-install` を
   スタブして実施。
@@ -304,5 +306,5 @@
 カスタム関数群(dired/window/edit/view-mode/検索/Git/各言語モード 等)。
 各機能を `use-package` 化して移植する際、対応するキーバインドのコメントを外していく運用。
 
-> 検証用 Emacs: `/Applications/Emacs-30.2-1.app/Contents/MacOS/Emacs`(GNU Emacs 30.2)。
-> `/Applications/Emacs.app` は 29.x なので使わない。
+> 検証用 Emacs: `/Applications/Emacs.app/Contents/MacOS/Emacs`(GNU Emacs 30.2)。
+> (旧 `/Applications/Emacs-30.2-1.app` は廃止 → `/Applications/Emacs.app` 一本へ移行済み)。

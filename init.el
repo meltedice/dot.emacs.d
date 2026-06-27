@@ -325,7 +325,7 @@ next one."
 (defun my-font--clear-jp-fontset ()
   "前プリセットが設定した日本語/Latin fontset 上書きを解除する。"
   (dolist (s '(katakana-jisx0201 japanese-jisx0208 japanese-jisx0212
-               japanese-jisx0213-1 japanese-jisx0213-2))
+                                 japanese-jisx0213-1 japanese-jisx0213-2))
     (set-fontset-font t s nil))
   (set-fontset-font t '(#x80 . #x24F) nil))
 
@@ -334,7 +334,7 @@ next one."
   (my-font--clear-jp-fontset)
   (set-face-attribute 'default nil :family "Monaco" :height my-font-height)
   (dolist (s '(katakana-jisx0201 japanese-jisx0208 japanese-jisx0212
-               japanese-jisx0213-1 japanese-jisx0213-2))
+                                 japanese-jisx0213-1 japanese-jisx0213-2))
     (set-fontset-font t s "Hiragino Maru Gothic ProN"))
   (set-fontset-font t '(#x80 . #x24F) "Monaco")
   (setq face-font-rescale-alist
@@ -352,7 +352,7 @@ next one."
   (my-font--clear-jp-fontset)
   (set-face-attribute 'default nil :family "Menlo" :height my-font-height)
   (dolist (s '(katakana-jisx0201 japanese-jisx0208
-               japanese-jisx0213-1 japanese-jisx0213-2))
+                                 japanese-jisx0213-1 japanese-jisx0213-2))
     (set-fontset-font t s "Hiragino Kaku Gothic ProN"))
   (setq face-font-rescale-alist '((".*Hiragino.*" . 1.2))))
 
@@ -444,6 +444,14 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
       (tab-bar-new-tab)
       (switch-to-buffer buffer))))
 
+;; 旧 elscreen の C-z f(elscreen-find-file)相当。
+;; 新しいタブを作り、そこでファイルを開く(C-z C-b の my-tab-find-buffer と対)。
+(defun my-tab-find-file (filename)
+  "新しいタブを作って FILENAME を開く(旧 elscreen の C-z f = elscreen-find-file 相当)。"
+  (interactive (list (read-file-name "Find file (新タブで開く): ")))
+  (tab-bar-new-tab)
+  (find-file filename))
+
 ;; 旧 elscreen 風 C-z プレフィックス(標準は suspend-frame だが踏襲)
 (defvar elscreen-like-tab-map (make-sparse-keymap)
   "elscreen 風タブ操作プレフィックス (C-z)。")
@@ -460,18 +468,20 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 (define-key elscreen-like-tab-map (kbd "a")   #'tab-recent)
 (define-key elscreen-like-tab-map (kbd "'")   #'tab-bar-switch-to-tab) ; 名前で選択
 (define-key elscreen-like-tab-map (kbd "r")   #'tab-rename)     ; 改名
-;; C-z b = 指定バッファのタブへ移動 / 無ければ新タブで開く
-;;   (旧 elscreen の C-z b = elscreen-find-and-goto-by-buffer 相当)
-(define-key elscreen-like-tab-map (kbd "b")   #'my-tab-find-buffer)
+;; C-z C-b = 指定バッファのタブへ移動 / 無ければ新タブで開く
+;;   (旧 elscreen の C-z b = elscreen-find-and-goto-by-buffer 相当。
 (define-key elscreen-like-tab-map (kbd "C-b") #'my-tab-find-buffer)
-;; タブ構成の undo/redo(履歴)。旧 b/f から u/f へ移動(b はバッファ用に明渡し)
-(define-key elscreen-like-tab-map (kbd "u")   #'tab-bar-history-back)
+;; タブ構成の undo/redo(履歴)
+(define-key elscreen-like-tab-map (kbd "b")   #'tab-bar-history-back)
 (define-key elscreen-like-tab-map (kbd "f")   #'tab-bar-history-forward)
+;; C-z C-f = 新しいタブでファイルを開く(旧 elscreen の C-z f = elscreen-find-file 相当)
+;;   (C-z f は tab-bar-history-forward(redo)のまま据え置き、新タブ open は C-z C-f)
+(define-key elscreen-like-tab-map (kbd "C-f") #'my-tab-find-file)
 ;; C-z 1..9 で番号のタブへ
 (dotimes (i 9)
   (define-key elscreen-like-tab-map (kbd (number-to-string (1+ i)))
-    (let ((n (1+ i)))
-      (lambda () (interactive) (tab-bar-select-tab n)))))
+              (let ((n (1+ i)))
+                (lambda () (interactive) (tab-bar-select-tab n)))))
 
 
 ;;; ============================================================
@@ -813,7 +823,7 @@ shebang 不挿入。"
 ;;   端末(-nw、フリンジ無し)では M-x diff-hl-margin-mode でマージン表示に。
 (use-package diff-hl
   :demand t                               ; :hook で遅延化されるのを上書きし
-                                          ; 起動時にロード→global mode を有効化
+                                        ; 起動時にロード→global mode を有効化
   :hook ((magit-pre-refresh  . diff-hl-magit-pre-refresh)
          (magit-post-refresh . diff-hl-magit-post-refresh)
          (dired-mode         . diff-hl-dired-mode))
