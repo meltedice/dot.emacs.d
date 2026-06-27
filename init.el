@@ -1925,7 +1925,13 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
 ;; 取り込んだもの(無改変)。worklog ファイル(日付セクション内のログ行)の
 ;; 行末で RET → 改行 + 現在の勤務日・時刻 prefix を自動挿入。
 ;; 詳細・仕様は lisp/worklog.el 冒頭の Commentary を参照。
-(add-to-list 'load-path (locate-user-emacs-file "lisp"))
+;; load-path 追加は eval-and-compile で包む(コンパイル時にも評価)。
+;; こうしないと init.el 全体を byte-compile した際、コンパイル時には
+;; この add-to-list が実行されず、直後の (require 'worklog) が lisp/ を
+;; 見つけられず失敗する(実行時=逐次 load では順に実行され問題ない)。
+;; ※ load 時の挙動は従来と不変(eval-and-compile は実行時にも評価する)。
+(eval-and-compile
+  (add-to-list 'load-path (locate-user-emacs-file "lisp")))
 (require 'worklog)
 
 ;; worklog を開いたら worklog-mode を自動 ON。
