@@ -51,6 +51,11 @@ ddskk-*
 /.savehist
 /.saveplace
 
+# agent-shell(shell-maker)が書き出す per-machine の入力履歴。
+# 既定の shell-maker-root-path = user-emacs-directory 直下に <シェル名>/history
+# を作る(例: agent/history)。実行時状態のため git 管理しない。
+/agent/
+
 # ido
 ido.last
 smex-items
