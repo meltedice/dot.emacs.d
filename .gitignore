@@ -29,6 +29,11 @@ __MACOSX
 /elpa/.last-refresh
 # package-install が署名検証用に生成する GPG キーリング(per-machine)。
 /elpa/gnupg/
+# vterm: ネイティブモジュール(arch 依存、各マシンで初回 M-x vterm 時にビルド)。
+# tree-sitter dylib と同様、.el ソースのみ追跡しビルド成果物は除外。
+/elpa/vterm-*/build/
+/elpa/vterm-*/vterm-module.so
+/elpa/vterm-*/vterm-module.dylib
 /eln-cache/
 /.eln-cache/
 package-quickstart.el

@@ -1958,6 +1958,26 @@ ARG = 0(または nil)で内容クリアして switch、ARG = 1 で別の *scrat
 
 
 ;;; ============================================================
+;;;  ターミナル: vterm (libvterm ベースの Emacs 内ターミナル)
+;;; ============================================================
+;; eat は issue #262(全角/罫線連続で O(n^2) ハング、Claude Code バナーで再現)
+;; のため不採用、vterm を採用。ネイティブモジュール(vterm-module)を使うため
+;; 初回 M-x vterm 時にローカルビルドが走る(要 cmake/libtool/C コンパイラ、README 参照)。
+;; PATH は上部の exec-path-from-shell が GUI/daemon に取り込み済み。
+;; claude 等は vterm が起動する対話 zsh(~/.config/zsh/.zshrc の alias)が解決。
+;; ディレクトリ追跡(基準5)は zsh 側スニペットが前提(README 参照)。
+(use-package vterm
+  :if module-file-suffix              ; モジュール非対応ビルドでは安全スキップ
+  :commands (vterm)
+  :custom
+  (vterm-max-scrollback 10000)        ; 上限 100000
+  (vterm-kill-buffer-on-exit t)
+  :config
+  (unless (getenv "SHELL")            ; SHELL 優先、未設定時のみ /bin/zsh
+    (setq vterm-shell "/bin/zsh")))
+
+
+;;; ============================================================
 ;;;  外部プロジェクト統合: worklog (Workday Log 入力補助)
 ;;; ============================================================
 ;; 別プロジェクト ~/cm/meltedice/worklog/ で作成した
