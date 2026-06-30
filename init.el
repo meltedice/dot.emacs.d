@@ -375,6 +375,20 @@ next one."
     ("plemol-jp"    . my-font--plemol-jp))
   "プリセット名 → 適用関数。")
 
+;; Powerline 私用領域(PUA)グリフを Powerline 対応フォントで描くための割当。
+;; powerlevel10k 等が使う区切り U+E0B0 / ブランチ記号 U+E0A0 は Menlo 等の通常
+;; フォントに無く(use-default-font-for-symbols nil でも fontset 未割当)、放置すると
+;; vterm 内の p10k プロンプトが別フォント(例: Hannotate TC の漢字)で化ける。
+;; Powerline パッチ版 "Ricty for Powerline"(システム導入済み)を PUA 域へ prepend する。
+;; ★ 既定 fontset(t)ではなく「選択フレームの fontset(nil)」へ入れる。t だと一度
+;;   自動フォールバックで確定したフレーム側エントリに握りつぶされて効かない(実証済)。
+;;   プリセット切替で fontset が作り直されても効くよう my-font-preset から都度呼ぶ。
+(defun my-font--apply-powerline-glyphs ()
+  "選択フレームの fontset で Powerline 域(U+E0A0..E0D4)を割当(GUI 時のみ)。"
+  (when (and (display-graphic-p)
+             (find-font (font-spec :family "Ricty for Powerline")))
+    (set-fontset-font nil '(#xe0a0 . #xe0d4) "Ricty for Powerline" nil 'prepend)))
+
 (defun my-font-preset (name)
   "フォントプリセット NAME を即時適用(目視比較用)。
 未インストールフォントは既定にフォールバックする点に注意。"
@@ -382,6 +396,7 @@ next one."
    (list (completing-read "Font preset: "
                           (mapcar #'car my-font-presets) nil t)))
   (funcall (cdr (assoc name my-font-presets)))
+  (my-font--apply-powerline-glyphs)     ; プリセット切替でも Powerline グリフを再割当
   (message "Font preset: %s → 実フォント family=%s height=%s"
            name (face-attribute 'default :family) (face-attribute 'default :height)))
 
