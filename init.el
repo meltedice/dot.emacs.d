@@ -498,6 +498,32 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
               (let ((n (1+ i)))
                 (lambda () (interactive) (tab-bar-select-tab n)))))
 
+;; C-z C-s = 現在のタブと直前に選択していたタブの位置(内容)を入れ替える
+;; (旧 elscreen デフォルトの C-z C-s = elscreen-swap 相当。elscreen 同様、
+;;  交換後は元のタブ位置に留まる = 直前タブの内容が目の前に来る。
+;;  自分の作業に戻るには C-z C-z(tab-recent)。もう一度 C-z C-s で元に戻る)
+(defun my-tab-swap-with-recent ()
+  "現在のタブと直前に選択していたタブの位置を入れ替える(旧 elscreen-swap 相当)。"
+  (interactive)
+  (let* ((tabs (funcall tab-bar-tabs-function))
+         (current-index (tab-bar--current-tab-index tabs))
+         (recent-index (tab-bar--tab-index-recent 1 tabs)))
+    (if (null recent-index)
+        (message "There is only one tab, cannot swap")
+      (let ((tmp (nth current-index tabs)))
+        (setf (nth current-index tabs) (nth recent-index tabs))
+        (setf (nth recent-index tabs) tmp))
+      (tab-bar-tabs-set tabs)
+      (tab-bar-select-tab (1+ current-index)))))
+(define-key elscreen-like-tab-map (kbd "C-s") #'my-tab-swap-with-recent)
+
+;; C-z < / C-z > = 現在タブを左/右へ1つ移動(組み込み tab-bar-move-tab-backward / tab-move)。
+;; repeat-mode 対応: 一度押した後は < / > 連打で連続移動(組み込み既定の M / m も可)。
+(define-key elscreen-like-tab-map (kbd "<") #'tab-bar-move-tab-backward)
+(define-key elscreen-like-tab-map (kbd ">") #'tab-move)
+(define-key tab-bar-move-repeat-map (kbd "<") #'tab-bar-move-tab-backward)
+(define-key tab-bar-move-repeat-map (kbd ">") #'tab-move)
+
 
 ;;; ============================================================
 ;;;  バッファ操作(旧 inits/50-window.el の一部)

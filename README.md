@@ -302,6 +302,7 @@ volta install prettier
 | dired `A` / `Q` | マーク済みファイル群に regex 検索 / 置換 | 組み込み |
 | `C-x p f` / `g` / `r` / `p` / `d` 等 | project.el(find-file / find-regexp / query-replace / switch / find-dir 等) | 組み込み |
 | `C-z c` / `C-z C-z` / `C-z k` / `n` / `p` / `b` / `u` / `f` / `1`..`9` | tab-bar(new / recent / close / next / prev / バッファのタブへ・無ければ新タブ / undo / redo / 番号ジャンプ) | 組み込み |
+| `C-z C-s` / `C-z <` / `C-z >` | 直前タブと入れ替え(旧 elscreen-swap) / タブを左 / 右へ移動(`<` `>` 連打可) | カスタム / 組み込み |
 | `C-c a` | `org-agenda` | 組み込み (org) |
 | `C-c m` / `C-c p`(macOS) | フレーム最大化トグル / 透明度トグル | カスタム |
 
@@ -448,6 +449,8 @@ VS Code / Sublime 風の複数カーソル編集。`multiple-cursors` 本体 + �
 | `C-z C-b` | `my-tab-find-buffer`(指定バッファを表示中のタブへ移動 / どのタブにも無ければ新タブで開く。旧 elscreen の `C-z b` = `elscreen-find-and-goto-by-buffer` 相当) |
 | `C-z C-f` | `my-tab-find-file`(新しいタブでファイルを開く。旧 elscreen の `C-z f` = `elscreen-find-file` 相当) |
 | `C-z 1` .. `C-z 9` | 番号でタブにジャンプ |
+| `C-z C-s` | `my-tab-swap-with-recent`(現在のタブと直前に選択していたタブの位置を入れ替え。旧 elscreen デフォルトの `C-z C-s` = `elscreen-swap` 相当。交換後は元のタブ位置に留まる = 直前タブの内容が目の前に来る。もう一度押すと元に戻る) |
+| `C-z <` / `C-z >` | 現在タブを左 / 右へ1つ移動(`tab-bar-move-tab-backward` / `tab-move`)。repeat-mode 対応で、一度押した後は `<` `>` の連打で連続移動 |
 
 **タブの色**: `matrix-on-ice` テーマが `tab-bar` 系 face に設定している(黒背景下で見分けやすいよう)。**アクティブタブ = 黒地・緑字(#7eff00)の太字**(`tab-bar-tab`。テーマ色で「点灯」して見える)、**非アクティブタブ = 中灰地(Gray50)・黒字**(`tab-bar-tab-inactive`)、**バー地(タブ間・左右)= 中灰(Gray50)・黒字**(`tab-bar`)。色を変えたい場合は `themes/matrix-on-ice-theme.el` の該当 face を編集(`M-:` で `set-face-attribute` を評価すれば即時に試せる)。
 
