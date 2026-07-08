@@ -223,6 +223,105 @@ next one."
   (other-window 1))
 (global-set-key "\M-o" #'my-other-window-or-split) ;; 旧 other-window-or-split 相当
 
+;; フレーム内のウィンドウ配置を時計回りに 90° 回転する
+;; (M-x my-rotate-windows-clockwise。キーバインドは未割当 = 検討中)。
+;; 分割ツリーを再帰変換する: 左右分割 → 上下分割(順序維持: 左→上)、
+;; 上下分割 → 左右分割(順序反転: 上→右)。分割比率は回転後の軸へ引き継ぐ。
+;; 例)  A|B  →  A/B(A が上)  →  B|A  →  B/A  → …
+;;      (A|B)/C  →  C|(A/B)  →  C/(B|A)  → …
+;; 単純に回転できない構成(専用ウィンドウ・サイドウィンドウ、回転後に
+;; 最小サイズを割る場合等)は途中で error にし、元の配置に復元する。
+(defun my-rotate-windows--capture (node)
+  "`window-tree' の NODE を回転用の仕様リストに再帰変換する。
+リーフは (leaf BUFFER POINT START SELECTED-P)、内部ノードは
+\(split VERTICAL (FRACTION . CHILD)...) を返す。FRACTION は
+分割軸方向に子が占めるサイズ比(合計 1.0)。"
+  (if (windowp node)
+      (progn
+        (when (window-dedicated-p node)
+          (user-error "Cannot rotate: dedicated window (%s)" (window-buffer node)))
+        (when (window-parameter node 'window-side)
+          (user-error "Cannot rotate: side window (%s)" (window-buffer node)))
+        ;; atomic window(window-make-atom で束ねた分割不可グループ)。dedicated /
+        ;; side と違い leaf にフラグが立つだけなので、これを弾かないと回転で
+        ;; delete-other-windows + 再分割によって atom が無言で解体される
+        ;; (batch で再現済み)。「回転できない構成はエラーで中止」の契約を守る。
+        (when (window-parameter node 'window-atom)
+          (user-error "Cannot rotate: atomic window (%s)" (window-buffer node)))
+        (list 'leaf (window-buffer node) (window-point node)
+              (window-start node) (eq node (selected-window))))
+    (let* ((vertical (car node))            ; t = 上下分割 / nil = 左右分割
+           (edges (cadr node))
+           (total (if vertical
+                      (- (nth 3 edges) (nth 1 edges))
+                    (- (nth 2 edges) (nth 0 edges)))))
+      (cons 'split
+            (cons vertical
+                  (mapcar
+                   (lambda (child)
+                     (let* ((cedges (if (windowp child) (window-edges child) (cadr child)))
+                            (csize (if vertical
+                                       (- (nth 3 cedges) (nth 1 cedges))
+                                     (- (nth 2 cedges) (nth 0 cedges)))))
+                       (cons (/ (float csize) total)
+                             (my-rotate-windows--capture child))))
+                   (cddr node)))))))
+
+(defun my-rotate-windows--rotate (spec)
+  "回転規則を SPEC に再帰適用する。
+左右分割 → 上下分割(順序維持: 左→上)/ 上下分割 → 左右分割(順序反転: 上→右)。"
+  (if (eq (car spec) 'leaf)
+      spec
+    (let ((vertical (cadr spec))
+          (children (mapcar (lambda (fc)
+                              (cons (car fc) (my-rotate-windows--rotate (cdr fc))))
+                            (cddr spec))))
+      (cons 'split
+            (cons (not vertical)
+                  (if vertical (reverse children) children))))))
+
+(defun my-rotate-windows--build (spec win)
+  "SPEC を WIN に再帰展開する。選択すべきウィンドウを返す(該当なしなら nil)。"
+  (pcase spec
+    (`(leaf ,buffer ,point ,start ,selected)
+     (set-window-buffer win buffer)
+     (set-window-start win start)
+     (set-window-point win point)
+     (and selected win))
+    (`(split ,vertical . ,children)
+     (let ((selected nil)
+           (remaining 1.0))
+       ;; 先頭の子から順に、残り領域から自分の比率ぶんを split で切り出す
+       (while (cdr children)
+         (let* ((fraction (caar children))
+                (total (if vertical (window-total-height win) (window-total-width win)))
+                (size (round (* total (/ fraction remaining))))
+                (rest (split-window win size (if vertical 'below 'right))))
+           (setq selected (or (my-rotate-windows--build (cdar children) win) selected))
+           (setq remaining (- remaining fraction)
+                 win rest
+                 children (cdr children))))
+       (or (my-rotate-windows--build (cdar children) win) selected)))))
+
+(defun my-rotate-windows-clockwise ()
+  "フレーム内のウィンドウ配置を時計回りに 90° 回転する。
+選択ウィンドウ(同じバッファのウィンドウ)は回転後も選択を維持する。
+回転できない構成ではエラーにし、元の配置に復元する。"
+  (interactive)
+  (let ((tree (car (window-tree))))
+    (if (windowp tree)
+        (message "There is only one window, nothing to rotate")
+      (let ((spec (my-rotate-windows--rotate (my-rotate-windows--capture tree)))
+            (wc (current-window-configuration)))
+        (condition-case err
+            (progn
+              (delete-other-windows)
+              (let ((selected (my-rotate-windows--build spec (selected-window))))
+                (when selected (select-window selected))))
+          (error
+           (set-window-configuration wc)
+           (signal (car err) (cdr err))))))))
+
 (global-set-key "\C-x\C-d" 'delete-region)
 (global-set-key "\C-ci"    'indent-region)
 (global-set-key "\C-cc"    'comment-region)
@@ -523,6 +622,39 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 (define-key elscreen-like-tab-map (kbd ">") #'tab-move)
 (define-key tab-bar-move-repeat-map (kbd "<") #'tab-bar-move-tab-backward)
 (define-key tab-bar-move-repeat-map (kbd ">") #'tab-move)
+
+;; C-z j = 現在のタブと直前に選択していたタブを1つのタブに統合する
+;; (旧 elscreen デフォルトの C-z j = elscreen-link 相当)。現在のウィンドウを
+;; 左右に分割し、右側に直前タブのバッファを表示して、直前タブを閉じる。
+;; elscreen-link 同様、双方のタブがウィンドウ1つだけの時に限り動作し、
+;; 統合後は持ってきた側(右)のウィンドウを選択する。
+;; (elscreen-link の分割は上下だったが、左右分割に変更(ユーザー指定)。)
+(defun my-tab-link ()
+  "直前に選択していたタブのバッファを右側に持ってきて統合し、そのタブを閉じる。
+現在のタブ・直前のタブともウィンドウが1つだけの時に限り動作する
+(旧 elscreen の `C-z j' = elscreen-link 相当)。"
+  (interactive)
+  (let* ((tabs (funcall tab-bar-tabs-function))
+         (recent-index (tab-bar--tab-index-recent 1 tabs))
+         (current-number (1+ (tab-bar--current-tab-index tabs))))
+    (cond
+     ((null recent-index)
+      (user-error "There is only one tab, no tab to link"))
+     ((not (one-window-p 'nomini))
+      (user-error "Current tab must have exactly one window"))
+     (t
+      (tab-bar-select-tab (1+ recent-index))
+      (if (not (one-window-p 'nomini))
+          (progn
+            (tab-bar-select-tab current-number)
+            (user-error "Recent tab must have exactly one window"))
+        (let ((buffer (current-buffer))
+              ;; 直前タブ上で閉じる → recency で自動的に元のタブへ戻る
+              (tab-bar-close-tab-select 'recent))
+          (tab-bar-close-tab)
+          (select-window (split-window-right))
+          (switch-to-buffer buffer)))))))
+(define-key elscreen-like-tab-map (kbd "j") #'my-tab-link)
 
 
 ;;; ============================================================

@@ -303,6 +303,8 @@ volta install prettier
 | `C-x p f` / `g` / `r` / `p` / `d` 等 | project.el(find-file / find-regexp / query-replace / switch / find-dir 等) | 組み込み |
 | `C-z c` / `C-z C-z` / `C-z k` / `n` / `p` / `b` / `u` / `f` / `1`..`9` | tab-bar(new / recent / close / next / prev / バッファのタブへ・無ければ新タブ / undo / redo / 番号ジャンプ) | 組み込み |
 | `C-z C-s` / `C-z <` / `C-z >` | 直前タブと入れ替え(旧 elscreen-swap) / タブを左 / 右へ移動(`<` `>` 連打可) | カスタム / 組み込み |
+| `C-z j` | 直前タブを右側に統合してタブを閉じる(旧 elscreen-link) | カスタム |
+| `M-x my-rotate-windows-clockwise` | フレーム内のウィンドウ配置を時計回りに 90° 回転(キー未割当) | カスタム |
 | `C-c a` | `org-agenda` | 組み込み (org) |
 | `C-c m` / `C-c p`(macOS) | フレーム最大化トグル / 透明度トグル | カスタム |
 
@@ -423,6 +425,7 @@ VS Code / Sublime 風の複数カーソル編集。`multiple-cursors` 本体 + �
 ### バッファ・ウィンドウ
 
 - **`M-o`** — ウィンドウが 1 つなら分割してから移動、2 つ以上なら次のウィンドウへ移動(`my-other-window-or-split`)。分割方向は `split-window-sensibly` がフレームの縦横比で左右/上下を自動選択(横長なら左右、縦長なら上下)。旧 `other-window-or-split` の移植・現代化版。
+- **`M-x my-rotate-windows-clockwise`**(キー未割当) — フレーム内のウィンドウ配置を時計回りに 90° 回転する。左右分割は上下分割に(左→上)、上下分割は左右分割に(上→右)変わり、分割比率は回転後の軸へ引き継がれる。例: `A|B` → `A/B`(A が上)→ `B|A` → `B/A` → 元に戻る(4回で一周)。`(A|B)/C` → `C|(A/B)` → `C/(B|A)` のような入れ子構成も再帰的に回転。専用(dedicated)ウィンドウ・サイドウィンドウがある場合や回転後に最小サイズを割る場合はエラーで中止し、元の配置に復元される。
 - **`C-,` / `C-.`** — 前/次のバッファに切替。`*Help*` / `*Compile-Log*` / `*Completions*` / `*Shell Command Output*` / `*Apropos*` / `*Buffer List*` は `switch-to-prev-buffer-skip-regexp` で自動スキップ(`*scratch*` / `*Messages*` は巡回対象)。スペース始まりの内部バッファは組み込みが自動スキップ。
 - **`jk` 同時押し** → `view-mode` トグル(key-chord、`key-chord-two-keys-delay 0.1`)。
 - **view-mode 内のキー**:
@@ -451,6 +454,7 @@ VS Code / Sublime 風の複数カーソル編集。`multiple-cursors` 本体 + �
 | `C-z 1` .. `C-z 9` | 番号でタブにジャンプ |
 | `C-z C-s` | `my-tab-swap-with-recent`(現在のタブと直前に選択していたタブの位置を入れ替え。旧 elscreen デフォルトの `C-z C-s` = `elscreen-swap` 相当。交換後は元のタブ位置に留まる = 直前タブの内容が目の前に来る。もう一度押すと元に戻る) |
 | `C-z <` / `C-z >` | 現在タブを左 / 右へ1つ移動(`tab-bar-move-tab-backward` / `tab-move`)。repeat-mode 対応で、一度押した後は `<` `>` の連打で連続移動 |
+| `C-z j` | `my-tab-link`(現在のウィンドウを左右に分割し、右側に直前タブのバッファを持ってきて、直前タブを閉じる = 2つのタブを1つに統合。旧 elscreen デフォルトの `C-z j` = `elscreen-link` 相当。双方のタブがウィンドウ1つだけの時に限り動作し、統合後は右側のウィンドウを選択) |
 
 **タブの色**: `matrix-on-ice` テーマが `tab-bar` 系 face に設定している(黒背景下で見分けやすいよう)。**アクティブタブ = 黒地・緑字(#7eff00)の太字**(`tab-bar-tab`。テーマ色で「点灯」して見える)、**非アクティブタブ = 中灰地(Gray50)・黒字**(`tab-bar-tab-inactive`)、**バー地(タブ間・左右)= 中灰(Gray50)・黒字**(`tab-bar`)。色を変えたい場合は `themes/matrix-on-ice-theme.el` の該当 face を編集(`M-:` で `set-face-attribute` を評価すれば即時に試せる)。
 
