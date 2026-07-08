@@ -304,7 +304,7 @@ volta install prettier
 | `C-z c` / `C-z C-z` / `C-z k` / `n` / `p` / `b` / `u` / `f` / `1`..`9` | tab-bar(new / recent / close / next / prev / バッファのタブへ・無ければ新タブ / undo / redo / 番号ジャンプ) | 組み込み |
 | `C-z C-s` / `C-z <` / `C-z >` | 直前タブと入れ替え(旧 elscreen-swap) / タブを左 / 右へ移動(`<` `>` 連打可) | カスタム / 組み込み |
 | `C-z j` | 直前タブを右側に統合してタブを閉じる(旧 elscreen-link) | カスタム |
-| `M-x my-rotate-windows-clockwise` | フレーム内のウィンドウ配置を時計回りに 90° 回転(キー未割当) | カスタム |
+| `C-t r` | フレーム内のウィンドウ配置を時計回りに 90° 回転(`my-rotate-windows-clockwise`。`r` 連打で連続回転) | カスタム |
 | `C-c a` | `org-agenda` | 組み込み (org) |
 | `C-c m` / `C-c p`(macOS) | フレーム最大化トグル / 透明度トグル | カスタム |
 
@@ -425,7 +425,7 @@ VS Code / Sublime 風の複数カーソル編集。`multiple-cursors` 本体 + �
 ### バッファ・ウィンドウ
 
 - **`M-o`** — ウィンドウが 1 つなら分割してから移動、2 つ以上なら次のウィンドウへ移動(`my-other-window-or-split`)。分割方向は `split-window-sensibly` がフレームの縦横比で左右/上下を自動選択(横長なら左右、縦長なら上下)。旧 `other-window-or-split` の移植・現代化版。
-- **`M-x my-rotate-windows-clockwise`**(キー未割当) — フレーム内のウィンドウ配置を時計回りに 90° 回転する。左右分割は上下分割に(左→上)、上下分割は左右分割に(上→右)変わり、分割比率は回転後の軸へ引き継がれる。例: `A|B` → `A/B`(A が上)→ `B|A` → `B/A` → 元に戻る(4回で一周)。`(A|B)/C` → `C|(A/B)` → `C/(B|A)` のような入れ子構成も再帰的に回転。専用(dedicated)ウィンドウ・サイドウィンドウがある場合や回転後に最小サイズを割る場合はエラーで中止し、元の配置に復元される。
+- **`C-t r`**（`my-rotate-windows-clockwise`） — フレーム内のウィンドウ配置を時計回りに 90° 回転する。`C-t` は旧設定由来のウィンドウ操作プレフィックス、`r` = rotate。repeat-mode 対応で、`C-t r` のあとは `r` 単打で連続回転（4 回で一周）。`C-g` や他キーで抜ける。左右分割は上下分割に(左→上)、上下分割は左右分割に(上→右)変わり、分割比率は回転後の軸へ引き継がれる。例: `A|B` → `A/B`(A が上)→ `B|A` → `B/A` → 元に戻る(4回で一周)。`(A|B)/C` → `C|(A/B)` → `C/(B|A)` のような入れ子構成も再帰的に回転。専用(dedicated)ウィンドウ・サイドウィンドウがある場合や回転後に最小サイズを割る場合はエラーで中止し、元の配置に復元される。
 - **`C-,` / `C-.`** — 前/次のバッファに切替。`*Help*` / `*Compile-Log*` / `*Completions*` / `*Shell Command Output*` / `*Apropos*` / `*Buffer List*` は `switch-to-prev-buffer-skip-regexp` で自動スキップ(`*scratch*` / `*Messages*` は巡回対象)。スペース始まりの内部バッファは組み込みが自動スキップ。
 - **`jk` 同時押し** → `view-mode` トグル(key-chord、`key-chord-two-keys-delay 0.1`)。
 - **view-mode 内のキー**:

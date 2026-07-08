@@ -224,7 +224,8 @@ next one."
 (global-set-key "\M-o" #'my-other-window-or-split) ;; 旧 other-window-or-split 相当
 
 ;; フレーム内のウィンドウ配置を時計回りに 90° 回転する
-;; (M-x my-rotate-windows-clockwise。キーバインドは未割当 = 検討中)。
+;; (M-x my-rotate-windows-clockwise / C-t r。バインドは C-t プレフィックス
+;;  定義の直後を参照。repeat-mode 対応で C-t r のあと r 連打で回り続ける)。
 ;; 分割ツリーを再帰変換する: 左右分割 → 上下分割(順序維持: 左→上)、
 ;; 上下分割 → 左右分割(順序反転: 上→右)。分割比率は回転後の軸へ引き継ぐ。
 ;; 例)  A|B  →  A/B(A が上)  →  B|A  →  B/A  → …
@@ -335,6 +336,16 @@ next one."
   "Keymap for C-t prefix key.")
 (global-set-key "\C-t" ctl-t-map)
 (define-key minibuffer-local-map "\C-t" 'undefined)
+
+;; C-t r = ウィンドウ配置を時計回りに 90° 回転(my-rotate-windows-clockwise)。
+;; 旧 C-t 配下(ウィンドウ操作プレフィックス)の空き枠に配置。r = rotate。
+;; repeat-mode 対応: :repeat t が map 内コマンドに repeat-map プロパティを付与するため、
+;; C-t r のあとは r 単打で連続回転(4 回で一周)。C-g / 他キーで抜ける。
+(defvar-keymap my-rotate-windows-repeat-map
+  :doc "Repeat map for `my-rotate-windows-clockwise' (C-t r then r r ...)."
+  :repeat t
+  "r" #'my-rotate-windows-clockwise)
+(define-key ctl-t-map "r" #'my-rotate-windows-clockwise)
 
 
 ;;; ============================================================
