@@ -688,10 +688,11 @@ cmigemo バイナリ or 辞書が無いマシンでは `use-package :if` で全�
 押したキーと、それに対応して走った**コマンド**(`C-x C-s` → `save-buffer` など)を、実行のたびにログファイルへ追記する。「どのキー・コマンドをよく使うか」を後から `grep` / 集計して分析できる。組み込みのみ・依存なし。
 
 - **トグル**: `M-x my-command-log-mode`(グローバルマイナーモード、モードライン表示 ` CmdLog`)。**本設定では起動時に `(my-command-log-mode 1)` で常時 ON**。一時的に止めたい時は `M-x my-command-log-mode` でトグル。
-- **記録内容**: 1 行 = `時刻\t[キー]\tコマンド名\t(メジャーモード)`。例: `2026-07-12 08:33:58	[C-x C-s]	save-buffer	(emacs-lisp-mode)`。M-x など対応キーが無い起動は `[-]`。
-- **除外**: 通常のテキスト入力(`self-insert-command`)は既定で記録しない(本文を残さない)。ノイズの多い移動系(`next-line` 等)を減らしたければ `my-command-log-exclude-commands` に足す。
-- **保存先**: `my-command-log-file`(既定 `~/.emacs.d/.command-log`、`.gitignore` 除外)。素のテキストなので `grep`・`sort`・`uniq -c` で「よく使うコマンド」を集計できる。
-- **安全性**: `post-command-hook` は毎コマンド走るが、書き込み失敗は握りつぶして操作を止めない。生キー全記録の組み込み `open-dribble-file`(タイプした本文も残る)とは別物で、こちらは**非テキストのコマンドのみ**を残す。
+- **記録内容**: 1 行 = `時刻\t[キー]\tコマンド名\t(メジャーモード)`。例: `2026-07-13 08:33:58	[C-x C-s]	save-buffer	(emacs-lisp-mode)`。`M-x` 起動のコマンドはキー列を `[M-x]` に畳んで記録する(どのコマンドかは次のコマンド名の列に残る)。
+- **除外(本文を残さない)**: テキスト入力系コマンドを既定で除外し、打った内容をログに残さない。既定除外 = `self-insert-command` / `org-self-insert-command`(org 本文)/ `isearch-printing-char`(検索文字)/ `quoted-insert`(C-q)/ `xterm-paste`(貼り付け)/ `vterm--self-insert`(+`-meta`)・`term-send-raw`(+`-meta`)(vterm・term のシェル入力=パスワード等)。これは denylist なので、上記以外のモード固有 self-insert 相当(電気的挿入 `c-electric-*` 等)や、ノイズの多い移動系(`next-line` 等)を減らしたい場合は `my-command-log-exclude-commands` に足す。
+- **保存先(月ごとローテーション)**: `my-command-log-file-format` を `format-time-string` で展開した `~/.emacs.d/.command-log-YYYY-MM`(月ごとに別ファイル)。`.gitignore` 除外(`/.command-log*`)。素のテキストなので集計できる。例(よく使うコマンド上位、全月まとめて): `cut -f3 ~/.emacs.d/.command-log-* | sort | uniq -c | sort -rn | head`。
+- **書き込みタイミング**: `post-command-hook` では行を変数に貯めるだけで、実際の書き込みは **5 秒アイドル + 未書き出しが `my-command-log-pending-max`(既定 2000)に達した時 + Emacs 終了時 + モード無効化時**にまとめて行う(毎コマンドのディスク I/O を避ける)。そのため**クラッシュ時は直近の未書き出し分を取りこぼす**(使い方分析用途のため許容)。書き込みに失敗した場合は**一度だけ**警告し、貯めた分は破棄せず次回の成功時に書き出す。
+- **他方式との違い**: 生キー全記録の組み込み `open-dribble-file`(タイプした本文も残る)とは別物で、こちらは**テキスト入力系を除外したコマンドのみ**を残す。
 
 ### テーマ
 

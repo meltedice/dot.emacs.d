@@ -351,56 +351,131 @@ next one."
 ;;; ============================================================
 ;;;  コマンドロガー(押したキーと対応するコマンドをファイルに記録)
 ;;; ============================================================
-;; 通常のテキスト入力(self-insert-command)以外のコマンドを、実行のたびに
-;; 「時刻・キー・コマンド名・メジャーモード」の 1 行としてログファイルへ追記する。
-;; キー入力(C-x C-s 等)や M-x 起動のコマンドを対象に、後から grep / 集計して
-;; 「どのキー・コマンドをよく使うか」を分析できる。組み込みのみ・依存なし。
+;; 通常のテキスト入力以外のコマンドを、実行のたびに「時刻・キー・コマンド名・
+;; メジャーモード」の 1 行として記録する。キー入力(C-x C-s 等)や M-x 起動の
+;; コマンドを対象に、後から grep / 集計して「どのキー・コマンドをよく使うか」を
+;; 分析できる。組み込みのみ・依存なし。
 ;;
 ;;   使い方: M-x my-command-log-mode でトグル(グローバルマイナーモード)。
 ;;           本 init では下部で (my-command-log-mode 1) を呼び起動時から常時記録する
 ;;           (ユーザー要望)。一時的に止めたい時は M-x my-command-log-mode でトグル。
-;;   ログ:   my-command-log-file(既定 ~/.emacs.d/.command-log、.gitignore 除外)。
-;;   除外:   my-command-log-exclude-commands(既定は self-insert-command のみ=
-;;           通常の文字入力は本文を残さない。ノイズが多い移動系を足すのも可)。
+;;   ログ:   my-command-log-file-format を format-time-string で展開したファイル。
+;;           %Y-%m を含むため月ごとに別ファイル(.command-log-YYYY-MM)へローテーション。
+;;           .gitignore 除外(per-machine)。
+;;   除外:   my-command-log-exclude-commands。テキスト入力系コマンドを除外し、
+;;           打った本文をログに残さない(下記変数の docstring 参照)。
 ;;
-;; 注意: post-command-hook は毎コマンド走るため、書き込み失敗が command loop を
-;;       壊さないよう condition-case で握りつぶす。write-region 追記は毎回
-;;       ファイルを開閉するが、コマンドはユーザー速度なので実害は小さい。
+;; 設計: post-command-hook は毎コマンド走るため、そこでは行を変数へ push するだけに
+;;       し、実際のディスク書き込みはアイドルタイマー + kill-emacs + モード無効化時に
+;;       まとめて行う(毎コマンドの I/O を避ける)。クラッシュ時は未フラッシュ分を
+;;       取りこぼすが、使い方分析用途のため許容(ユーザー判断)。
 
-(defvar my-command-log-file
-  (expand-file-name ".command-log" user-emacs-directory)
-  "コマンドログの保存先(per-machine、.gitignore 除外)。")
+(defvar my-command-log-file-format
+  (expand-file-name ".command-log-%Y-%m" user-emacs-directory)
+  "コマンドログの保存先(`format-time-string' で展開)。
+%Y-%m を含むため月ごとに別ファイル(.command-log-YYYY-MM)へローテーションされる。
+per-machine、.gitignore 除外。")
 
 (defvar my-command-log-exclude-commands
-  '(self-insert-command)
-  "ログに残さないコマンドのリスト。既定は通常のテキスト入力のみ除外。
-ノイズを減らしたければ next-line / previous-line / forward-char 等を足す。")
+  '(self-insert-command
+    org-self-insert-command
+    isearch-printing-char
+    quoted-insert
+    xterm-paste
+    ;; ターミナル系(シェルにタイプした文字。パスワード等の漏洩を防ぐ)。
+    vterm--self-insert
+    vterm--self-insert-meta
+    term-send-raw
+    term-send-raw-meta)
+  "ログに残さないコマンドのリスト。
+テキスト入力系(通常の self-insert / org の self-insert / isearch のタイプ文字 /
+C-q quoted-insert / 貼り付け / vterm・term のシェル入力)を除外し、打った本文を
+ログに残さない。これは denylist なので、上記以外にもモード固有の self-insert 相当
+コマンド(電気的挿入 c-electric-* 等)や、ノイズの多い移動系(next-line 等)を
+減らしたい場合は必要に応じて足す。")
+
+(defvar my-command-log-flush-idle-delay 5
+  "この秒数アイドルすると、貯めたログ行をまとめてファイルへ書き出す。")
+
+(defvar my-command-log-pending-max 2000
+  "未フラッシュ行がこの数に達したら、アイドルを待たず即フラッシュする。
+アイドルが長く来ない連続操作(マクロ大量実行等)でメモリに溜め込みすぎない上限。")
+
+(defvar my-command-log--pending nil
+  "未フラッシュのログ行(push で先頭=新しい順に積み、フラッシュ時に reverse)。")
+
+(defvar my-command-log--timer nil
+  "フラッシュ用のアイドルタイマー。")
+
+(defvar my-command-log--write-warned nil
+  "書き込み失敗を一度警告したら t になり、以後は警告を繰り返さない。")
 
 (defun my-command-log--record ()
-  "直前に実行したコマンドを `my-command-log-file' に 1 行追記する。
+  "直前に実行したコマンドの 1 行を `my-command-log--pending' に積む。
 `post-command-hook' 用。テキスト入力・除外コマンド・無名コマンドは記録しない。
-エラーは握りつぶして command loop を壊さない。"
-  (condition-case nil
-      (let ((cmd this-command))
-        (when (and cmd
-                   (symbolp cmd)
-                   (not (memq cmd my-command-log-exclude-commands)))
-          (let* ((keys (this-command-keys))
-                 (keydesc (if (> (length keys) 0) (key-description keys) "-"))
-                 (line (format "%s\t[%s]\t%s\t(%s)\n"
-                               (format-time-string "%Y-%m-%d %H:%M:%S")
-                               keydesc cmd major-mode)))
-            (write-region line nil my-command-log-file 'append 'no-message))))
-    (error nil)))
+ここではディスク書き込みをせず(アイドル時にまとめて flush)、エラーは握りつぶす。"
+  (ignore-errors
+    (let ((cmd this-command))
+      (when (and cmd
+                 (symbolp cmd)
+                 (not (memq cmd my-command-log-exclude-commands)))
+        (let* ((keys (this-command-keys))
+               (desc (unless (seq-empty-p keys) (key-description keys)))
+               ;; M-x 起動は this-command-keys が "M-x <名前> RET" に展開されるので
+               ;; キー列は "M-x" に畳む(どのコマンドかは次のコマンド名の列に残る)。
+               (keydesc (cond ((null desc) "-")
+                              ((string-prefix-p "M-x " desc) "M-x")
+                              (t desc)))
+               (line (format "%s\t[%s]\t%s\t(%s)\n"
+                             (format-time-string "%Y-%m-%d %H:%M:%S")
+                             keydesc cmd major-mode)))
+          (push line my-command-log--pending)
+          ;; アイドルが来ない連続操作でもメモリに溜め込みすぎないよう、
+          ;; 上限を超えたら即フラッシュする。
+          (when (>= (length my-command-log--pending) my-command-log-pending-max)
+            (my-command-log--flush)))))))
+
+(defun my-command-log--flush ()
+  "貯めた `my-command-log--pending' をまとめて当月のログファイルへ追記する。
+書き込みに成功したときだけ pending をクリアし、失敗時は保持して次回リトライする
+(失敗の警告は一度だけ)。"
+  (when my-command-log--pending
+    (condition-case err
+        (progn
+          ;; reverse は非破壊(古い順に連結)。失敗しても pending を壊さない。
+          (write-region (apply #'concat (reverse my-command-log--pending))
+                        nil (format-time-string my-command-log-file-format)
+                        'append 'no-message)
+          (setq my-command-log--pending nil))     ; 成功時のみクリア
+      (error
+       (unless my-command-log--write-warned
+         (setq my-command-log--write-warned t)
+         (message "my-command-log: ログ書き込みに失敗しました(以後この警告は出しません): %s"
+                  (error-message-string err)))))))
 
 (define-minor-mode my-command-log-mode
-  "非テキスト入力コマンドを `my-command-log-file' に記録するグローバルマイナーモード。"
+  "非テキスト入力コマンドをログファイルに記録するグローバルマイナーモード。"
   :global t
   :lighter " CmdLog"
   :group 'convenience
   (if my-command-log-mode
-      (add-hook 'post-command-hook #'my-command-log--record)
-    (remove-hook 'post-command-hook #'my-command-log--record)))
+      (progn
+        (add-hook 'post-command-hook #'my-command-log--record)
+        (add-hook 'kill-emacs-hook #'my-command-log--flush)
+        ;; 二重有効化(init 再読込等で (my-command-log-mode 1) が再実行される)でも
+        ;; 古いタイマーを取りこぼさないよう、既存があれば必ず cancel してから作る。
+        (when (timerp my-command-log--timer)
+          (cancel-timer my-command-log--timer))
+        (setq my-command-log--timer
+              (run-with-idle-timer my-command-log-flush-idle-delay t
+                                   #'my-command-log--flush)))
+    (remove-hook 'post-command-hook #'my-command-log--record)
+    (remove-hook 'kill-emacs-hook #'my-command-log--flush)
+    (when (timerp my-command-log--timer)
+      (cancel-timer my-command-log--timer)
+      (setq my-command-log--timer nil))
+    ;; 無効化時に未フラッシュ分を書き出す
+    (my-command-log--flush)))
 
 ;; 起動時から常時記録する(ユーザー要望)。止めたい時は M-x my-command-log-mode。
 (my-command-log-mode 1)

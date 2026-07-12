@@ -46,7 +46,8 @@ ddskk-*
 .scratch*
 
 # コマンドロガー(my-command-log-mode)が書き出す per-machine の操作ログ。
-/.command-log
+# 月ごとに .command-log-YYYY-MM へローテーションするため glob で除外。
+/.command-log*
 
 # 組み込み UX(recentf / savehist / save-place)が書き出す per-machine の
 # 履歴・カーソル位置。実行時状態のため git 管理しない。
