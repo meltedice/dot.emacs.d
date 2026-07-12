@@ -687,7 +687,7 @@ cmigemo バイナリ or 辞書が無いマシンでは `use-package :if` で全�
 
 押したキーと、それに対応して走った**コマンド**(`C-x C-s` → `save-buffer` など)を、実行のたびにログファイルへ追記する。「どのキー・コマンドをよく使うか」を後から `grep` / 集計して分析できる。組み込みのみ・依存なし。
 
-- **トグル**: `M-x my-command-log-mode`(グローバルマイナーモード、モードライン表示 ` CmdLog`)。**既定は OFF**で、有効化した間だけ記録する。常時記録したいなら init 末尾等で `(my-command-log-mode 1)`。
+- **トグル**: `M-x my-command-log-mode`(グローバルマイナーモード、モードライン表示 ` CmdLog`)。**本設定では起動時に `(my-command-log-mode 1)` で常時 ON**。一時的に止めたい時は `M-x my-command-log-mode` でトグル。
 - **記録内容**: 1 行 = `時刻\t[キー]\tコマンド名\t(メジャーモード)`。例: `2026-07-12 08:33:58	[C-x C-s]	save-buffer	(emacs-lisp-mode)`。M-x など対応キーが無い起動は `[-]`。
 - **除外**: 通常のテキスト入力(`self-insert-command`)は既定で記録しない(本文を残さない)。ノイズの多い移動系(`next-line` 等)を減らしたければ `my-command-log-exclude-commands` に足す。
 - **保存先**: `my-command-log-file`(既定 `~/.emacs.d/.command-log`、`.gitignore` 除外)。素のテキストなので `grep`・`sort`・`uniq -c` で「よく使うコマンド」を集計できる。

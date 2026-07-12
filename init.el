@@ -357,8 +357,8 @@ next one."
 ;; 「どのキー・コマンドをよく使うか」を分析できる。組み込みのみ・依存なし。
 ;;
 ;;   使い方: M-x my-command-log-mode でトグル(グローバルマイナーモード)。
-;;           既定は OFF(=明示的に有効化した時だけ記録)。常時記録したいなら
-;;           init 末尾等で (my-command-log-mode 1) を呼ぶ。
+;;           本 init では下部で (my-command-log-mode 1) を呼び起動時から常時記録する
+;;           (ユーザー要望)。一時的に止めたい時は M-x my-command-log-mode でトグル。
 ;;   ログ:   my-command-log-file(既定 ~/.emacs.d/.command-log、.gitignore 除外)。
 ;;   除外:   my-command-log-exclude-commands(既定は self-insert-command のみ=
 ;;           通常の文字入力は本文を残さない。ノイズが多い移動系を足すのも可)。
@@ -401,6 +401,9 @@ next one."
   (if my-command-log-mode
       (add-hook 'post-command-hook #'my-command-log--record)
     (remove-hook 'post-command-hook #'my-command-log--record)))
+
+;; 起動時から常時記録する(ユーザー要望)。止めたい時は M-x my-command-log-mode。
+(my-command-log-mode 1)
 
 
 ;;; ============================================================
