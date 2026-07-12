@@ -349,6 +349,61 @@ next one."
 
 
 ;;; ============================================================
+;;;  コマンドロガー(押したキーと対応するコマンドをファイルに記録)
+;;; ============================================================
+;; 通常のテキスト入力(self-insert-command)以外のコマンドを、実行のたびに
+;; 「時刻・キー・コマンド名・メジャーモード」の 1 行としてログファイルへ追記する。
+;; キー入力(C-x C-s 等)や M-x 起動のコマンドを対象に、後から grep / 集計して
+;; 「どのキー・コマンドをよく使うか」を分析できる。組み込みのみ・依存なし。
+;;
+;;   使い方: M-x my-command-log-mode でトグル(グローバルマイナーモード)。
+;;           既定は OFF(=明示的に有効化した時だけ記録)。常時記録したいなら
+;;           init 末尾等で (my-command-log-mode 1) を呼ぶ。
+;;   ログ:   my-command-log-file(既定 ~/.emacs.d/.command-log、.gitignore 除外)。
+;;   除外:   my-command-log-exclude-commands(既定は self-insert-command のみ=
+;;           通常の文字入力は本文を残さない。ノイズが多い移動系を足すのも可)。
+;;
+;; 注意: post-command-hook は毎コマンド走るため、書き込み失敗が command loop を
+;;       壊さないよう condition-case で握りつぶす。write-region 追記は毎回
+;;       ファイルを開閉するが、コマンドはユーザー速度なので実害は小さい。
+
+(defvar my-command-log-file
+  (expand-file-name ".command-log" user-emacs-directory)
+  "コマンドログの保存先(per-machine、.gitignore 除外)。")
+
+(defvar my-command-log-exclude-commands
+  '(self-insert-command)
+  "ログに残さないコマンドのリスト。既定は通常のテキスト入力のみ除外。
+ノイズを減らしたければ next-line / previous-line / forward-char 等を足す。")
+
+(defun my-command-log--record ()
+  "直前に実行したコマンドを `my-command-log-file' に 1 行追記する。
+`post-command-hook' 用。テキスト入力・除外コマンド・無名コマンドは記録しない。
+エラーは握りつぶして command loop を壊さない。"
+  (condition-case nil
+      (let ((cmd this-command))
+        (when (and cmd
+                   (symbolp cmd)
+                   (not (memq cmd my-command-log-exclude-commands)))
+          (let* ((keys (this-command-keys))
+                 (keydesc (if (> (length keys) 0) (key-description keys) "-"))
+                 (line (format "%s\t[%s]\t%s\t(%s)\n"
+                               (format-time-string "%Y-%m-%d %H:%M:%S")
+                               keydesc cmd major-mode)))
+            (write-region line nil my-command-log-file 'append 'no-message))))
+    (error nil)))
+
+(define-minor-mode my-command-log-mode
+  "非テキスト入力コマンドを `my-command-log-file' に記録するグローバルマイナーモード。"
+  :global t
+  :lighter " CmdLog"
+  :group 'convenience
+  (if my-command-log-mode
+      (add-hook 'post-command-hook #'my-command-log--record)
+    (remove-hook 'post-command-hook #'my-command-log--record)))
+
+
+;;; ============================================================
 ;;;  macOS (Cocoa / NS)
 ;;; ============================================================
 

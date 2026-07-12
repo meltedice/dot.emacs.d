@@ -683,6 +683,16 @@ cmigemo バイナリ or 辞書が無いマシンでは `use-package :if` で全�
 | `M-x my-scratch-load` / `M-x my-scratch-reload` | 手動でファイルから読み直し |
 | `M-x my-scratch-donot-save` | 今セッション 1 回限り、次回 Emacs 終了時の保存を抑止 |
 
+### コマンドロガー(操作履歴の記録)
+
+押したキーと、それに対応して走った**コマンド**(`C-x C-s` → `save-buffer` など)を、実行のたびにログファイルへ追記する。「どのキー・コマンドをよく使うか」を後から `grep` / 集計して分析できる。組み込みのみ・依存なし。
+
+- **トグル**: `M-x my-command-log-mode`(グローバルマイナーモード、モードライン表示 ` CmdLog`)。**既定は OFF**で、有効化した間だけ記録する。常時記録したいなら init 末尾等で `(my-command-log-mode 1)`。
+- **記録内容**: 1 行 = `時刻\t[キー]\tコマンド名\t(メジャーモード)`。例: `2026-07-12 08:33:58	[C-x C-s]	save-buffer	(emacs-lisp-mode)`。M-x など対応キーが無い起動は `[-]`。
+- **除外**: 通常のテキスト入力(`self-insert-command`)は既定で記録しない(本文を残さない)。ノイズの多い移動系(`next-line` 等)を減らしたければ `my-command-log-exclude-commands` に足す。
+- **保存先**: `my-command-log-file`(既定 `~/.emacs.d/.command-log`、`.gitignore` 除外)。素のテキストなので `grep`・`sort`・`uniq -c` で「よく使うコマンド」を集計できる。
+- **安全性**: `post-command-hook` は毎コマンド走るが、書き込み失敗は握りつぶして操作を止めない。生キー全記録の組み込み `open-dribble-file`(タイプした本文も残る)とは別物で、こちらは**非テキストのコマンドのみ**を残す。
+
 ### テーマ
 
 自前テーマ `themes/matrix-on-ice-theme.el`(旧 `~/.emacs.d/auto-install/matrix-on-ice-theme.el` の名前を引き継ぎつつ、`deftheme` で**最小忠実再実装**したもの。外部パッケージ非依存)。
