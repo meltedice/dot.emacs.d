@@ -843,7 +843,10 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
          ("\\.\\(text\\|mdt\\)\\'" . markdown-mode)
          ("README\\.md\\'"       . gfm-mode))
   :custom
-  (markdown-fontify-code-blocks-natively t))
+  (markdown-fontify-code-blocks-natively t)
+  ;; ``` を 3 つ打った時に GFM コードブロックを自動挿入し言語を尋ねる
+  ;; electric 挙動を無効化(markdown-electric-backquote を素の ` 挿入に戻す)。
+  (markdown-gfm-use-electric-backquote nil))
 
 ;; 目次生成: M-x markdown-toc-generate-toc
 (use-package markdown-toc
