@@ -555,8 +555,8 @@ C-q quoted-insert / 貼り付け / vterm・term のシェル入力)を除外し�
 ;;;  フォント(比較用プリセット切替: M-x my-font-preset)
 ;;; ============================================================
 ;; 旧 inits/cocoa-emacs-font.el の復元検討。どれを常用するか目視で
-;; 決められるよう、4 プリセットを M-x my-font-preset で即時切替できる。
-;; 起動時は my-font-default-preset(現在 "stock-modern")を GUI 時に
+;; 決められるよう、5 プリセットを M-x my-font-preset で即時切替できる。
+;; 起動時は my-font-default-preset(現在 "stock-modern-fixed")を GUI 時に
 ;; 自動適用する。他プリセットは引き続き M-x で随時比較可能。
 ;; 旧 init.el の (setq use-default-font-for-symbols nil)(↓ 等の記号を
 ;; fontset 側=全角で出す)は全プリセット共通で維持。
@@ -590,14 +590,40 @@ C-q quoted-insert / 貼り付け / vterm・term のシェル入力)を除外し�
           (".*monaco-bold-.*-mac-roman" . 0.9)
           ("-cdac$" . 1.3))))
 
-(defun my-font--stock-modern ()
-  "ストック現代化: Menlo + Hiragino Kaku ProN + 最小 rescale。"
+(defun my-font--menlo-hiragino (jp-family)
+  "Menlo + JP-FAMILY(ヒラギノ系)+ 最小 rescale の共通部。
+stock-modern / stock-modern-fixed の 2 プリセットで日本語 family だけ差し替える。"
   (my-font--clear-jp-fontset)
   (set-face-attribute 'default nil :family "Menlo" :height my-font-height)
   (dolist (s '(katakana-jisx0201 japanese-jisx0208
                                  japanese-jisx0213-1 japanese-jisx0213-2))
-    (set-fontset-font t s "Hiragino Kaku Gothic ProN"))
+    (set-fontset-font t s jp-family))
   (setq face-font-rescale-alist '((".*Hiragino.*" . 1.2))))
+
+(defun my-font--stock-modern ()
+  "ストック現代化: Menlo + Hiragino Kaku ProN(macOS 同梱そのまま)+ 最小 rescale。
+素の Hiragino は hhea.lineGap=500 を Emacs(macfont.m)が ascent/descent に
+加算するため、日本語を含む行だけ 16px→20px に伸びて後続行が下にズレる(実測)。
+ズレを解消した版は stock-modern-fixed。"
+  (my-font--menlo-hiragino "Hiragino Kaku Gothic ProN"))
+
+;; stock-modern の日本語だけを、縦メトリクス調整済みの派生フォント
+;; "Hiragino Kaku Gothic ProN Emacs"(tools/make-hiragino-emacs-font.py で
+;; ~/Library/Fonts/ に生成。ascender 880→760 / lineGap 500→0、字形は同一)に
+;; 差し替えた版。全行が Menlo と同じ 16px に揃う(実測)。
+;; 未生成のマシンでは素の Hiragino に fallback(= stock-modern と同じ表示)。
+(defconst my-font-jp-hiragino-emacs "Hiragino Kaku Gothic ProN Emacs"
+  "縦メトリクス調整済みヒラギノ派生フォントの family 名。")
+
+(defun my-font--stock-modern-fixed ()
+  "stock-modern の行高ズレ解消版: Menlo + Hiragino Kaku ProN Emacs(派生)。"
+  (my-font--menlo-hiragino
+   (if (find-font (font-spec :family my-font-jp-hiragino-emacs))
+       my-font-jp-hiragino-emacs
+     (progn
+       (message "my-font: %s が未生成のため素の Hiragino に fallback(tools/make-hiragino-emacs-font.py 参照)"
+                my-font-jp-hiragino-emacs)
+       "Hiragino Kaku Gothic ProN"))))
 
 (defun my-font--udev-gothic ()
   "CJK 同梱 1 本: UDEV Gothic(要 brew install --cask font-udev-gothic)。"
@@ -612,10 +638,11 @@ C-q quoted-insert / 貼り付け / vterm・term のシェル入力)を除外し�
   (set-face-attribute 'default nil :family "PlemolJP" :height my-font-height))
 
 (defconst my-font-presets
-  '(("faithful-old" . my-font--faithful-old)
-    ("stock-modern" . my-font--stock-modern)
-    ("udev-gothic"  . my-font--udev-gothic)
-    ("plemol-jp"    . my-font--plemol-jp))
+  '(("faithful-old"       . my-font--faithful-old)
+    ("stock-modern"       . my-font--stock-modern)
+    ("stock-modern-fixed" . my-font--stock-modern-fixed)
+    ("udev-gothic"        . my-font--udev-gothic)
+    ("plemol-jp"          . my-font--plemol-jp))
   "プリセット名 → 適用関数。")
 
 ;; Powerline 私用領域(PUA)グリフを Powerline 対応フォントで描くための割当。
@@ -643,7 +670,7 @@ C-q quoted-insert / 貼り付け / vterm・term のシェル入力)を除外し�
   (message "Font preset: %s → 実フォント family=%s height=%s"
            name (face-attribute 'default :family) (face-attribute 'default :height)))
 
-(defvar my-font-default-preset "stock-modern"
+(defvar my-font-default-preset "stock-modern-fixed"
   "起動時に GUI フレームへ自動適用するプリセット名。
 M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 
@@ -657,6 +684,13 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
 (if (daemonp)
     (add-hook 'after-make-frame-functions #'my-font-apply-default)
   (my-font-apply-default))
+
+;; 行間: 各行の下に 4px の余白を足す(全プリセット共通・全バッファ既定)。
+;; 全行に一律で足すため stock-modern-fixed の「ASCII 行と日本語行の行高一致」は
+;; 保たれる(実測: 16px → 20px)。整数 = px、小数 = 行高に対する割合。
+;; バッファローカル変数なので setq-default で既定値を変える(vterm 等で
+;; 隙間が気になる場合は各 mode-hook で (setq line-spacing 0) に戻せる)。
+(setq-default line-spacing 4)
 
 ;;; ============================================================
 ;;;  タブ(旧 elscreen の代替: 組み込み tab-bar-mode)

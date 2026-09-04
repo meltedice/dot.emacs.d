@@ -124,7 +124,7 @@ Emacs パッケージは `elpa/` を git で抱えているのでクローンす
 
 ### フォント(任意 — `M-x my-font-preset` で切替)
 
-`stock-modern`(既定)と `faithful-old` は macOS 同梱フォントのみで動くため追加導入不要。下記 2 つを使いたい場合のみ導入:
+`stock-modern` と `faithful-old` は macOS 同梱フォントのみで動くため追加導入不要(既定の `stock-modern-fixed` は下記の派生フォント生成が必要。未生成なら `stock-modern` と同じ表示に fallback)。下記 2 つを使いたい場合のみ導入:
 
 ```sh
 brew install --cask font-udev-gothic
@@ -132,6 +132,26 @@ brew install --cask font-plemol-jp
 ```
 
 未導入のままプリセットを選んだ場合は Emacs の既定フォントへフォールバックする。
+
+#### `stock-modern-fixed`(既定)— ヒラギノ派生フォントの生成
+
+素の Hiragino Kaku Gothic ProN は行間情報(lineGap)が大きく、Emacs は
+日本語を含む行だけ 16px → 20px に伸ばすため後続行が下にズレる(`stock-modern` の挙動)。
+`stock-modern-fixed` は日本語だけを、`tools/make-hiragino-emacs-font.py` で
+システムのヒラギノを**上書きせず**縦メトリクスだけ揃えた派生フォント
+`Hiragino Kaku Gothic ProN Emacs`(W3 / W6、字形は同一)に差し替えたプリセットで、
+全行が 16px に揃う。派生フォントは `~/Library/Fonts/` に生成する
+(未生成のマシンでは素のヒラギノに fallback = `stock-modern` と同じ表示):
+
+```sh
+pipx install fonttools    # 依存(初回のみ)
+~/.local/pipx/venvs/fonttools/bin/python tools/make-hiragino-emacs-font.py
+# -> ~/Library/Fonts/HiraKakuProNEmacs-W3.otf / -W6.otf
+```
+
+生成後は Emacs を再起動するか `M-x my-font-preset RET stock-modern-fixed` で反映。
+元の表示に戻すのは `M-x my-font-preset RET stock-modern`(`stock-modern` の定義は不変)。
+生成物はライセンスフォントの派生のため git 管理・配布はしない(本人のマシン内利用のみ)。
 
 ### Markdown ライブプレビュー(任意 — `grip-mode` が使用)
 
@@ -704,17 +724,19 @@ cmigemo バイナリ or 辞書が無いマシンでは `use-package :if` で全�
 
 ### フォント
 
-`M-x my-font-preset` で 4 プリセット即時切替(目視比較用)。
+`M-x my-font-preset` で 5 プリセット即時切替(目視比較用)。
 
 | プリセット | Latin | CJK | 外部導入 |
 |---|---|---|---|
 | `faithful-old` | Monaco | Hiragino Maru Gothic ProN | macOS 同梱 |
-| `stock-modern`(既定) | Menlo | Hiragino Kaku Gothic ProN | macOS 同梱 |
+| `stock-modern` | Menlo | Hiragino Kaku Gothic ProN | macOS 同梱(日本語行が 4px 高くなる) |
+| `stock-modern-fixed`(既定) | Menlo | Hiragino Kaku Gothic ProN Emacs(派生・行高一致) | `tools/make-hiragino-emacs-font.py` で生成(未生成なら `stock-modern` と同じ) |
 | `udev-gothic` | UDEV Gothic(CJK 同梱 1 本) | (同) | `brew install --cask font-udev-gothic` |
 | `plemol-jp` | PlemolJP(CJK 同梱 1 本) | (同) | `brew install --cask font-plemol-jp` |
 
 - サイズは `my-font-height = 140`(= 14pt)固定で揃えてある。
-- 起動時の既定プリセットは `my-font-default-preset`(現在 `"stock-modern"`)で制御。
+- 起動時の既定プリセットは `my-font-default-preset`(現在 `"stock-modern-fixed"`)で制御。
+- 行間は `(setq-default line-spacing 4)`(各行の下に 4px。全プリセット共通・全バッファ既定)。一時的に変えるなら `M-:` で `(setq-default line-spacing 2)` など、戻すなら `nil`。
 - `daemon` 起動の場合は最初の GUI フレーム生成時に自動適用(`after-make-frame-functions`)。
 - `use-default-font-for-symbols nil` を全プリセット共通で維持(`↓` などの記号を fontset 経由 = 全角で表示)。
 
