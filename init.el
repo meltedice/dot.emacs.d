@@ -590,11 +590,11 @@ C-q quoted-insert / 貼り付け / vterm・term のシェル入力)を除外し�
           (".*monaco-bold-.*-mac-roman" . 0.9)
           ("-cdac$" . 1.3))))
 
-(defun my-font--menlo-hiragino (jp-family)
-  "Menlo + JP-FAMILY(ヒラギノ系)+ 最小 rescale の共通部。
-stock-modern / stock-modern-fixed の 2 プリセットで日本語 family だけ差し替える。"
+(defun my-font--menlo-hiragino (latin-family jp-family)
+  "LATIN-FAMILY(Menlo 系)+ JP-FAMILY(ヒラギノ系)+ 最小 rescale の共通部。
+stock-modern / stock-modern-fixed / stock-modern-fixed-v1 で family だけ差し替える。"
   (my-font--clear-jp-fontset)
-  (set-face-attribute 'default nil :family "Menlo" :height my-font-height)
+  (set-face-attribute 'default nil :family latin-family :height my-font-height)
   (dolist (s '(katakana-jisx0201 japanese-jisx0208
                                  japanese-jisx0213-1 japanese-jisx0213-2))
     (set-fontset-font t s jp-family))
@@ -605,25 +605,46 @@ stock-modern / stock-modern-fixed の 2 プリセットで日本語 family だ�
 素の Hiragino は hhea.lineGap=500 を Emacs(macfont.m)が ascent/descent に
 加算するため、日本語を含む行だけ 16px→20px に伸びて後続行が下にズレる(実測)。
 ズレを解消した版は stock-modern-fixed。"
-  (my-font--menlo-hiragino "Hiragino Kaku Gothic ProN"))
+  (my-font--menlo-hiragino "Menlo" "Hiragino Kaku Gothic ProN"))
 
-;; stock-modern の日本語だけを、縦メトリクス調整済みの派生フォント
-;; "Hiragino Kaku Gothic ProN Emacs"(tools/make-hiragino-emacs-font.py で
-;; ~/Library/Fonts/ に生成。ascender 880→760 / lineGap 500→0、字形は同一)に
-;; 差し替えた版。全行が Menlo と同じ 16px に揃う(実測)。
-;; 未生成のマシンでは素の Hiragino に fallback(= stock-modern と同じ表示)。
+;; ---- 行高ズレ解消版(派生フォント。tools/make-emacs-fonts.py で ~/Library/Fonts/ に生成)
+;; Emacs の画面行の高さ = 行内フォントの ascent 最大 + descent 最大。Menlo は
+;; 14px で 13/3=16px、素のヒラギノは 16px で 16/4=20px(lineGap 由来)なので
+;; 混在行だけ伸びる。派生フォントは字形を変えず hhea/OS2 の縦メトリクスだけを
+;; 揃えたもの。派生フォントが無いマシンでは message を出して stock-modern
+;; (素の Menlo + ヒラギノ)に fallback する。
+(defconst my-font-latin-menlo-emacs "Menlo Emacs"
+  "Menlo 派生(14px で ascent 16 / descent 4 = 20px)の family 名。")
+(defconst my-font-jp-hiragino-emacs2 "Hiragino Kaku Gothic ProN Emacs2"
+  "ヒラギノ派生 v2(16px で ascent 16 / descent 4 = 20px)の family 名。")
 (defconst my-font-jp-hiragino-emacs "Hiragino Kaku Gothic ProN Emacs"
-  "縦メトリクス調整済みヒラギノ派生フォントの family 名。")
+  "ヒラギノ派生 v1(16px で ascent 12 / descent 2 = 14px)の family 名。比較用。")
+
+(defun my-font--derived-or-fallback (latin jp)
+  "派生フォント LATIN / JP が両方あればその組、無ければ素の Menlo + ヒラギノを返す。"
+  (let ((missing (seq-remove (lambda (f) (find-font (font-spec :family f))) (list latin jp))))
+    (if (null missing)
+        (list latin jp)
+      (message "my-font: %s が未生成のため stock-modern に fallback(tools/make-emacs-fonts.py 参照)"
+               (string-join missing " / "))
+      (list "Menlo" "Hiragino Kaku Gothic ProN"))))
 
 (defun my-font--stock-modern-fixed ()
-  "stock-modern の行高ズレ解消版: Menlo + Hiragino Kaku ProN Emacs(派生)。"
-  (my-font--menlo-hiragino
-   (if (find-font (font-spec :family my-font-jp-hiragino-emacs))
-       my-font-jp-hiragino-emacs
-     (progn
-       (message "my-font: %s が未生成のため素の Hiragino に fallback(tools/make-hiragino-emacs-font.py 参照)"
-                my-font-jp-hiragino-emacs)
-       "Hiragino Kaku Gothic ProN"))))
+  "stock-modern の行高ズレ解消版(v2): Menlo Emacs + Hiragino Kaku ProN Emacs2。
+両フォントとも「上 16 / 下 4 = 20px」= 元の日本語行と同じ寸法に揃えてあるので、
+改行の有無・折り返しに関係なく全行 20px になり、全角の上下 2px の余裕が
+カーソル箱の内側に入る(実測)。行ピッチ 20px は line-spacing 0 で得る。"
+  (apply #'my-font--menlo-hiragino
+         (my-font--derived-or-fallback my-font-latin-menlo-emacs
+                                       my-font-jp-hiragino-emacs2)))
+
+(defun my-font--stock-modern-fixed-v1 ()
+  "比較用の旧版(v1): 素の Menlo + Hiragino Kaku ProN Emacs(ascender 880→760)。
+改行を含む行は 16px に揃うが、折り返した日本語のみの行は 14px になり、
+全角の字形上端(14px)が行上端(13px)より 1px はみ出してカーソル箱の上が
+欠けて見える。v2 で解消したため比較用途のみ。"
+  (apply #'my-font--menlo-hiragino
+         (my-font--derived-or-fallback "Menlo" my-font-jp-hiragino-emacs)))
 
 (defun my-font--udev-gothic ()
   "CJK 同梱 1 本: UDEV Gothic(要 brew install --cask font-udev-gothic)。"
@@ -638,11 +659,12 @@ stock-modern / stock-modern-fixed の 2 プリセットで日本語 family だ�
   (set-face-attribute 'default nil :family "PlemolJP" :height my-font-height))
 
 (defconst my-font-presets
-  '(("faithful-old"       . my-font--faithful-old)
-    ("stock-modern"       . my-font--stock-modern)
-    ("stock-modern-fixed" . my-font--stock-modern-fixed)
-    ("udev-gothic"        . my-font--udev-gothic)
-    ("plemol-jp"          . my-font--plemol-jp))
+  '(("faithful-old"          . my-font--faithful-old)
+    ("stock-modern"          . my-font--stock-modern)
+    ("stock-modern-fixed"    . my-font--stock-modern-fixed)
+    ("stock-modern-fixed-v1" . my-font--stock-modern-fixed-v1)
+    ("udev-gothic"           . my-font--udev-gothic)
+    ("plemol-jp"             . my-font--plemol-jp))
   "プリセット名 → 適用関数。")
 
 ;; Powerline 私用領域(PUA)グリフを Powerline 対応フォントで描くための割当。
@@ -685,12 +707,12 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
     (add-hook 'after-make-frame-functions #'my-font-apply-default)
   (my-font-apply-default))
 
-;; 行間: 各行の下に 4px の余白を足す(全プリセット共通・全バッファ既定)。
-;; 全行に一律で足すため stock-modern-fixed の「ASCII 行と日本語行の行高一致」は
-;; 保たれる(実測: 16px → 20px)。整数 = px、小数 = 行高に対する割合。
-;; バッファローカル変数なので setq-default で既定値を変える(vterm 等で
-;; 隙間が気になる場合は各 mode-hook で (setq line-spacing 0) に戻せる)。
-(setq-default line-spacing 4)
+;; 行間(各行の下に足す余白。整数 = px、小数 = 行高に対する割合)。
+;; stock-modern-fixed(v2)は行の余裕をフォントの ascent/descent 側に持たせて
+;; 全行 20px にしてあるため、ここは 0(= 行ピッチ 20px、v1 + line-spacing 4 と同じ)。
+;; line-spacing の余白はカーソル箱の外側に付くので、箱の内側の余裕は作れない。
+;; バッファローカル変数なので setq-default で既定値を変える。
+(setq-default line-spacing 0)
 
 ;;; ============================================================
 ;;;  タブ(旧 elscreen の代替: 組み込み tab-bar-mode)
