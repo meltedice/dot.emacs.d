@@ -880,7 +880,13 @@ M-x my-font-preset で随時切替可能(これは既定値のみ)。")
   (markdown-fontify-code-blocks-natively t)
   ;; ``` を 3 つ打った時に GFM コードブロックを自動挿入し言語を尋ねる
   ;; electric 挙動を無効化(markdown-electric-backquote を素の ` 挿入に戻す)。
-  (markdown-gfm-use-electric-backquote nil))
+  (markdown-gfm-use-electric-backquote nil)
+  :config
+  ;; C-c - (markdown-insert-hr = 水平線 --- 挿入) を外す(誤爆防止)。
+  ;; C-c C-s - と M-x markdown-insert-hr からは引き続き呼べる。
+  ;; gfm-mode-map は markdown-mode-map を親に持つので README(gfm-mode)でも効く。
+  ;; 第 3 引数 t = 定義自体を除去(nil 上書きではない)。C-c - はグローバル未割当。
+  (keymap-unset markdown-mode-map "C-c -" t))
 
 ;; 目次生成: M-x markdown-toc-generate-toc
 (use-package markdown-toc
